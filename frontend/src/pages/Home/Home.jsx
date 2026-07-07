@@ -21,11 +21,11 @@ const days = Array.from({ length: 31 }, (_, index) => index + 1)
 const eventDays = [12, 16, 18, 26]
 const weekDays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB']
 
-function Home() {
+function Home({ session, onLogout }) {
   return (
     <main className={styles.page}>
       <div className={styles.content}>
-        <Header />
+        <Header user={session?.user} onLogout={onLogout} />
         <SearchLinks />
         <HeroSection />
         <Comunicados />
@@ -37,7 +37,7 @@ function Home() {
   )
 }
 
-function Header() {
+function Header({ user, onLogout }) {
   return (
     <header className={styles.header}>
       <BrandLogo small />
@@ -53,10 +53,19 @@ function Header() {
           <strong>09:52</strong>
           <small>31.01.2026</small>
         </div>
-        <button className={styles.userButton} type="button" aria-label="Perfil" />
+        <button className={styles.userButton} type="button" onClick={onLogout} aria-label="Sair">
+          <span>{getInitials(user?.name)}</span>
+        </button>
       </div>
     </header>
   )
+}
+
+function getInitials(name = '') {
+  const [firstName = '', lastName = ''] = name.trim().split(' ')
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1)}`.trim()
+
+  return initials.toUpperCase() || 'U'
 }
 
 function SearchLinks() {

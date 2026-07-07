@@ -21,7 +21,7 @@
 
 .card {
   width: clamp(320px, 29.4vw, 376px);
-  min-height: clamp(292px, 24.4vw, 312px);
+  min-height: clamp(292px, 24.4vw, 336px);
   display: flex;
   flex-direction: column;
   padding: clamp(22px, 2vw, 25px) clamp(28px, 2.8vw, 36px) 24px;
@@ -88,8 +88,31 @@
   cursor: pointer;
 }
 
+.card button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .card button:hover {
   background: #ffd946;
+}
+
+.card .modeButton {
+  width: auto;
+  height: auto;
+  margin: 0 auto 9px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.card .modeButton:hover {
+  background: transparent;
+  color: #fff4a4;
 }
 
 .card a {
@@ -102,6 +125,15 @@
 
 .card a:hover {
   text-decoration: underline;
+}
+
+.error {
+  min-height: 18px;
+  margin: -2px 0 0;
+  color: #ffe7e7;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 @media (max-width: 900px) {

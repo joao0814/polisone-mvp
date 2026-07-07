@@ -1,0 +1,44 @@
+services:
+  api:
+    build:
+      context: .
+    container_name: polisone-api
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_DATABASE: ${DB_DATABASE:-polisone}
+      DB_SYNC: ${DB_SYNC:-true}
+      DB_LOGGING: ${DB_LOGGING:-false}
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-secret}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: polisone-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_DATABASE:-polisone}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-polisone}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
