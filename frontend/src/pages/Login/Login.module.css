@@ -1,0 +1,149 @@
+.page {
+  --yellow: #ffca05;
+  --yellow-soft: #ffd735;
+  --ink: #020715;
+  --white: #f7f7fb;
+  min-height: 100svh;
+  overflow-x: hidden;
+  background: url('../../assets/images/background_login.svg') top center / cover no-repeat;
+  color: var(--white);
+  font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+}
+
+.loginPanel {
+  width: min(44.3vw, 850px);
+  min-width: min(430px, 100vw);
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 3vw, 42px);
+}
+
+.card {
+  width: clamp(320px, 29.4vw, 376px);
+  min-height: clamp(292px, 24.4vw, 312px);
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 2vw, 25px) clamp(28px, 2.8vw, 36px) 24px;
+  border-radius: 17px;
+  background:
+    linear-gradient(112deg, rgba(112, 96, 0, 0.78), rgba(96, 84, 0, 0.64)),
+    radial-gradient(circle at 72% 22%, rgba(255, 255, 255, 0.26), transparent 24%);
+  box-shadow: 0 22px 65px rgba(62, 50, 0, 0.22);
+  backdrop-filter: blur(6px);
+}
+
+.card h1 {
+  margin: 0;
+  color: var(--white);
+  font-size: 31px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.divider {
+  height: 3px;
+  margin: 20px 0 13px;
+  background: var(--yellow-soft);
+}
+
+.field {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 15px;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.field input {
+  height: 32px;
+  padding: 4px 10px;
+  border: 1.5px solid var(--yellow);
+  border-radius: 4px;
+  background: #06101f;
+  color: var(--white);
+  font: inherit;
+  outline: none;
+}
+
+.field input:focus {
+  border-color: #fff4a4;
+  box-shadow: 0 0 0 3px rgba(255, 244, 164, 0.24);
+}
+
+.card button {
+  width: 68%;
+  height: 31px;
+  margin: 22px auto 9px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--yellow);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background: #ffd946;
+}
+
+.card a {
+  align-self: center;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .page {
+    min-height: 100svh;
+    background-color: var(--yellow);
+    background-position: top center;
+    background-size: auto min(62svh, 520px);
+  }
+
+  .loginPanel {
+    width: 100%;
+    min-width: 0;
+    min-height: 100svh;
+    align-items: end;
+    padding: min(58svh, 500px) 24px 40px;
+  }
+
+  .card {
+    width: min(100%, 376px);
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    background-position: top 0 center;
+    background-size: auto 42svh;
+  }
+
+  .loginPanel {
+    min-height: 100svh;
+    padding: 40svh 18px 32px;
+  }
+
+  .card {
+    width: min(100%, 360px);
+    min-height: 0;
+    padding-inline: 26px;
+  }
+
+  .card button {
+    width: 100%;
+  }
+}

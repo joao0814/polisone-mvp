@@ -1,0 +1,316 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.45rem;
+  width: clamp(960px, 78vw, 1180px);
+  max-width: 100%;
+  margin: 0 auto;
+  color: #153a66;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-right: 2.5rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(248, 77, 36, 0.12);
+  color: #f84d24;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #153a66;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.16fr) minmax(360px, 0.84fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.05rem;
+  min-width: 0;
+  padding: 1.25rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(243, 248, 253, 0.98) 100%);
+  border: 1px solid rgba(21, 58, 102, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 18px 40px rgba(21, 58, 102, 0.08);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.panelIcon {
+  color: #f84d24;
+  font-size: 0.95rem;
+}
+
+.panelTitle {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #153a66;
+}
+
+.fieldsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.15rem;
+}
+
+.fieldGroup,
+.textareaGroup,
+.weekDaysGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.fieldGroup span,
+.textareaGroup span,
+.weekDaysGroup > span {
+  position: relative;
+  left: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #153a66;
+}
+
+.panel input:not([type="checkbox"]),
+.select,
+.textareaGroup textarea {
+  width: 100%;
+  border: 1px solid #eef6ff;
+  border-radius: 1.5rem;
+  background-color: #eef6ff;
+  box-shadow: 6px 6px 8px rgba(31, 120, 180, 0.15);
+  color: #333;
+  font-size: 1rem;
+  outline: none;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.select {
+  min-height: 54px;
+  padding: 0 1.25rem;
+  color: #153a66;
+}
+
+.textareaGroup textarea {
+  resize: vertical;
+  min-height: 128px;
+  padding: 1rem 1.25rem;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.panel input:not([type="checkbox"])::placeholder,
+.textareaGroup textarea::placeholder {
+  color: #757575;
+}
+
+.panel input:not([type="checkbox"]):hover:not(:disabled),
+.select:hover:not(:disabled),
+.textareaGroup textarea:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--login-accent-soft, #ffb8a8);
+  box-shadow: 0 6px 14px var(--login-accent-shadow-soft, rgba(255, 69, 0, 0.4));
+}
+
+.panel input:not([type="checkbox"]):focus,
+.panel input:not([type="checkbox"]):focus-visible,
+.select:focus,
+.select:focus-visible,
+.textareaGroup textarea:focus {
+  transform: translateY(-2px);
+  border-color: var(--login-accent, #f84d24);
+  box-shadow: 0 6px 14px var(--login-accent-shadow, rgba(255, 69, 0, 0.6));
+}
+
+.panel input:not([type="checkbox"]):disabled,
+.select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 6px 6px 8px rgba(31, 120, 180, 0.1);
+}
+
+.panel input:not([type="checkbox"]):disabled:hover,
+.select:disabled:hover {
+  transform: none;
+  border-color: #eef6ff;
+  box-shadow: 6px 6px 8px rgba(31, 120, 180, 0.1);
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: fit-content;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #153a66;
+  cursor: pointer;
+}
+
+.switchRow input {
+  width: 18px;
+  height: 18px;
+  accent-color: #f84d24;
+}
+
+.weekDays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.weekDayButton {
+  min-width: 42px;
+  min-height: 34px;
+  border: 1px solid rgba(21, 58, 102, 0.14);
+  border-radius: 0.7rem;
+  background: #ffffff;
+  color: #48627f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.weekDayButton:hover,
+.weekDayButton.active {
+  background: #f84d24;
+  border-color: #f84d24;
+  color: #ffffff;
+}
+
+.validationMessage {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.84fr);
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.actionsHint {
+  color: #6a7f96;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.actions :global(button) {
+  justify-self: center;
+  min-width: 255px;
+}
+
+:global(body.dark) .container,
+:global(body.dark) .panel {
+  background: #111317;
+  border-color: #3a3a3a;
+  color: #f1f1f1;
+}
+
+:global(body.dark) .title,
+:global(body.dark) .panelTitle,
+:global(body.dark) .fieldGroup span,
+:global(body.dark) .textareaGroup span,
+:global(body.dark) .weekDaysGroup > span {
+  color: #f1f1f1;
+}
+
+:global(body.dark) .panel input:not([type="checkbox"]),
+:global(body.dark) .select,
+:global(body.dark) .textareaGroup textarea,
+:global(body.dark) .weekDayButton {
+  background: #1a1f29;
+  border-color: #3a3a3a;
+  color: #f1f1f1;
+}
+
+:global(body.dark) .actionsHint {
+  color: #a9b1bd;
+}
+
+@media (max-width: 1040px) {
+  .container {
+    width: min(100%, 900px);
+  }
+
+  .body {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .actions :global(button) {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 620px) {
+  .container {
+    gap: 1.1rem;
+  }
+
+  .header {
+    padding-right: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.45rem;
+  }
+
+  .fieldsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    align-items: stretch;
+  }
+
+  .actionsHint {
+    max-width: none;
+  }
+
+  .actions :global(button) {
+    justify-self: stretch;
+    min-width: 0;
+  }
+}
