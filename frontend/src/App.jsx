@@ -1,9 +1,6 @@
 import { useState } from 'react'
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
-import Chamados from './pages/Chamados/Chamados'
-import NovoChamado from './pages/Chamados/NovoChamado/NovoChamado'
-import Login from './pages/Login/Login'
-import Home from './pages/Home/Home'
+import { useNavigate } from 'react-router-dom'
+import AppRoutes from './routes/AppRoutes'
 import { getStoredSession, login, logout, register } from './services/auth'
 
 function App() {
@@ -31,49 +28,12 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route
-        path="/login"
-        element={
-          session ? (
-            <Navigate to="/" replace />
-          ) : (
-            <Login onLogin={handleLogin} onRegister={handleRegister} />
-          )
-        }
-      />
-      <Route
-        path="/"
-        element={
-          session ? (
-            <Home session={session} onLogout={handleLogout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
-      <Route
-        path="/chamados"
-        element={
-          session ? (
-            <Chamados session={session} onLogout={handleLogout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
-      <Route
-        path="/chamados/novo"
-        element={
-          session ? (
-            <NovoChamado session={session} onLogout={handleLogout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
-      <Route path="*" element={<Navigate to={session ? '/' : '/login'} replace />} />
-    </Routes>
+    <AppRoutes
+      session={session}
+      onLogin={handleLogin}
+      onRegister={handleRegister}
+      onLogout={handleLogout}
+    />
   )
 }
 

@@ -335,11 +335,20 @@
   font-weight: 700;
 }
 
+.tableHeader span:nth-child(4) {
+  justify-self: center;
+}
+
 .tableRow {
   min-height: 56px;
   padding: 0 10px;
   font-size: 16px;
   font-weight: 700;
+}
+
+.closedTableHeader,
+.closedTableRow {
+  grid-template-columns: 120px minmax(340px, 1.7fr) minmax(170px, 0.9fr) 190px;
 }
 
 .statusBadge {

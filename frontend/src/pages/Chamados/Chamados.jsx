@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import logoNav from '../../assets/images/home/logo nav.png'
-import styles from './ChamadosPolis.module.css'
+import styles from './Chamados.module.css'
 
 const stats = [
   { label: 'Respondidos', value: 12 },
@@ -46,8 +46,36 @@ const tickets = [
   },
 ]
 
+const closedTickets = [
+  {
+    protocol: '#1821',
+    subject: 'Solicitacao para desativar CellCash',
+    requester: 'Interno',
+    date: '12/11/2025 09:39',
+  },
+  {
+    protocol: '#1821',
+    subject: 'Solicitacao para desativar CellCash',
+    requester: 'Interno',
+    date: '12/11/2025 09:39',
+  },
+  {
+    protocol: '#1821',
+    subject: 'Solicitacao para desativar CellCash',
+    requester: 'Interno',
+    date: '12/11/2025 09:39',
+  },
+  {
+    protocol: '#1821',
+    subject: 'Solicitacao para desativar CellCash',
+    requester: 'Interno',
+    date: '12/11/2025 09:39',
+  },
+]
+
 function Chamados({ session, onLogout }) {
   const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState('open')
 
   return (
     <main className={styles.page}>
@@ -84,30 +112,59 @@ function Chamados({ session, onLogout }) {
         <section className={styles.ticketSection}>
           <h2>Chamados</h2>
           <div className={styles.tabs} role="tablist" aria-label="Status dos chamados">
-            <button className={styles.tabActive} type="button">
+            <button
+              className={activeTab === 'open' ? styles.tabActive : ''}
+              type="button"
+              onClick={() => setActiveTab('open')}
+            >
               Abertos
             </button>
-            <button type="button">Fechados</button>
+            <button
+              className={activeTab === 'closed' ? styles.tabActive : ''}
+              type="button"
+              onClick={() => setActiveTab('closed')}
+            >
+              Fechados
+            </button>
           </div>
 
-          <div className={styles.tableCard}>
-            <div className={styles.tableHeader}>
-              <span>Protocolo</span>
-              <span>Assunto</span>
-              <span>Solicitante</span>
-              <span>Status</span>
-              <span>Data</span>
+          {activeTab === 'open' ? (
+            <div className={styles.tableCard}>
+              <div className={styles.tableHeader}>
+                <span>Protocolo</span>
+                <span>Assunto</span>
+                <span>Solicitante</span>
+                <span>Status</span>
+                <span>Data</span>
+              </div>
+              {tickets.map((ticket, index) => (
+                <article className={styles.tableRow} key={`${ticket.protocol}-${ticket.status}-${index}`}>
+                  <strong>{ticket.protocol}</strong>
+                  <span>{ticket.subject}</span>
+                  <span>{ticket.requester}</span>
+                  <span className={`${styles.statusBadge} ${styles[ticket.tone]}`}>{ticket.status}</span>
+                  <time>{ticket.date}</time>
+                </article>
+              ))}
             </div>
-            {tickets.map((ticket, index) => (
-              <article className={styles.tableRow} key={`${ticket.protocol}-${ticket.status}-${index}`}>
-                <strong>{ticket.protocol}</strong>
-                <span>{ticket.subject}</span>
-                <span>{ticket.requester}</span>
-                <span className={`${styles.statusBadge} ${styles[ticket.tone]}`}>{ticket.status}</span>
-                <time>{ticket.date}</time>
-              </article>
-            ))}
-          </div>
+          ) : (
+            <div className={styles.tableCard}>
+              <div className={`${styles.tableHeader} ${styles.closedTableHeader}`}>
+                <span>Protocolo</span>
+                <span>Assunto</span>
+                <span>Solicitante</span>
+                <span>Data</span>
+              </div>
+              {closedTickets.map((ticket, index) => (
+                <article className={`${styles.tableRow} ${styles.closedTableRow}`} key={`${ticket.protocol}-closed-${index}`}>
+                  <strong>{ticket.protocol}</strong>
+                  <span>{ticket.subject}</span>
+                  <span>{ticket.requester}</span>
+                  <time>{ticket.date}</time>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         <BrandSignature />

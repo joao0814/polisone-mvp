@@ -8,6 +8,8 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "migration:status": "ts-node src/shared/database/migrations/run-migrations.ts status",
+    "migration:up": "ts-node src/shared/database/migrations/run-migrations.ts up",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
