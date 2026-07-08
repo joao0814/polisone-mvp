@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './nest_modules/auth/auth.module';
+import { SupportTicketsModule } from './nest_modules/support-tickets/support-tickets.module';
 import { DatabaseModule } from './shared/database/database.module';
 
 @Module({
@@ -12,6 +13,7 @@ import { DatabaseModule } from './shared/database/database.module';
     }),
     DatabaseModule,
     AuthModule,
+    SupportTicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

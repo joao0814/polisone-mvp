@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { SupportTicketAttachmentModel } from '../../core/support-tickets/infrastructure/database/sequelize/models/support-ticket-attachment.model';
+import { SupportTicketMessageModel } from '../../core/support-tickets/infrastructure/database/sequelize/models/support-ticket-message.model';
+import { SupportTicketModel } from '../../core/support-tickets/infrastructure/database/sequelize/models/support-ticket.model';
 import { UserModel } from '../../core/users/infrastructure/database/sequelize/models/user.model';
 
 @Module({
@@ -15,7 +18,12 @@ import { UserModel } from '../../core/users/infrastructure/database/sequelize/mo
         username: configService.get<string>('DB_USERNAME', 'postgres'),
         password: configService.get<string>('DB_PASSWORD', 'postgres'),
         database: configService.get<string>('DB_DATABASE', 'polisone'),
-        models: [UserModel],
+        models: [
+          UserModel,
+          SupportTicketModel,
+          SupportTicketMessageModel,
+          SupportTicketAttachmentModel,
+        ],
         autoLoadModels: true,
         synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',
         logging: configService.get<string>('DB_LOGGING', 'false') === 'true',
