@@ -105,7 +105,7 @@ export class SupportTicketSequelizeRepository
           include: [SupportTicketAttachmentModel],
         },
       ],
-      order: [[SupportTicketMessageModel, 'created_at', 'ASC']],
+      order: [[{ model: SupportTicketMessageModel, as: 'messages' }, 'createdAt', 'ASC']],
     };
   }
 

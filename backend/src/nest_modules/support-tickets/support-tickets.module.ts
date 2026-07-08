@@ -8,9 +8,11 @@ import { SupportTicketsController } from './support-tickets.controller';
 import { supportTicketsProviders } from './support-tickets.providers';
 import { UserSequelizeRepository } from '../../core/users/infrastructure/database/sequelize/repositories/user.repository';
 import { USER_REPOSITORY } from '../../core/users/domain/contracts/user-repository.interface';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     SequelizeModule.forFeature([
       UserModel,
       SupportTicketModel,

@@ -1,9 +1,55 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logoNav from "../../../assets/images/home/logo nav.png";
+import { createTicket } from "../../../services/tickets";
+import {
+  mapDepartmentToApi,
+  mapPriorityToApi,
+} from "../helpers";
+import {
+  CLASSIFICATION_OPTIONS_BY_DEPARTMENT,
+  DEPARTMENT_OPTIONS,
+  getClassificationFieldLabel,
+} from "../ticketOptions";
 import styles from "./NovoChamado.module.css";
 
 function NovoChamado({ session, onLogout }) {
+  const navigate = useNavigate();
+  const [department, setDepartment] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [priority, setPriority] = useState("media");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const classificationOptions = useMemo(
+    () => CLASSIFICATION_OPTIONS_BY_DEPARTMENT[department] ?? [],
+    [department],
+  );
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const createdTicket = await createTicket({
+        subject: subject.trim(),
+        department: mapDepartmentToApi(department),
+        subcategory: subcategory || undefined,
+        priority: mapPriorityToApi(priority),
+        message: message.trim(),
+      });
+
+      navigate(`/chamados/${createdTicket.id}`);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <main className={styles.page}>
       <div className={styles.content}>
@@ -19,44 +65,86 @@ function NovoChamado({ session, onLogout }) {
 
           <form
             className={styles.form}
-            onSubmit={(event) => event.preventDefault()}
+            onSubmit={handleSubmit}
           >
             <div className={styles.grid}>
               <label className={styles.field}>
                 <span>Departamento</span>
-                <select defaultValue="">
+                <select
+                  value={department}
+                  onChange={(event) => {
+                    setDepartment(event.target.value);
+                    setSubcategory("");
+                  }}
+                  required
+                >
                   <option value="" disabled>
                     Selecionar departamento
                   </option>
-                  <option>Financeiro</option>
-                  <option>Tecnologia</option>
-                  <option>Operacoes</option>
-                  <option>Comercial</option>
+                  {DEPARTMENT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </label>
 
               <label className={styles.field}>
-                <span>Propriedade</span>
-                <select defaultValue="">
+                <span>{getClassificationFieldLabel(department)}</span>
+                <select
+                  value={subcategory}
+                  onChange={(event) => setSubcategory(event.target.value)}
+                  disabled={!classificationOptions.length}
+                >
                   <option value="" disabled>
                     Selecione
                   </option>
-                  <option>Portal do candidato</option>
-                  <option>Aplicativo</option>
-                  <option>Site institucional</option>
+                  {classificationOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </label>
             </div>
 
+            <label className={styles.field}>
+              <span>Prioridade</span>
+              <select
+                value={priority}
+                onChange={(event) => setPriority(event.target.value)}
+              >
+                <option value="baixa">Baixa</option>
+                <option value="media">Media</option>
+                <option value="alta">Alta</option>
+              </select>
+            </label>
+
             <label className={`${styles.field} ${styles.fieldFull}`}>
               <span>Assunto</span>
-              <input type="text" placeholder="Assunto do Chamado" />
+              <input
+                type="text"
+                placeholder="Assunto do Chamado"
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                maxLength={255}
+                required
+              />
             </label>
 
             <label className={`${styles.field} ${styles.fieldFull}`}>
               <span>Mensagem</span>
-              <textarea rows="10" placeholder="Descreva aqui seu chamado" />
+              <textarea
+                rows="10"
+                placeholder="Descreva aqui seu chamado"
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                maxLength={5000}
+                required
+              />
             </label>
+
+            {error ? <p className={styles.errorText}>{error}</p> : null}
 
             <div className={styles.actions}>
               <div className={styles.uploadGroup}>
@@ -72,8 +160,12 @@ function NovoChamado({ session, onLogout }) {
                 </button>
               </div>
 
-              <button className={styles.submitButton} type="button">
-                Criar chamado
+              <button
+                className={styles.submitButton}
+                type="submit"
+                disabled={submitting}
+              >
+                {submitting ? "Criando..." : "Criar chamado"}
               </button>
             </div>
           </form>

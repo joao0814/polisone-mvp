@@ -23,4 +23,8 @@ export class CreateSupportTicketDto {
   @IsOptional()
   @IsEnum(SupportTicketPriority)
   priority?: SupportTicketPriority;
+
+  @IsString()
+  @MaxLength(5000)
+  message: string;
 }

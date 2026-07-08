@@ -70,6 +70,7 @@ export class SupportTicketsController {
         department: dto.department,
         subcategory: dto.subcategory,
         priority: dto.priority,
+        message: dto.message,
       });
 
       return SupportTicketPresenter.toHTTP(output);

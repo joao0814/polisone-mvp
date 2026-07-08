@@ -1,81 +1,98 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logoNav from "../../assets/images/home/logo nav.png";
+import { listTickets } from "../../services/tickets";
+import { formatTicketDate, mapStatusLabel, mapStatusTone } from "./helpers";
 import styles from "./Chamados.module.css";
-
-const stats = [
-  { label: "Respondidos", value: 12 },
-  { label: "Aguardando", value: 12 },
-  { label: "Em análise", value: 12 },
-  { label: "Nvl2", value: 12 },
-  { label: "Concluídos", value: 12 },
-];
-
-const tickets = [
-  {
-    protocol: "#1821",
-    subject: "Solicitação para desativar CellCash",
-    requester: "Interno",
-    status: "Respondido pelo cliente",
-    tone: "answered",
-    date: "12/11/2025 09:39",
-  },
-  {
-    protocol: "#1821",
-    subject: "Solicitação para desativar CellCash",
-    requester: "Interno",
-    status: "Aguardando interação do cliente",
-    tone: "waiting",
-    date: "12/11/2025 09:39",
-  },
-  {
-    protocol: "#1821",
-    subject: "Solicitação para desativar CellCash",
-    requester: "Interno",
-    status: "Em análise",
-    tone: "analysis",
-    date: "12/11/2025 09:39",
-  },
-  {
-    protocol: "#1821",
-    subject: "Solicitação para desativar CellCash",
-    requester: "Interno",
-    status: "Aguardando suporte Nvl.2",
-    tone: "support",
-    date: "12/11/2025 09:39",
-  },
-];
-
-const closedTickets = [
-  {
-    protocol: "#1821",
-    subject: "Solicitacao para desativar CellCash",
-    requester: "Interno",
-    date: "12/11/2025 09:39",
-  },
-  {
-    protocol: "#1821",
-    subject: "Solicitacao para desativar CellCash",
-    requester: "Interno",
-    date: "12/11/2025 09:39",
-  },
-  {
-    protocol: "#1821",
-    subject: "Solicitacao para desativar CellCash",
-    requester: "Interno",
-    date: "12/11/2025 09:39",
-  },
-  {
-    protocol: "#1821",
-    subject: "Solicitacao para desativar CellCash",
-    requester: "Interno",
-    date: "12/11/2025 09:39",
-  },
-];
 
 function Chamados({ session, onLogout }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("open");
+  const [search, setSearch] = useState("");
+  const [openTickets, setOpenTickets] = useState([]);
+  const [closedTickets, setClosedTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadTickets() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const [openResponse, closedResponse] = await Promise.all([
+          listTickets({ status: "open" }),
+          listTickets({ status: "closed" }),
+        ]);
+
+        if (!isActive) {
+          return;
+        }
+
+        setOpenTickets(openResponse.items ?? []);
+        setClosedTickets(closedResponse.items ?? []);
+      } catch (requestError) {
+        if (!isActive) {
+          return;
+        }
+
+        setError(requestError.message);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadTickets();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const visibleOpenTickets = useMemo(
+    () => filterTickets(openTickets, search),
+    [openTickets, search],
+  );
+
+  const visibleClosedTickets = useMemo(
+    () => filterTickets(closedTickets, search),
+    [closedTickets, search],
+  );
+
+  const stats = useMemo(() => {
+    const allTickets = [...openTickets, ...closedTickets];
+
+    return [
+      {
+        label: "Respondidos",
+        value: allTickets.filter((ticket) => ticket.status === "RESOLVED")
+          .length,
+      },
+      {
+        label: "Aguardando",
+        value: allTickets.filter((ticket) => ticket.status === "WAITING_CUSTOMER")
+          .length,
+      },
+      {
+        label: "Em analise",
+        value: allTickets.filter((ticket) => ticket.status === "IN_ANALYSIS")
+          .length,
+      },
+      {
+        label: "Nvl2",
+        value: allTickets.filter((ticket) => ticket.status === "WAITING_INTERNAL")
+          .length,
+      },
+      {
+        label: "Concluidos",
+        value: allTickets.filter((ticket) => ticket.status === "CLOSED").length,
+      },
+    ];
+  }, [openTickets, closedTickets]);
 
   return (
     <main className={styles.page}>
@@ -105,7 +122,12 @@ function Chamados({ session, onLogout }) {
         </section>
 
         <section className={styles.searchRow} aria-label="Busca de chamados">
-          <input type="search" aria-label="Pesquisar chamado" />
+          <input
+            type="search"
+            aria-label="Pesquisar chamado"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
           <button type="button" aria-label="Pesquisar" />
         </section>
 
@@ -132,7 +154,13 @@ function Chamados({ session, onLogout }) {
             </button>
           </div>
 
-          {activeTab === "open" ? (
+          {error ? <p className={styles.errorText}>{error}</p> : null}
+
+          {loading ? (
+            <div className={styles.tableCard}>
+              <p className={styles.emptyState}>Carregando chamados...</p>
+            </div>
+          ) : activeTab === "open" ? (
             <div className={styles.tableCard}>
               <div className={styles.tableHeader}>
                 <span>Protocolo</span>
@@ -141,22 +169,43 @@ function Chamados({ session, onLogout }) {
                 <span>Status</span>
                 <span>Data</span>
               </div>
-              {tickets.map((ticket, index) => (
-                <article
-                  className={styles.tableRow}
-                  key={`${ticket.protocol}-${ticket.status}-${index}`}
-                >
-                  <strong>{ticket.protocol}</strong>
-                  <span>{ticket.subject}</span>
-                  <span>{ticket.requester}</span>
-                  <span
-                    className={`${styles.statusBadge} ${styles[ticket.tone]}`}
+              {visibleOpenTickets.length ? (
+                visibleOpenTickets.map((ticket) => (
+                  <article
+                    className={styles.tableRow}
+                    key={ticket.id}
+                    onClick={() => navigate(`/chamados/${ticket.id}`)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        navigate(`/chamados/${ticket.id}`);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
                   >
-                    {ticket.status}
-                  </span>
-                  <time>{ticket.date}</time>
-                </article>
-              ))}
+                    <strong className={styles.protocolCell}>{ticket.protocol}</strong>
+                    <span className={styles.subjectCell}>{ticket.subject}</span>
+                    <span className={styles.requesterCell}>
+                      {ticket.requester_id === session?.user?.id
+                        ? "Voce"
+                        : "Atendimento"}
+                    </span>
+                    <span
+                      className={`${styles.statusBadge} ${styles[mapStatusTone(ticket.status)]}`}
+                    >
+                      {mapStatusLabel(ticket.status)}
+                    </span>
+                    <time className={styles.dateCell}>
+                      {formatTicketDate(ticket.created_at)}
+                    </time>
+                  </article>
+                ))
+              ) : (
+                <p className={styles.emptyState}>
+                  Nenhum chamado aberto encontrado.
+                </p>
+              )}
             </div>
           ) : (
             <div className={styles.tableCard}>
@@ -168,17 +217,38 @@ function Chamados({ session, onLogout }) {
                 <span>Solicitante</span>
                 <span>Data</span>
               </div>
-              {closedTickets.map((ticket, index) => (
-                <article
-                  className={`${styles.tableRow} ${styles.closedTableRow}`}
-                  key={`${ticket.protocol}-closed-${index}`}
-                >
-                  <strong>{ticket.protocol}</strong>
-                  <span>{ticket.subject}</span>
-                  <span>{ticket.requester}</span>
-                  <time>{ticket.date}</time>
-                </article>
-              ))}
+              {visibleClosedTickets.length ? (
+                visibleClosedTickets.map((ticket) => (
+                  <article
+                    className={`${styles.tableRow} ${styles.closedTableRow}`}
+                    key={ticket.id}
+                    onClick={() => navigate(`/chamados/${ticket.id}`)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        navigate(`/chamados/${ticket.id}`);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <strong className={styles.protocolCell}>{ticket.protocol}</strong>
+                    <span className={styles.subjectCell}>{ticket.subject}</span>
+                    <span className={styles.requesterCell}>
+                      {ticket.requester_id === session?.user?.id
+                        ? "Voce"
+                        : "Atendimento"}
+                    </span>
+                    <time className={styles.dateCell}>
+                      {formatTicketDate(ticket.updated_at)}
+                    </time>
+                  </article>
+                ))
+              ) : (
+                <p className={styles.emptyState}>
+                  Nenhum chamado concluido encontrado.
+                </p>
+              )}
             </div>
           )}
         </section>
@@ -187,6 +257,20 @@ function Chamados({ session, onLogout }) {
       </div>
       <Footer />
     </main>
+  );
+}
+
+function filterTickets(tickets, search) {
+  const normalizedSearch = search.trim().toLowerCase();
+
+  if (!normalizedSearch) {
+    return tickets;
+  }
+
+  return tickets.filter((ticket) =>
+    [ticket.protocol, ticket.subject, mapStatusLabel(ticket.status)]
+      .filter(Boolean)
+      .some((value) => value.toLowerCase().includes(normalizedSearch)),
   );
 }
 
@@ -205,7 +289,7 @@ function Header({ user, onLogout }) {
       <nav className={styles.nav} aria-label="Menu principal">
         <Link to="/">Home</Link>
         <a href="#institucional">Institucional</a>
-        <a href="#calendarios">Calendários e comunicados</a>
+        <a href="#calendarios">Calendarios e comunicados</a>
         <div className={styles.navSelect}>
           <button
             type="button"
@@ -215,7 +299,9 @@ function Header({ user, onLogout }) {
           >
             Recursos{" "}
             <span
-              className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ""}`}
+              className={`${styles.resourceCaret} ${
+                isResourcesOpen ? styles.resourceCaretOpen : ""
+              }`}
               aria-hidden="true"
             />
           </button>
@@ -232,7 +318,7 @@ function Header({ user, onLogout }) {
                 Comunicados
               </button>
               <button type="button" role="menuitem">
-                Gestão de banners
+                Gestao de banners
               </button>
             </div>
           )}
@@ -240,7 +326,7 @@ function Header({ user, onLogout }) {
       </nav>
       <div className={styles.headerRight}>
         <div className={styles.clock}>
-          <span>Horário de Brasília</span>
+          <span>Horario de Brasilia</span>
           <strong>09:52</strong>
           <small>01.03.2025</small>
         </div>
@@ -277,19 +363,19 @@ function Footer() {
   return (
     <footer className={styles.footer}>
       <section>
-        <h2>POLIS I.A - Plataforma de gestão de campanha e mandato</h2>
+        <h2>POLIS I.A - Plataforma de gestao de campanha e mandato</h2>
         <p>
           CNPJ: 39.453.451/0001-22
           <br />
-          Rua Tabapuã, 594, Edifício Itaim, 3º andar,
+          Rua Tabapua, 594, Edificio Itaim, 3o andar,
           <br />
-          Itaim Bibi - São Paulo/SP.
+          Itaim Bibi - Sao Paulo/SP.
         </p>
       </section>
       <section>
         <h2>Atendimento</h2>
         <p>+55 (11) 916285698</p>
-        <p>Segunda - Sexta das 08:00 às 18:00</p>
+        <p>Segunda - Sexta das 08:00 as 18:00</p>
       </section>
       <section>
         <h2>Baixe agora o nosso App:</h2>

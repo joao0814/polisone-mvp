@@ -1,7 +1,9 @@
+import { SupportTicketMessageEntity } from '../../domain/entities/support-ticket-message.entity';
 import { UserRepository } from '../../../users/domain/contracts/user-repository.interface';
 import { SupportTicketRepository } from '../../domain/contracts/support-ticket-repository.interface';
 import { SupportTicketEntity } from '../../domain/entities/support-ticket.entity';
 import { SupportTicketDepartment } from '../../domain/enums/support-ticket-department.enum';
+import { SupportTicketMessageType } from '../../domain/enums/support-ticket-message-type.enum';
 import { SupportTicketPriority } from '../../domain/enums/support-ticket-priority.enum';
 import {
   SupportTicketOutput,
@@ -14,6 +16,7 @@ export type CreateSupportTicketInput = {
   department: SupportTicketDepartment;
   subcategory?: string;
   priority?: SupportTicketPriority;
+  message: string;
 };
 
 export class CreateSupportTicketUseCase {
@@ -39,7 +42,24 @@ export class CreateSupportTicketUseCase {
     });
 
     const storedTicket = await this.supportTicketRepository.store(ticket);
-    return SupportTicketOutputMapper.toOutput(storedTicket);
+    await this.supportTicketRepository.addMessage(
+      SupportTicketMessageEntity.create({
+        ticketId: storedTicket.id,
+        senderId: input.requesterId,
+        message: input.message,
+        type: SupportTicketMessageType.MESSAGE,
+      }),
+    );
+
+    const completeTicket = await this.supportTicketRepository.findById(
+      storedTicket.id,
+    );
+
+    if (!completeTicket) {
+      throw new Error('Support ticket not found');
+    }
+
+    return SupportTicketOutputMapper.toOutput(completeTicket);
   }
 
   private generateProtocol(): string {
