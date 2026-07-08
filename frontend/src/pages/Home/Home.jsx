@@ -1,4 +1,15 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import styles from './Home.module.css'
+import bannerImage from '../../assets/images/home/banner.png'
+import biImage from '../../assets/images/home/BI.png'
+import comunicado1Image from '../../assets/images/home/comunicados/comunicado1.png'
+import comunicado2Image from '../../assets/images/home/comunicados/comunicado2.png'
+import comunicado3Image from '../../assets/images/home/comunicados/comunidade3.png'
+import gestaoCampanhaImage from '../../assets/images/home/gestao_campanha.png'
+import gestaoMandatoImage from '../../assets/images/home/gestao_mandato.png'
+import iaImage from '../../assets/images/home/IA.png'
+import logoNav from '../../assets/images/home/logo nav.png'
 
 const links = [
   { label: 'Chamados', icon: 'support', tone: 'yellow' },
@@ -9,12 +20,26 @@ const links = [
   { label: 'Canva', icon: 'canva', tone: 'cyan' },
 ]
 
-const systems = ['Gestao de Campanha', 'Gestao de Mandato', 'BI', 'IA']
+const systems = [
+  { label: 'Gestão de Campanha', image: gestaoCampanhaImage },
+  { label: 'Gestão de Mandato', image: gestaoMandatoImage },
+  { label: 'BI', image: biImage },
+  { label: 'IA', image: iaImage },
+]
 
 const comunicados = [
-  'Sentem o que voce nao sente. Torca com consciencia!!!',
-  'Urgente!!!',
-  'Dia do case em nova odessa',
+  {
+    title: 'Sentem o que voce nao sente. Torca com consciencia!!!',
+    image: comunicado1Image,
+  },
+  {
+    title: 'Urgente!!!',
+    image: comunicado2Image,
+  },
+  {
+    title: 'Dia do case em nova odessa',
+    image: comunicado3Image,
+  },
 ]
 
 const days = Array.from({ length: 31 }, (_, index) => index + 1)
@@ -38,14 +63,47 @@ function Home({ session, onLogout }) {
 }
 
 function Header({ user, onLogout }) {
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false)
+  const navigate = useNavigate()
+
+  function handleResourceSelect(path) {
+    setIsResourcesOpen(false)
+    navigate(path)
+  }
+
   return (
     <header className={styles.header}>
       <BrandLogo small />
       <nav className={styles.nav} aria-label="Menu principal">
-        <a href="#home">Home</a>
+        <Link to="/">Home</Link>
         <a href="#institucional">Institucional</a>
         <a href="#calendarios">Calendários e comunicados</a>
-        <a href="#recursos">Recursos</a>
+        <div className={styles.navSelect}>
+          <button
+            type="button"
+            onClick={() => setIsResourcesOpen((isOpen) => !isOpen)}
+            aria-expanded={isResourcesOpen}
+            aria-haspopup="menu"
+          >
+            Recursos <span className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ''}`} aria-hidden="true" />
+          </button>
+          {isResourcesOpen && (
+            <div className={styles.navMenu} role="menu">
+              <button type="button" onClick={() => handleResourceSelect('/chamados')} role="menuitem">
+                Chamados
+              </button>
+              <button type="button" role="menuitem">
+                Acervo
+              </button>
+              <button type="button" role="menuitem">
+                Comunicados
+              </button>
+              <button type="button" role="menuitem">
+                Gestão de banners
+              </button>
+            </div>
+          )}
+        </div>
       </nav>
       <div className={styles.headerRight}>
         <div className={styles.clock}>
@@ -99,25 +157,18 @@ function HeroSection() {
   return (
     <section className={styles.heroSection}>
       <aside className={styles.systems}>
+        <h2>Sistemas</h2>
         <div className={styles.systemCards}>
-          {systems.map((system, index) => (
-            <button className={styles.systemCard} type="button" key={system}>
-              <span>{system}</span>
-              {index === 0 && <strong>Campanha</strong>}
+          {systems.map((system) => (
+            <button className={styles.systemCard} type="button" key={system.label} aria-label={system.label}>
+              <img src={system.image} alt="" aria-hidden="true" />
             </button>
           ))}
         </div>
-        <h2>Sistemas</h2>
       </aside>
 
-      <section className={styles.banner}>
-        <div className={styles.bannerCopy}>
-          <BrandLogo small />
-          <p>Seja Bem-vindo ao</p>
-          <h1>Portal do Candidato</h1>
-          <span>Alan Leal</span>
-        </div>
-        <div className={styles.personPlaceholder} aria-hidden="true" />
+      <section className={styles.banner} aria-label="Seja bem-vindo ao Portal do Candidato Alan Leal">
+        <img src={bannerImage} alt="" aria-hidden="true" />
       </section>
 
       <div className={styles.dots} aria-hidden="true">
@@ -137,10 +188,10 @@ function Comunicados() {
     <section className={styles.comunicados}>
       <h2>Comunicados</h2>
       <div className={styles.comunicadoGrid}>
-        {comunicados.map((title, index) => (
-          <article className={styles.comunicadoCard} key={title}>
-            <div className={`${styles.comunicadoImage} ${styles[`comunicado${index + 1}`]}`}>
-              <strong>{title}</strong>
+        {comunicados.map((comunicado) => (
+          <article className={styles.comunicadoCard} key={comunicado.title}>
+            <div className={styles.comunicadoImage}>
+              <img src={comunicado.image} alt={comunicado.title} />
             </div>
             <div className={styles.comunicadoBody}>
               <h3>Título do comunicado</h3>
@@ -257,8 +308,16 @@ function Footer() {
 }
 
 function BrandLogo({ small = false }) {
+  if (small) {
+    return (
+      <div className={`${styles.logo} ${styles.logoSmall}`}>
+        <img className={styles.logoImage} src={logoNav} alt="Polis One" />
+      </div>
+    )
+  }
+
   return (
-    <div className={`${styles.logo} ${small ? styles.logoSmall : ''}`}>
+    <div className={styles.logo}>
       <span className={styles.logoIcon} aria-hidden="true">
         <i />
         <i />

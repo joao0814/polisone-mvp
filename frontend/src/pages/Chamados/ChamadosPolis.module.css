@@ -1,0 +1,635 @@
+.page {
+  --yellow: #ffca18;
+  --black: #000;
+  --text: #111;
+  min-height: 100svh;
+  background: #fff;
+  color: var(--text);
+  font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+}
+
+.content {
+  width: 100%;
+  min-height: calc(100svh - 210px);
+  margin: 0 auto;
+  padding: 28px 26px 0;
+}
+
+.header {
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 28px;
+  padding: 11px 18px 11px 30px;
+  border: 2px solid var(--yellow);
+  border-radius: 18px;
+  background: #000;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.28);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.4vw, 34px);
+}
+
+.nav a,
+.navSelect > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.nav a:hover,
+.navSelect > button:hover {
+  color: var(--yellow);
+}
+
+.navSelect {
+  position: relative;
+}
+
+.resourceCaret {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+  transition: transform 140ms ease;
+}
+
+.resourceCaretOpen {
+  transform: translateY(2px) rotate(225deg);
+}
+
+.navMenu {
+  position: absolute;
+  top: calc(100% + 13px);
+  left: 50%;
+  min-width: 182px;
+  padding: 8px 0;
+  border: 1px solid rgba(255, 202, 24, 0.42);
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 15px 34px rgba(0, 0, 0, 0.2);
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.navMenu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-left: 1px solid rgba(255, 202, 24, 0.42);
+  border-top: 1px solid rgba(255, 202, 24, 0.42);
+  background: #fff;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.navMenu button {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #111;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.navMenu button:hover {
+  background: rgba(255, 202, 24, 0.18);
+  color: #000;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.clock {
+  display: grid;
+  justify-items: center;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: var(--yellow);
+  color: #000;
+  line-height: 1;
+}
+
+.clock span {
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.clock strong {
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.clock small {
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.userButton {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: #000;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.ticketHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 24px;
+  margin: 28px 22px 28px;
+}
+
+.ticketHero h1 {
+  margin: 0 0 16px 8px;
+  color: var(--yellow);
+  font-size: clamp(34px, 3.4vw, 54px);
+  line-height: 1;
+  font-weight: 500;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 26px;
+  max-width: 820px;
+}
+
+.statCard {
+  display: grid;
+  gap: 10px;
+}
+
+.statCard span {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.statCard strong {
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--yellow);
+  border-radius: 16px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.22);
+}
+
+.newTicketButton {
+  min-width: 200px;
+  min-height: 46px;
+  margin-bottom: 10px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--yellow);
+  color: #000;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+}
+
+.searchRow {
+  display: grid;
+  grid-template-columns: minmax(260px, 485px) 48px;
+  gap: 8px;
+  align-items: center;
+  margin: 0 22px 18px;
+}
+
+.searchRow input {
+  height: 46px;
+  padding: 0 18px;
+  border: 1.5px solid var(--yellow);
+  border-radius: 19px;
+  background: #fff;
+  font: inherit;
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+}
+
+.searchRow button {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--yellow);
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.22);
+}
+
+.searchRow button::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 14px;
+  height: 14px;
+  border: 3px solid #000;
+  border-radius: 50%;
+}
+
+.searchRow button::after {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 27px;
+  width: 12px;
+  height: 3px;
+  border-radius: 3px;
+  background: #000;
+  transform: rotate(45deg);
+}
+
+.ticketSection {
+  margin: 0 18px;
+}
+
+.ticketSection h2 {
+  margin: 0 0 14px 8px;
+  font-size: 27px;
+}
+
+.tabs {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.tabs button {
+  min-width: 128px;
+  min-height: 45px;
+  border: 0;
+  border-radius: 10px 10px 0 0;
+  background: transparent;
+  color: #111;
+  font: inherit;
+  font-size: 21px;
+  cursor: pointer;
+}
+
+.tabs .tabActive {
+  background: #000;
+  color: var(--yellow);
+  font-weight: 800;
+}
+
+.tableCard {
+  overflow: hidden;
+  padding: 48px 24px 34px;
+  border: 2px solid var(--yellow);
+  border-radius: 22px;
+  background: #000;
+  color: #fff;
+}
+
+.tableHeader,
+.tableRow {
+  display: grid;
+  grid-template-columns: 120px minmax(280px, 1.4fr) minmax(160px, 0.8fr) minmax(260px, 0.9fr) 190px;
+  gap: 14px;
+  align-items: center;
+}
+
+.tableHeader {
+  padding: 0 6px 14px;
+  border-bottom: 1px solid #173456;
+  color: var(--yellow);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.tableRow {
+  min-height: 56px;
+  padding: 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.statusBadge {
+  justify-self: center;
+  min-width: 220px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: #fff;
+  text-align: center;
+  font-size: 15px;
+}
+
+.answered {
+  border: 1px solid #ff4a00;
+  background: #9f3600;
+}
+
+.waiting {
+  border: 1px solid #ffd51b;
+  background: #806800;
+}
+
+.analysis {
+  border: 1px solid #2a72df;
+  background: #123d91;
+}
+
+.support {
+  border: 1px solid #ff0000;
+  background: #bf0f0f;
+}
+
+.signature {
+  min-height: 410px;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 34px;
+}
+
+.footer {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 0.8fr;
+  gap: 48px;
+  padding: 38px 56px;
+  background: #000;
+  color: #fff;
+}
+
+.footer h2 {
+  margin: 0 0 20px;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.footer p {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.storeButtons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.storeButtons span {
+  min-width: 98px;
+  min-height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #777;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.socials {
+  display: flex;
+  gap: 10px;
+}
+
+.socials span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #000;
+}
+
+.logoImage {
+  display: block;
+  width: auto;
+  height: 44px;
+  object-fit: contain;
+}
+
+.logoSmall {
+  color: #fff;
+  gap: 8px;
+}
+
+.logoSmall .logoImage {
+  height: 40px;
+}
+
+.logoIcon {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  display: inline-block;
+  border: 9px solid var(--yellow);
+  border-bottom-color: transparent;
+  border-radius: 15px 18px 24px 0;
+}
+
+.logoIcon::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  width: 24px;
+  height: 28px;
+  border-radius: 0 14px 14px 0;
+  background: currentColor;
+}
+
+.logoIcon i {
+  position: absolute;
+  bottom: 4px;
+  width: 7px;
+  background: var(--yellow);
+  transform: skewY(-31deg);
+}
+
+.logoIcon i:nth-child(1) {
+  left: 3px;
+  height: 24px;
+}
+
+.logoIcon i:nth-child(2) {
+  left: 14px;
+  height: 31px;
+}
+
+.logoIcon i:nth-child(3) {
+  left: 28px;
+  height: 39px;
+}
+
+.logoText {
+  display: grid;
+  line-height: 1;
+}
+
+.logoText strong {
+  color: currentColor;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.logoText small {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--yellow);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.logoText small::before,
+.logoText small::after {
+  content: '';
+  width: 28px;
+  height: 2px;
+  background: var(--yellow);
+}
+
+.logoSmall .logoIcon {
+  width: 43px;
+  height: 43px;
+  border-width: 7px;
+}
+
+.logoSmall .logoIcon::before {
+  top: -7px;
+  right: -7px;
+  width: 19px;
+  height: 24px;
+}
+
+.logoSmall .logoIcon i {
+  width: 5px;
+}
+
+.logoSmall .logoIcon i:nth-child(1) {
+  height: 19px;
+}
+
+.logoSmall .logoIcon i:nth-child(2) {
+  left: 12px;
+  height: 24px;
+}
+
+.logoSmall .logoIcon i:nth-child(3) {
+  left: 23px;
+  height: 31px;
+}
+
+.logoSmall .logoText strong {
+  font-size: 23px;
+}
+
+.logoSmall .logoText small {
+  font-size: 10px;
+}
+
+.logoSmall .logoText small::before,
+.logoSmall .logoText small::after {
+  width: 18px;
+}
+
+@media (max-width: 1120px) {
+  .header,
+  .ticketHero,
+  .footer {
+    grid-template-columns: 1fr;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    max-width: none;
+  }
+
+  .newTicketButton {
+    justify-self: start;
+  }
+
+  .tableCard {
+    overflow-x: auto;
+  }
+
+  .tableHeader,
+  .tableRow {
+    min-width: 1040px;
+  }
+}
+
+@media (max-width: 680px) {
+  .content {
+    padding: 18px 12px 0;
+  }
+
+  .header {
+    padding: 14px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .searchRow {
+    grid-template-columns: 1fr 46px;
+    margin-inline: 0;
+  }
+
+  .ticketHero,
+  .ticketSection {
+    margin-inline: 0;
+  }
+
+  .footer {
+    padding: 32px 24px;
+  }
+}

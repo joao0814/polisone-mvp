@@ -1,0 +1,513 @@
+.page {
+  min-height: 100vh;
+  background: #f6f5f1;
+  color: #0f0f0f;
+}
+
+.content {
+  width: min(1840px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 20px 0 0;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 28px;
+  background: #050505;
+  border: 2px solid #f4bb18;
+  border-radius: 22px;
+  padding: 14px 26px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+}
+
+.logoImage {
+  display: block;
+  width: auto;
+  height: 44px;
+  object-fit: contain;
+}
+
+.logoSmall {
+  transform: scale(0.96);
+  transform-origin: left center;
+}
+
+.logoSmall .logoImage {
+  height: 40px;
+}
+
+.logoIcon {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffd35b 0%, #f4bb18 100%);
+  overflow: hidden;
+}
+
+.logoIcon i {
+  position: absolute;
+  bottom: 7px;
+  width: 6px;
+  background: #050505;
+  border-radius: 999px;
+}
+
+.logoIcon i:nth-child(1) {
+  left: 10px;
+  height: 20px;
+  transform: skewY(-28deg);
+}
+
+.logoIcon i:nth-child(2) {
+  left: 18px;
+  height: 28px;
+  transform: skewY(-28deg);
+}
+
+.logoIcon i:nth-child(3) {
+  left: 27px;
+  height: 34px;
+  transform: skewY(-28deg);
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.9;
+}
+
+.logoText strong {
+  font-size: 1.1rem;
+  letter-spacing: 0;
+}
+
+.logoText small {
+  color: #f4bb18;
+  font-size: 0.72rem;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 38px;
+  min-width: 0;
+}
+
+.nav a,
+.navSelect > button {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.98rem;
+  font-weight: 700;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.nav a:hover,
+.navSelect > button:hover {
+  color: #f4bb18;
+}
+
+.navSelect {
+  position: relative;
+}
+
+.navSelect > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resourceCaret {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateY(-1px);
+  transition: transform 0.18s ease;
+}
+
+.resourceCaretOpen {
+  transform: rotate(225deg) translateY(-1px);
+}
+
+.navMenu {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 0;
+  min-width: 230px;
+  padding: 14px 0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(10, 28, 58, 0.18);
+  z-index: 20;
+}
+
+.navMenu button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 12px 18px;
+  color: #173a69;
+  font-size: 0.98rem;
+  cursor: pointer;
+}
+
+.navMenu button:hover {
+  background: #f4f7fb;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.clock {
+  display: grid;
+  justify-items: center;
+  min-width: 88px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: #f4bb18;
+  color: #050505;
+}
+
+.clock span {
+  font-size: 0.45rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.clock strong {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.clock small {
+  font-size: 0.48rem;
+  font-weight: 700;
+}
+
+.userButton {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 0;
+  background: #f4bb18;
+  color: #050505;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.formSection {
+  padding: 52px 82px 20px;
+}
+
+.formHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 38px;
+}
+
+.formHeader h1 {
+  margin: 0;
+  color: #f4bb18;
+  font-size: clamp(2.5rem, 2vw + 1.7rem, 3.4rem);
+  font-weight: 500;
+}
+
+.cancelButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 232px;
+  height: 74px;
+  padding: 0 28px;
+  border-radius: 24px;
+  background: #f7c432;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.14);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field span {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 0;
+  border-radius: 24px;
+  background: #050505;
+  color: #ffffff;
+  font: inherit;
+  outline: none;
+}
+
+.field input,
+.field select {
+  height: 58px;
+  padding: 0 20px;
+}
+
+.field select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #f4bb18 50%),
+    linear-gradient(135deg, #f4bb18 50%, transparent 50%);
+  background-position:
+    calc(100% - 24px) calc(50% - 3px),
+    calc(100% - 16px) calc(50% - 3px);
+  background-size: 8px 8px, 8px 8px;
+  background-repeat: no-repeat;
+  padding-right: 48px;
+}
+
+.field textarea {
+  min-height: 316px;
+  padding: 18px 20px;
+  resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder,
+.field select {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.fieldFull {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.uploadGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.uploadButton,
+.submitButton,
+.uploadIcon {
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.14);
+}
+
+.uploadButton {
+  min-width: 270px;
+  height: 62px;
+  padding: 0 26px;
+  border-radius: 20px;
+  background: #f7c432;
+  color: #050505;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.uploadIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: transparent;
+  color: #f4bb18;
+  box-shadow: none;
+}
+
+.uploadIcon span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.submitButton {
+  min-width: 330px;
+  height: 62px;
+  padding: 0 26px;
+  border-radius: 20px;
+  background: #12ab5d;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.signature {
+  display: flex;
+  justify-content: center;
+  padding: 120px 0 68px;
+}
+
+.signature .logo {
+  color: #050505;
+}
+
+.signature .logoIcon {
+  width: 66px;
+  height: 66px;
+}
+
+.signature .logoText strong {
+  font-size: 2rem;
+}
+
+.signature .logoText small {
+  font-size: 0.95rem;
+}
+
+.footer {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1.1fr;
+  gap: 40px;
+  background: #050505;
+  color: #ffffff;
+  padding: 42px 50px 34px;
+}
+
+.footer h2 {
+  margin: 0 0 16px;
+  font-size: 1rem;
+}
+
+.footer p {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.94rem;
+}
+
+.storeButtons,
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.storeButtons span,
+.socials span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #050505;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.socials span {
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+@media (max-width: 1200px) {
+  .header {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    gap: 18px 28px;
+  }
+
+  .headerRight {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .formSection {
+    padding: 42px 32px 16px;
+  }
+}
+
+@media (max-width: 860px) {
+  .content {
+    width: min(100vw - 24px, 1840px);
+  }
+
+  .grid,
+  .footer {
+    grid-template-columns: 1fr;
+  }
+
+  .formHeader,
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cancelButton,
+  .uploadButton,
+  .submitButton {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .uploadGroup {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .signature {
+    padding: 80px 0 50px;
+  }
+}
