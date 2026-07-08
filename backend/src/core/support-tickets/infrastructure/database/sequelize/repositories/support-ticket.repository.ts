@@ -5,6 +5,7 @@ import {
   SupportTicketListResult,
   SupportTicketRepository as SupportTicketRepositoryContract,
 } from '../../../../domain/contracts/support-ticket-repository.interface';
+import { SupportTicketMessageEntity } from '../../../../domain/entities/support-ticket-message.entity';
 import { SupportTicketEntity } from '../../../../domain/entities/support-ticket.entity';
 import { SupportTicketStatus } from '../../../../domain/enums/support-ticket-status.enum';
 import { SupportTicketAttachmentModel } from '../models/support-ticket-attachment.model';
@@ -62,6 +63,20 @@ export class SupportTicketSequelizeRepository
     );
 
     return SupportTicketModelMapper.toEntity(storedTicket);
+  }
+
+  async addMessage(
+    message: SupportTicketMessageEntity,
+  ): Promise<SupportTicketMessageEntity> {
+    const storedMessage = await SupportTicketMessageModel.create({
+      id: message.id,
+      ticketId: message.ticketId,
+      senderId: message.senderId,
+      message: message.message,
+      type: message.type,
+    });
+
+    return SupportTicketModelMapper.messageToEntity(storedMessage);
   }
 
   private buildFindOptions(): Omit<FindOptions<SupportTicketModel>, 'where'> {

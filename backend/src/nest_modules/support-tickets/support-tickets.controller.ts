@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -10,16 +11,19 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { AddSupportTicketMessageUseCase } from '../../core/support-tickets/application/use_case/add-support-ticket-message.use-case';
 import { CreateSupportTicketUseCase } from '../../core/support-tickets/application/use_case/create-support-ticket.use-case';
 import { GetSupportTicketByIdUseCase } from '../../core/support-tickets/application/use_case/get-support-ticket-by-id.use-case';
 import { ListSupportTicketsUseCase } from '../../core/support-tickets/application/use_case/list-support-tickets.use-case';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { AuthenticatedUser } from '../auth/types/authenticated-user.type';
+import { AddSupportTicketMessageDto } from './dto/add-support-ticket-message.dto';
 import { CreateSupportTicketDto } from './dto/create-support-ticket.dto';
 import { ListSupportTicketsDto } from './dto/list-support-tickets.dto';
 import { SupportTicketPresenter } from './presenters/support-ticket.presenter';
 import {
+  ADD_SUPPORT_TICKET_MESSAGE_USE_CASE,
   CREATE_SUPPORT_TICKET_USE_CASE,
   GET_SUPPORT_TICKET_BY_ID_USE_CASE,
   LIST_SUPPORT_TICKETS_USE_CASE,
@@ -35,6 +39,8 @@ export class SupportTicketsController {
     private readonly listSupportTicketsUseCase: ListSupportTicketsUseCase,
     @Inject(GET_SUPPORT_TICKET_BY_ID_USE_CASE)
     private readonly getSupportTicketByIdUseCase: GetSupportTicketByIdUseCase,
+    @Inject(ADD_SUPPORT_TICKET_MESSAGE_USE_CASE)
+    private readonly addSupportTicketMessageUseCase: AddSupportTicketMessageUseCase,
   ) {}
 
   @Post()
@@ -55,6 +61,47 @@ export class SupportTicketsController {
     } catch (error) {
       if (error instanceof Error && error.message === 'Requester not found') {
         throw new NotFoundException(error.message);
+      }
+
+      throw error;
+    }
+  }
+
+  @Post(':id/messages')
+  async addMessage(
+    @Param('id') id: string,
+    @Body() dto: AddSupportTicketMessageDto,
+    @CurrentUser() currentUser: AuthenticatedUser,
+  ) {
+    try {
+      const output = await this.addSupportTicketMessageUseCase.execute({
+        ticketId: id,
+        senderId: currentUser.sub,
+        senderRoles: currentUser.roles,
+        message: dto.message,
+      });
+
+      return SupportTicketPresenter.messageToHTTP(output);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket not found'
+      ) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket access denied'
+      ) {
+        throw new UnauthorizedException(error.message);
+      }
+
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket message content is required'
+      ) {
+        throw new BadRequestException(error.message);
       }
 
       throw error;

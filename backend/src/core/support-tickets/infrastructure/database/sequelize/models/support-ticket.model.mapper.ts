@@ -17,20 +17,7 @@ export class SupportTicketModelMapper {
       priority: model.priority,
       status: model.status,
       closedAt: model.closedAt,
-      messages: (model.messages ?? []).map((message) =>
-        SupportTicketMessageEntity.create({
-          id: message.id,
-          ticketId: message.ticketId,
-          senderId: message.senderId,
-          message: message.message,
-          type: message.type,
-          attachments: (message.attachments ?? []).map((attachment) =>
-            this.attachmentToEntity(attachment),
-          ),
-          createdAt: message.createdAt,
-          updatedAt: message.updatedAt,
-        }),
-      ),
+      messages: (model.messages ?? []).map((message) => this.messageToEntity(message)),
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
     });
@@ -50,7 +37,24 @@ export class SupportTicketModelMapper {
     };
   }
 
-  private static attachmentToEntity(
+  static messageToEntity(
+    message: SupportTicketMessageModel,
+  ): SupportTicketMessageEntity {
+    return SupportTicketMessageEntity.create({
+      id: message.id,
+      ticketId: message.ticketId,
+      senderId: message.senderId,
+      message: message.message,
+      type: message.type,
+      attachments: (message.attachments ?? []).map((attachment) =>
+        this.attachmentToEntity(attachment),
+      ),
+      createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
+    });
+  }
+
+  static attachmentToEntity(
     attachment: SupportTicketAttachmentModel,
   ): SupportTicketAttachmentEntity {
     return SupportTicketAttachmentEntity.create({

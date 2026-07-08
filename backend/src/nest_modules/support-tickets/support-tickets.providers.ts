@@ -2,6 +2,7 @@ import {
   USER_REPOSITORY,
   UserRepository,
 } from '../../core/users/domain/contracts/user-repository.interface';
+import { AddSupportTicketMessageUseCase } from '../../core/support-tickets/application/use_case/add-support-ticket-message.use-case';
 import { SUPPORT_TICKET_REPOSITORY } from '../../core/support-tickets/domain/contracts/support-ticket-repository.interface';
 import { CreateSupportTicketUseCase } from '../../core/support-tickets/application/use_case/create-support-ticket.use-case';
 import { GetSupportTicketByIdUseCase } from '../../core/support-tickets/application/use_case/get-support-ticket-by-id.use-case';
@@ -16,6 +17,9 @@ export const LIST_SUPPORT_TICKETS_USE_CASE = Symbol(
 );
 export const GET_SUPPORT_TICKET_BY_ID_USE_CASE = Symbol(
   'GET_SUPPORT_TICKET_BY_ID_USE_CASE',
+);
+export const ADD_SUPPORT_TICKET_MESSAGE_USE_CASE = Symbol(
+  'ADD_SUPPORT_TICKET_MESSAGE_USE_CASE',
 );
 
 export const supportTicketsProviders = [
@@ -45,6 +49,12 @@ export const supportTicketsProviders = [
     provide: GET_SUPPORT_TICKET_BY_ID_USE_CASE,
     useFactory: (supportTicketRepository: SupportTicketSequelizeRepository) =>
       new GetSupportTicketByIdUseCase(supportTicketRepository),
+    inject: [SUPPORT_TICKET_REPOSITORY],
+  },
+  {
+    provide: ADD_SUPPORT_TICKET_MESSAGE_USE_CASE,
+    useFactory: (supportTicketRepository: SupportTicketSequelizeRepository) =>
+      new AddSupportTicketMessageUseCase(supportTicketRepository),
     inject: [SUPPORT_TICKET_REPOSITORY],
   },
 ];

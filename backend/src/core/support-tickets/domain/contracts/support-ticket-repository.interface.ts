@@ -1,3 +1,4 @@
+import { SupportTicketMessageEntity } from '../entities/support-ticket-message.entity';
 import { SupportTicketEntity } from '../entities/support-ticket.entity';
 import { SupportTicketStatus } from '../enums/support-ticket-status.enum';
 
@@ -23,5 +24,8 @@ export interface SupportTicketRepository {
   findById(id: string): Promise<SupportTicketEntity | null>;
   findByProtocol(protocol: string): Promise<SupportTicketEntity | null>;
   findMany(filters: SupportTicketListFilters): Promise<SupportTicketListResult>;
+  addMessage(
+    message: SupportTicketMessageEntity,
+  ): Promise<SupportTicketMessageEntity>;
   store(ticket: SupportTicketEntity): Promise<SupportTicketEntity>;
 }
