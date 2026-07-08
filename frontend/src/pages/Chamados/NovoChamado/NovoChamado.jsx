@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import logoNav from '../../../assets/images/home/logo nav.png'
-import styles from './NovoChamado.module.css'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import logoNav from "../../../assets/images/home/logo nav.png";
+import styles from "./NovoChamado.module.css";
 
 function NovoChamado({ session, onLogout }) {
   return (
@@ -17,7 +17,10 @@ function NovoChamado({ session, onLogout }) {
             </Link>
           </div>
 
-          <form className={styles.form} onSubmit={(event) => event.preventDefault()}>
+          <form
+            className={styles.form}
+            onSubmit={(event) => event.preventDefault()}
+          >
             <div className={styles.grid}>
               <label className={styles.field}>
                 <span>Departamento</span>
@@ -60,7 +63,11 @@ function NovoChamado({ session, onLogout }) {
                 <button className={styles.uploadButton} type="button">
                   Subir arquivo
                 </button>
-                <button className={styles.uploadIcon} type="button" aria-label="Adicionar arquivo">
+                <button
+                  className={styles.uploadIcon}
+                  type="button"
+                  aria-label="Adicionar arquivo"
+                >
                   <span aria-hidden="true">+</span>
                 </button>
               </div>
@@ -76,16 +83,16 @@ function NovoChamado({ session, onLogout }) {
       </div>
       <Footer />
     </main>
-  )
+  );
 }
 
 function Header({ user, onLogout }) {
-  const [isResourcesOpen, setIsResourcesOpen] = useState(false)
-  const navigate = useNavigate()
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+  const navigate = useNavigate();
 
   function handleResourceSelect(path) {
-    setIsResourcesOpen(false)
-    navigate(path)
+    setIsResourcesOpen(false);
+    navigate(path);
   }
 
   return (
@@ -102,19 +109,20 @@ function Header({ user, onLogout }) {
             aria-expanded={isResourcesOpen}
             aria-haspopup="menu"
           >
-            Recursos{' '}
+            Recursos{" "}
             <span
-              className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ''}`}
+              className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ""}`}
               aria-hidden="true"
             />
           </button>
           {isResourcesOpen && (
             <div className={styles.navMenu} role="menu">
-              <button type="button" onClick={() => handleResourceSelect('/chamados')} role="menuitem">
+              <button
+                type="button"
+                onClick={() => handleResourceSelect("/chamados")}
+                role="menuitem"
+              >
                 Chamados
-              </button>
-              <button type="button" role="menuitem">
-                Acervo
               </button>
               <button type="button" role="menuitem">
                 Comunicados
@@ -132,19 +140,25 @@ function Header({ user, onLogout }) {
           <strong>09:52</strong>
           <small>01.03.2025</small>
         </div>
-        <button className={styles.userButton} type="button" onClick={onLogout} aria-label="Sair">
+        <button
+          className={styles.userButton}
+          type="button"
+          onClick={onLogout}
+          aria-label="Sair"
+        >
           <span>{getInitials(user?.name)}</span>
         </button>
       </div>
     </header>
-  )
+  );
 }
 
-function getInitials(name = '') {
-  const [firstName = '', lastName = ''] = name.trim().split(' ')
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1)}`.trim()
+function getInitials(name = "") {
+  const [firstName = "", lastName = ""] = name.trim().split(" ");
+  const initials =
+    `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1)}`.trim();
 
-  return initials.toUpperCase() || 'U'
+  return initials.toUpperCase() || "U";
 }
 
 function BrandSignature() {
@@ -152,7 +166,7 @@ function BrandSignature() {
     <section className={styles.signature} aria-label="Polis One">
       <BrandLogo />
     </section>
-  )
+  );
 }
 
 function Footer() {
@@ -188,7 +202,7 @@ function Footer() {
         </div>
       </section>
     </footer>
-  )
+  );
 }
 
 function BrandLogo({ small = false }) {
@@ -197,7 +211,7 @@ function BrandLogo({ small = false }) {
       <div className={`${styles.logo} ${styles.logoSmall}`}>
         <img className={styles.logoImage} src={logoNav} alt="Polis One" />
       </div>
-    )
+    );
   }
 
   return (
@@ -212,7 +226,7 @@ function BrandLogo({ small = false }) {
         <small>ONE</small>
       </span>
     </div>
-  )
+  );
 }
 
-export default NovoChamado
+export default NovoChamado;

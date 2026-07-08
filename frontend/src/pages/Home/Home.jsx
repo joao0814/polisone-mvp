@@ -1,50 +1,50 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import styles from './Home.module.css'
-import bannerImage from '../../assets/images/home/banner.png'
-import biImage from '../../assets/images/home/BI.png'
-import comunicado1Image from '../../assets/images/home/comunicados/comunicado1.png'
-import comunicado2Image from '../../assets/images/home/comunicados/comunicado2.png'
-import comunicado3Image from '../../assets/images/home/comunicados/comunidade3.png'
-import gestaoCampanhaImage from '../../assets/images/home/gestao_campanha.png'
-import gestaoMandatoImage from '../../assets/images/home/gestao_mandato.png'
-import iaImage from '../../assets/images/home/IA.png'
-import logoNav from '../../assets/images/home/logo nav.png'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styles from "./Home.module.css";
+import bannerImage from "../../assets/images/home/banner.png";
+import biImage from "../../assets/images/home/BI.png";
+import comunicado1Image from "../../assets/images/home/comunicados/comunicado1.png";
+import comunicado2Image from "../../assets/images/home/comunicados/comunicado2.png";
+import comunicado3Image from "../../assets/images/home/comunicados/comunidade3.png";
+import gestaoCampanhaImage from "../../assets/images/home/gestao_campanha.png";
+import gestaoMandatoImage from "../../assets/images/home/gestao_mandato.png";
+import iaImage from "../../assets/images/home/IA.png";
+import logoNav from "../../assets/images/home/logo nav.png";
 
 const links = [
-  { label: 'Chamados', icon: 'support', tone: 'yellow' },
-  { label: 'Materiais de Campanha', icon: 'briefcase', tone: 'black' },
-  { label: 'Check-in', icon: 'check', tone: 'black' },
-  { label: 'Outlook', icon: 'mail', tone: 'blue' },
-  { label: 'YouTube', icon: 'play', tone: 'red' },
-  { label: 'Canva', icon: 'canva', tone: 'cyan' },
-]
+  { label: "Chamados", icon: "support", tone: "yellow" },
+  { label: "Materiais de Campanha", icon: "briefcase", tone: "black" },
+  { label: "Check-in", icon: "check", tone: "black" },
+  { label: "Outlook", icon: "mail", tone: "blue" },
+  { label: "YouTube", icon: "play", tone: "red" },
+  { label: "Canva", icon: "canva", tone: "cyan" },
+];
 
 const systems = [
-  { label: 'Gestão de Campanha', image: gestaoCampanhaImage },
-  { label: 'Gestão de Mandato', image: gestaoMandatoImage },
-  { label: 'BI', image: biImage },
-  { label: 'IA', image: iaImage },
-]
+  { label: "Gestão de Campanha", image: gestaoCampanhaImage },
+  { label: "Gestão de Mandato", image: gestaoMandatoImage },
+  { label: "BI", image: biImage },
+  { label: "IA", image: iaImage },
+];
 
 const comunicados = [
   {
-    title: 'Sentem o que voce nao sente. Torca com consciencia!!!',
+    title: "Sentem o que voce nao sente. Torca com consciencia!!!",
     image: comunicado1Image,
   },
   {
-    title: 'Urgente!!!',
+    title: "Urgente!!!",
     image: comunicado2Image,
   },
   {
-    title: 'Dia do case em nova odessa',
+    title: "Dia do case em nova odessa",
     image: comunicado3Image,
   },
-]
+];
 
-const days = Array.from({ length: 31 }, (_, index) => index + 1)
-const eventDays = [12, 16, 18, 26]
-const weekDays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB']
+const days = Array.from({ length: 31 }, (_, index) => index + 1);
+const eventDays = [12, 16, 18, 26];
+const weekDays = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
 
 function Home({ session, onLogout }) {
   return (
@@ -59,16 +59,16 @@ function Home({ session, onLogout }) {
       </div>
       <Footer />
     </main>
-  )
+  );
 }
 
 function Header({ user, onLogout }) {
-  const [isResourcesOpen, setIsResourcesOpen] = useState(false)
-  const navigate = useNavigate()
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+  const navigate = useNavigate();
 
   function handleResourceSelect(path) {
-    setIsResourcesOpen(false)
-    navigate(path)
+    setIsResourcesOpen(false);
+    navigate(path);
   }
 
   return (
@@ -85,15 +85,20 @@ function Header({ user, onLogout }) {
             aria-expanded={isResourcesOpen}
             aria-haspopup="menu"
           >
-            Recursos <span className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ''}`} aria-hidden="true" />
+            Recursos{" "}
+            <span
+              className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ""}`}
+              aria-hidden="true"
+            />
           </button>
           {isResourcesOpen && (
             <div className={styles.navMenu} role="menu">
-              <button type="button" onClick={() => handleResourceSelect('/chamados')} role="menuitem">
+              <button
+                type="button"
+                onClick={() => handleResourceSelect("/chamados")}
+                role="menuitem"
+              >
                 Chamados
-              </button>
-              <button type="button" role="menuitem">
-                Acervo
               </button>
               <button type="button" role="menuitem">
                 Comunicados
@@ -111,19 +116,25 @@ function Header({ user, onLogout }) {
           <strong>09:52</strong>
           <small>31.01.2026</small>
         </div>
-        <button className={styles.userButton} type="button" onClick={onLogout} aria-label="Sair">
+        <button
+          className={styles.userButton}
+          type="button"
+          onClick={onLogout}
+          aria-label="Sair"
+        >
           <span>{getInitials(user?.name)}</span>
         </button>
       </div>
     </header>
-  )
+  );
 }
 
-function getInitials(name = '') {
-  const [firstName = '', lastName = ''] = name.trim().split(' ')
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1)}`.trim()
+function getInitials(name = "") {
+  const [firstName = "", lastName = ""] = name.trim().split(" ");
+  const initials =
+    `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1)}`.trim();
 
-  return initials.toUpperCase() || 'U'
+  return initials.toUpperCase() || "U";
 }
 
 function SearchLinks() {
@@ -138,7 +149,11 @@ function SearchLinks() {
         <h2>Links</h2>
         <div className={styles.linkList}>
           {links.map((link) => (
-            <button className={`${styles.linkCard} ${styles[link.tone]}`} type="button" key={link.label}>
+            <button
+              className={`${styles.linkCard} ${styles[link.tone]}`}
+              type="button"
+              key={link.label}
+            >
               <span className={`${styles.linkIcon} ${styles[link.icon]}`} />
               <small>{link.label}</small>
             </button>
@@ -150,7 +165,7 @@ function SearchLinks() {
         </div>
       </section>
     </section>
-  )
+  );
 }
 
 function HeroSection() {
@@ -160,14 +175,22 @@ function HeroSection() {
         <h2>Sistemas</h2>
         <div className={styles.systemCards}>
           {systems.map((system) => (
-            <button className={styles.systemCard} type="button" key={system.label} aria-label={system.label}>
+            <button
+              className={styles.systemCard}
+              type="button"
+              key={system.label}
+              aria-label={system.label}
+            >
               <img src={system.image} alt="" aria-hidden="true" />
             </button>
           ))}
         </div>
       </aside>
 
-      <section className={styles.banner} aria-label="Seja bem-vindo ao Portal do Candidato Alan Leal">
+      <section
+        className={styles.banner}
+        aria-label="Seja bem-vindo ao Portal do Candidato Alan Leal"
+      >
         <img src={bannerImage} alt="" aria-hidden="true" />
       </section>
 
@@ -180,7 +203,7 @@ function HeroSection() {
         <span className={styles.dotActive} />
       </div>
     </section>
-  )
+  );
 }
 
 function Comunicados() {
@@ -197,8 +220,9 @@ function Comunicados() {
               <h3>Título do comunicado</h3>
               <span>Autor</span>
               <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s.
               </p>
               <footer>
                 <span>◉ 0</span>
@@ -213,7 +237,7 @@ function Comunicados() {
         ))}
       </div>
     </section>
-  )
+  );
 }
 
 function Calendar() {
@@ -233,25 +257,27 @@ function Calendar() {
 
       <section className={styles.month}>
         <h2>2025</h2>
-        <p>JAN - FEV - MAR - ABR - MAI - JUN - JUL - AGO - SET - OUT - NOV - DEZ</p>
+        <p>
+          JAN - FEV - MAR - ABR - MAI - JUN - JUL - AGO - SET - OUT - NOV - DEZ
+        </p>
         <div className={styles.monthGrid}>
           {weekDays.map((day) => (
             <strong key={day}>{day}</strong>
           ))}
           {days.map((day) => (
             <span
-              className={`${eventDays.includes(day) ? styles.eventDay : ''} ${
-                day === 18 ? styles.activeDay : ''
+              className={`${eventDays.includes(day) ? styles.eventDay : ""} ${
+                day === 18 ? styles.activeDay : ""
               }`}
               key={day}
             >
-              {String(day).padStart(2, '0')}
+              {String(day).padStart(2, "0")}
             </span>
           ))}
         </div>
       </section>
     </section>
-  )
+  );
 }
 
 function EventCard() {
@@ -260,7 +286,7 @@ function EventCard() {
       <strong>Nome do evento</strong>
       <span>Descrição:</span>
     </article>
-  )
+  );
 }
 
 function BrandSignature() {
@@ -268,7 +294,7 @@ function BrandSignature() {
     <section className={styles.signature} aria-label="Polis One">
       <BrandLogo />
     </section>
-  )
+  );
 }
 
 function Footer() {
@@ -304,7 +330,7 @@ function Footer() {
         </div>
       </section>
     </footer>
-  )
+  );
 }
 
 function BrandLogo({ small = false }) {
@@ -313,7 +339,7 @@ function BrandLogo({ small = false }) {
       <div className={`${styles.logo} ${styles.logoSmall}`}>
         <img className={styles.logoImage} src={logoNav} alt="Polis One" />
       </div>
-    )
+    );
   }
 
   return (
@@ -328,7 +354,7 @@ function BrandLogo({ small = false }) {
         <small>ONE</small>
       </span>
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;

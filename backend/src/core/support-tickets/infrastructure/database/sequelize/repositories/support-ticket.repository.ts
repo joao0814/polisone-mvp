@@ -79,6 +79,24 @@ export class SupportTicketSequelizeRepository
     return SupportTicketModelMapper.messageToEntity(storedMessage);
   }
 
+  async updateStatus(
+    id: string,
+    status: SupportTicketStatus,
+    closedAt: Date | null = null,
+  ): Promise<SupportTicketEntity | null> {
+    await this.supportTicketModel.update(
+      {
+        status,
+        closedAt,
+      },
+      {
+        where: { id },
+      },
+    );
+
+    return this.findById(id);
+  }
+
   private buildFindOptions(): Omit<FindOptions<SupportTicketModel>, 'where'> {
     return {
       include: [

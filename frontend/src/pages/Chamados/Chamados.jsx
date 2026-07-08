@@ -1,81 +1,81 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import logoNav from '../../assets/images/home/logo nav.png'
-import styles from './Chamados.module.css'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import logoNav from "../../assets/images/home/logo nav.png";
+import styles from "./Chamados.module.css";
 
 const stats = [
-  { label: 'Respondidos', value: 12 },
-  { label: 'Aguardando', value: 12 },
-  { label: 'Em análise', value: 12 },
-  { label: 'Nvl2', value: 12 },
-  { label: 'Concluídos', value: 12 },
-]
+  { label: "Respondidos", value: 12 },
+  { label: "Aguardando", value: 12 },
+  { label: "Em análise", value: 12 },
+  { label: "Nvl2", value: 12 },
+  { label: "Concluídos", value: 12 },
+];
 
 const tickets = [
   {
-    protocol: '#1821',
-    subject: 'Solicitação para desativar CellCash',
-    requester: 'Interno',
-    status: 'Respondido pelo cliente',
-    tone: 'answered',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitação para desativar CellCash",
+    requester: "Interno",
+    status: "Respondido pelo cliente",
+    tone: "answered",
+    date: "12/11/2025 09:39",
   },
   {
-    protocol: '#1821',
-    subject: 'Solicitação para desativar CellCash',
-    requester: 'Interno',
-    status: 'Aguardando interação do cliente',
-    tone: 'waiting',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitação para desativar CellCash",
+    requester: "Interno",
+    status: "Aguardando interação do cliente",
+    tone: "waiting",
+    date: "12/11/2025 09:39",
   },
   {
-    protocol: '#1821',
-    subject: 'Solicitação para desativar CellCash',
-    requester: 'Interno',
-    status: 'Em análise',
-    tone: 'analysis',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitação para desativar CellCash",
+    requester: "Interno",
+    status: "Em análise",
+    tone: "analysis",
+    date: "12/11/2025 09:39",
   },
   {
-    protocol: '#1821',
-    subject: 'Solicitação para desativar CellCash',
-    requester: 'Interno',
-    status: 'Aguardando suporte Nvl.2',
-    tone: 'support',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitação para desativar CellCash",
+    requester: "Interno",
+    status: "Aguardando suporte Nvl.2",
+    tone: "support",
+    date: "12/11/2025 09:39",
   },
-]
+];
 
 const closedTickets = [
   {
-    protocol: '#1821',
-    subject: 'Solicitacao para desativar CellCash',
-    requester: 'Interno',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitacao para desativar CellCash",
+    requester: "Interno",
+    date: "12/11/2025 09:39",
   },
   {
-    protocol: '#1821',
-    subject: 'Solicitacao para desativar CellCash',
-    requester: 'Interno',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitacao para desativar CellCash",
+    requester: "Interno",
+    date: "12/11/2025 09:39",
   },
   {
-    protocol: '#1821',
-    subject: 'Solicitacao para desativar CellCash',
-    requester: 'Interno',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitacao para desativar CellCash",
+    requester: "Interno",
+    date: "12/11/2025 09:39",
   },
   {
-    protocol: '#1821',
-    subject: 'Solicitacao para desativar CellCash',
-    requester: 'Interno',
-    date: '12/11/2025 09:39',
+    protocol: "#1821",
+    subject: "Solicitacao para desativar CellCash",
+    requester: "Interno",
+    date: "12/11/2025 09:39",
   },
-]
+];
 
 function Chamados({ session, onLogout }) {
-  const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('open')
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("open");
 
   return (
     <main className={styles.page}>
@@ -98,7 +98,7 @@ function Chamados({ session, onLogout }) {
           <button
             className={styles.newTicketButton}
             type="button"
-            onClick={() => navigate('/chamados/novo')}
+            onClick={() => navigate("/chamados/novo")}
           >
             Novo chamado
           </button>
@@ -111,24 +111,28 @@ function Chamados({ session, onLogout }) {
 
         <section className={styles.ticketSection}>
           <h2>Chamados</h2>
-          <div className={styles.tabs} role="tablist" aria-label="Status dos chamados">
+          <div
+            className={styles.tabs}
+            role="tablist"
+            aria-label="Status dos chamados"
+          >
             <button
-              className={activeTab === 'open' ? styles.tabActive : ''}
+              className={activeTab === "open" ? styles.tabActive : ""}
               type="button"
-              onClick={() => setActiveTab('open')}
+              onClick={() => setActiveTab("open")}
             >
               Abertos
             </button>
             <button
-              className={activeTab === 'closed' ? styles.tabActive : ''}
+              className={activeTab === "closed" ? styles.tabActive : ""}
               type="button"
-              onClick={() => setActiveTab('closed')}
+              onClick={() => setActiveTab("closed")}
             >
               Fechados
             </button>
           </div>
 
-          {activeTab === 'open' ? (
+          {activeTab === "open" ? (
             <div className={styles.tableCard}>
               <div className={styles.tableHeader}>
                 <span>Protocolo</span>
@@ -138,25 +142,37 @@ function Chamados({ session, onLogout }) {
                 <span>Data</span>
               </div>
               {tickets.map((ticket, index) => (
-                <article className={styles.tableRow} key={`${ticket.protocol}-${ticket.status}-${index}`}>
+                <article
+                  className={styles.tableRow}
+                  key={`${ticket.protocol}-${ticket.status}-${index}`}
+                >
                   <strong>{ticket.protocol}</strong>
                   <span>{ticket.subject}</span>
                   <span>{ticket.requester}</span>
-                  <span className={`${styles.statusBadge} ${styles[ticket.tone]}`}>{ticket.status}</span>
+                  <span
+                    className={`${styles.statusBadge} ${styles[ticket.tone]}`}
+                  >
+                    {ticket.status}
+                  </span>
                   <time>{ticket.date}</time>
                 </article>
               ))}
             </div>
           ) : (
             <div className={styles.tableCard}>
-              <div className={`${styles.tableHeader} ${styles.closedTableHeader}`}>
+              <div
+                className={`${styles.tableHeader} ${styles.closedTableHeader}`}
+              >
                 <span>Protocolo</span>
                 <span>Assunto</span>
                 <span>Solicitante</span>
                 <span>Data</span>
               </div>
               {closedTickets.map((ticket, index) => (
-                <article className={`${styles.tableRow} ${styles.closedTableRow}`} key={`${ticket.protocol}-closed-${index}`}>
+                <article
+                  className={`${styles.tableRow} ${styles.closedTableRow}`}
+                  key={`${ticket.protocol}-closed-${index}`}
+                >
                   <strong>{ticket.protocol}</strong>
                   <span>{ticket.subject}</span>
                   <span>{ticket.requester}</span>
@@ -171,16 +187,16 @@ function Chamados({ session, onLogout }) {
       </div>
       <Footer />
     </main>
-  )
+  );
 }
 
 function Header({ user, onLogout }) {
-  const [isResourcesOpen, setIsResourcesOpen] = useState(false)
-  const navigate = useNavigate()
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+  const navigate = useNavigate();
 
   function handleResourceSelect(path) {
-    setIsResourcesOpen(false)
-    navigate(path)
+    setIsResourcesOpen(false);
+    navigate(path);
   }
 
   return (
@@ -197,15 +213,20 @@ function Header({ user, onLogout }) {
             aria-expanded={isResourcesOpen}
             aria-haspopup="menu"
           >
-            Recursos <span className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ''}`} aria-hidden="true" />
+            Recursos{" "}
+            <span
+              className={`${styles.resourceCaret} ${isResourcesOpen ? styles.resourceCaretOpen : ""}`}
+              aria-hidden="true"
+            />
           </button>
           {isResourcesOpen && (
             <div className={styles.navMenu} role="menu">
-              <button type="button" onClick={() => handleResourceSelect('/chamados')} role="menuitem">
+              <button
+                type="button"
+                onClick={() => handleResourceSelect("/chamados")}
+                role="menuitem"
+              >
                 Chamados
-              </button>
-              <button type="button" role="menuitem">
-                Acervo
               </button>
               <button type="button" role="menuitem">
                 Comunicados
@@ -223,19 +244,25 @@ function Header({ user, onLogout }) {
           <strong>09:52</strong>
           <small>01.03.2025</small>
         </div>
-        <button className={styles.userButton} type="button" onClick={onLogout} aria-label="Sair">
+        <button
+          className={styles.userButton}
+          type="button"
+          onClick={onLogout}
+          aria-label="Sair"
+        >
           <span>{getInitials(user?.name)}</span>
         </button>
       </div>
     </header>
-  )
+  );
 }
 
-function getInitials(name = '') {
-  const [firstName = '', lastName = ''] = name.trim().split(' ')
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1)}`.trim()
+function getInitials(name = "") {
+  const [firstName = "", lastName = ""] = name.trim().split(" ");
+  const initials =
+    `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1)}`.trim();
 
-  return initials.toUpperCase() || 'U'
+  return initials.toUpperCase() || "U";
 }
 
 function BrandSignature() {
@@ -243,7 +270,7 @@ function BrandSignature() {
     <section className={styles.signature} aria-label="Polis One">
       <BrandLogo />
     </section>
-  )
+  );
 }
 
 function Footer() {
@@ -279,7 +306,7 @@ function Footer() {
         </div>
       </section>
     </footer>
-  )
+  );
 }
 
 function BrandLogo({ small = false }) {
@@ -288,7 +315,7 @@ function BrandLogo({ small = false }) {
       <div className={`${styles.logo} ${styles.logoSmall}`}>
         <img className={styles.logoImage} src={logoNav} alt="Polis One" />
       </div>
-    )
+    );
   }
 
   return (
@@ -303,7 +330,7 @@ function BrandLogo({ small = false }) {
         <small>ONE</small>
       </span>
     </div>
-  )
+  );
 }
 
-export default Chamados
+export default Chamados;

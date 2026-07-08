@@ -90,6 +90,27 @@ export class SupportTicketEntity {
     return this.props.updatedAt;
   }
 
+  changeStatus(status: SupportTicketStatus): void {
+    this.props.status = status;
+    this.props.closedAt =
+      status === SupportTicketStatus.CLOSED ? new Date() : null;
+    this.touch();
+  }
+
+  close(): void {
+    this.changeStatus(SupportTicketStatus.CLOSED);
+  }
+
+  reopen(): void {
+    this.props.status = SupportTicketStatus.OPEN;
+    this.props.closedAt = null;
+    this.touch();
+  }
+
+  private touch(): void {
+    this.props.updatedAt = new Date();
+  }
+
   private validate(): void {
     if (!this.props.protocol.trim()) {
       throw new Error('Support ticket protocol is required');

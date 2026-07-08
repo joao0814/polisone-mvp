@@ -27,5 +27,10 @@ export interface SupportTicketRepository {
   addMessage(
     message: SupportTicketMessageEntity,
   ): Promise<SupportTicketMessageEntity>;
+  updateStatus(
+    id: string,
+    status: SupportTicketStatus,
+    closedAt?: Date | null,
+  ): Promise<SupportTicketEntity | null>;
   store(ticket: SupportTicketEntity): Promise<SupportTicketEntity>;
 }
