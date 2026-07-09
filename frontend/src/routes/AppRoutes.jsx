@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Chamados from '../pages/Chamados/Chamados'
 import DetalheChamado from '../pages/Chamados/DetalheChamado/DetalheChamado'
 import NovoChamado from '../pages/Chamados/NovoChamado/NovoChamado'
+import GestaoCampanha from '../pages/GestaoCampanha/GestaoCampanha'
 import Login from '../pages/Login/Login'
 import Home from '../pages/Home/Home'
 
@@ -53,6 +54,16 @@ function AppRoutes({ session, onLogin, onRegister, onLogout }) {
         element={
           session ? (
             <DetalheChamado session={session} onLogout={onLogout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/gestao-campanha"
+        element={
+          session ? (
+            <GestaoCampanha session={session} onLogout={onLogout} />
           ) : (
             <Navigate to="/login" replace />
           )

@@ -21,7 +21,7 @@ const links = [
 ];
 
 const systems = [
-  { label: "Gestão de Campanha", image: gestaoCampanhaImage },
+  { label: "Gestão de Campanha", image: gestaoCampanhaImage, path: "/gestao-campanha" },
   { label: "Gestão de Mandato", image: gestaoMandatoImage },
   { label: "BI", image: biImage },
   { label: "IA", image: iaImage },
@@ -169,6 +169,8 @@ function SearchLinks() {
 }
 
 function HeroSection() {
+  const navigate = useNavigate();
+
   return (
     <section className={styles.heroSection}>
       <aside className={styles.systems}>
@@ -180,6 +182,11 @@ function HeroSection() {
               type="button"
               key={system.label}
               aria-label={system.label}
+              onClick={() => {
+                if (system.path) {
+                  navigate(system.path);
+                }
+              }}
             >
               <img src={system.image} alt="" aria-hidden="true" />
             </button>
