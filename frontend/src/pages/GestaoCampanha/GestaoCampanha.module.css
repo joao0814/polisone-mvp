@@ -9,7 +9,12 @@
   min-height: 100svh;
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
-  background: radial-gradient(circle at 64% 0%, #0d2a50 0, #04111f 34%, #000815 100%);
+  background: radial-gradient(
+    circle at 64% 0%,
+    #0d2a50 0,
+    #04111f 34%,
+    #000815 100%
+  );
   color: var(--text);
   font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
 }
@@ -275,9 +280,33 @@
   border-radius: 18px;
   overflow: hidden;
   background:
-    linear-gradient(135deg, transparent 19%, rgba(255, 255, 255, 0.08) 20%, transparent 21%) 0 0 / 34px 34px,
-    linear-gradient(135deg, #a91212 0 25%, #ea4a18 25% 49%, #ff8f18 49% 63%, #10b85b 63% 78%, #f7fafc 78% 100%);
-  clip-path: polygon(12% 58%, 22% 32%, 38% 20%, 56% 30%, 68% 45%, 88% 48%, 82% 67%, 64% 76%, 48% 68%, 30% 73%);
+    linear-gradient(
+        135deg,
+        transparent 19%,
+        rgba(255, 255, 255, 0.08) 20%,
+        transparent 21%
+      )
+      0 0 / 34px 34px,
+    linear-gradient(
+      135deg,
+      #a91212 0 25%,
+      #ea4a18 25% 49%,
+      #ff8f18 49% 63%,
+      #10b85b 63% 78%,
+      #f7fafc 78% 100%
+    );
+  clip-path: polygon(
+    12% 58%,
+    22% 32%,
+    38% 20%,
+    56% 30%,
+    68% 45%,
+    88% 48%,
+    82% 67%,
+    64% 76%,
+    48% 68%,
+    30% 73%
+  );
 }
 
 .mapPlaceholder span {
@@ -326,7 +355,11 @@
   grid-column: 1 / -1;
   height: 12px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--yellow) var(--value), #030b14 var(--value));
+  background: linear-gradient(
+    90deg,
+    var(--yellow) var(--value),
+    #030b14 var(--value)
+  );
 }
 
 .placeholderGrid {
@@ -389,7 +422,12 @@
 
 .page {
   grid-template-columns: 214px minmax(0, 1fr);
-  background: radial-gradient(circle at 70% 0%, #0d315f 0, #061b35 28%, #010916 74%);
+  background: radial-gradient(
+    circle at 70% 0%,
+    #0d315f 0,
+    #061b35 28%,
+    #010916 74%
+  );
 }
 
 .sidebar {
@@ -511,7 +549,11 @@
   grid-column: 2;
   height: 5px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--yellow) var(--value), #000812 var(--value));
+  background: linear-gradient(
+    90deg,
+    var(--yellow) var(--value),
+    #000812 var(--value)
+  );
 }
 
 .dateBox {
@@ -666,14 +708,14 @@
 
 .mapStage {
   position: relative;
-  min-height: 360px;
+  min-height: 500px;
   margin-top: 10px;
 }
 
 .brazilMap {
   width: min(86%, 760px);
   min-width: 560px;
-  height: 355px;
+  height: 500px;
   display: block;
   margin: 0 auto 0 0;
 }
@@ -881,7 +923,11 @@
   display: block;
   height: 10px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #ffca18 var(--value), #020912 var(--value));
+  background: linear-gradient(
+    90deg,
+    #ffca18 var(--value),
+    #020912 var(--value)
+  );
 }
 
 .rankingItem small {
@@ -1240,7 +1286,8 @@
 }
 
 .countdownCard span {
-  font-size: 9px;
+  font-size: 11px;
+  line-height: 1.18;
 }
 
 .dateBox strong,
@@ -1285,13 +1332,18 @@
 }
 
 .mapPanel {
-  min-height: 500px;
-  padding: 18px 18px 16px;
+  min-height: 0;
+  max-height: 600px;
+  padding: 14px 18px 10px;
 }
 
 .performancePanel {
-  min-height: 500px;
-  padding: 22px 14px;
+  min-height: 0;
+  max-height: 600px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  padding: 18px 14px;
 }
 
 .panelHeader h2 {
@@ -1309,48 +1361,188 @@
 }
 
 .mapStage {
-  min-height: 425px;
-  margin-top: 8px;
+  height: 350px;
+  margin-top: 4px;
+  contain: layout paint;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.mapControls {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
+
+.mapControls button {
+  min-width: 34px;
+  height: 28px;
+  border: 1px solid #ffca18;
+  border-radius: 999px;
+  background: #07121f;
+  color: #ffca18;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mapControls button:hover {
+  background: #ffca18;
+  color: #07121f;
+}
+
+.regionSelector {
+  position: absolute;
+  top: 42px;
+  left: 8px;
+  z-index: 2;
+  min-width: 230px;
+  display: grid;
+  grid-template-columns: auto minmax(150px, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 202, 24, 0.82);
+  border-radius: 8px;
+  background: rgba(7, 18, 31, 0.9);
+  color: #ffca18;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+}
+
+.regionSelector span {
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.regionSelector select {
+  min-height: 26px;
+  min-width: 0;
+  border: 0;
+  border-radius: 6px;
+  background: #ffca18;
+  color: #07121f;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.regionSelector select:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .brazilMap {
-  width: min(calc(100% - 180px), 1080px);
+  width: calc(100% - 220px);
   min-width: 760px;
-  height: 410px;
-  margin-left: 8px;
+  height: 500px;
+  margin: -22px 0 0 8px;
+  cursor: grab;
+  shape-rendering: geometricPrecision;
+  touch-action: none;
+  user-select: none;
+}
+
+.brazilMap:active {
+  cursor: grabbing;
+}
+
+.regionMuted {
+  opacity: 0.18;
+  filter: grayscale(0.35) brightness(0.72);
+}
+
+.regionSelected {
+  filter: saturate(1.2) brightness(1.12);
+  stroke: #fff;
+  stroke-width: 1.05;
+}
+
+.cityCell {
+  pointer-events: none;
+  transition: none;
+}
+
+.cityCell:hover {
+  filter: none;
+  stroke: rgba(0, 0, 0, 0.62);
+  stroke-width: 0.42;
 }
 
 .mapLoading {
-  width: min(calc(100% - 180px), 1080px);
+  width: calc(100% - 220px);
   min-width: 760px;
-  height: 410px;
+  height: 350px;
 }
 
 .mapLegend {
   top: 34px;
   right: 12px;
-  width: 176px;
+  width: 198px;
   gap: 8px;
   padding: 14px;
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .mapLegend strong {
-  font-size: 10px;
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+.mapLegend span {
+  line-height: 1.18;
 }
 
 .mapLegend i {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
 }
 
 .performanceList {
-  gap: 20px;
-  margin-top: 28px;
+  min-height: 0;
+  gap: 14px;
+  margin-top: 18px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.performanceList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.performanceList::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 202, 24, 0.42);
+}
+
+.performancePanel .moreButton {
+  margin-top: 14px;
 }
 
 .progressRow {
   font-size: 11px;
+}
+
+.progressRowButton {
+  width: 100%;
+  padding: 4px 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.progressRowButton:hover,
+.progressRowActive {
+  border-color: rgba(255, 202, 24, 0.36);
+  background: rgba(255, 202, 24, 0.07);
 }
 
 .progressRow strong {

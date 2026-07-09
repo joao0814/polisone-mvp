@@ -1,3 +1,4 @@
+import { useState } from "react";
 import BrazilMunicipalMap from "./components/BrazilMunicipalMap";
 import CampaignHeader from "./components/CampaignHeader";
 import Sidebar from "../../components/Commom/Sidebar/Sidebar";
@@ -10,6 +11,7 @@ import MetricCard from "./components/MetricCard";
 import MunicipalityRanking from "./components/MunicipalityRanking";
 import ProgressBar from "./components/ProgressBar";
 import RealtimeActivities from "./components/RealtimeActivities";
+import campaignRegions from "./data/campaignRegions";
 import styles from "./GestaoCampanha.module.css";
 
 const menuItems = [
@@ -31,14 +33,6 @@ const metrics = [
   { label: "Municipios ativos", value: "142", icon: "pin" },
   { label: "Liderancas", value: "180", icon: "network" },
   { label: "Representantes", value: "650", icon: "person" },
-];
-
-const regionPerformance = [
-  { label: "Regiao metropolitana", value: 42 },
-  { label: "Regiao de Campinas", value: 71 },
-  { label: "Vale do Paraiba", value: 50 },
-  { label: "Litoral Sul", value: 32 },
-  { label: "Regiao de Ribeirao Preto", value: 82 },
 ];
 
 const dailySummary = [
@@ -123,8 +117,13 @@ const fieldTeams = [
   },
 ];
 
+const performanceRegions = campaignRegions.filter(
+  (region) => region.showInPerformance !== false,
+);
+
 function GestaoCampanha({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato Alan Leal";
+  const [selectedRegionId, setSelectedRegionId] = useState(null);
 
   return (
     <main className={styles.page}>
@@ -164,7 +163,11 @@ function GestaoCampanha({ session, onLogout }) {
             subtitle="Mapa de calor"
             title="Mapa Eleitoral"
           >
-            <BrazilMunicipalMap />
+            <BrazilMunicipalMap
+              onRegionChange={setSelectedRegionId}
+              regions={campaignRegions}
+              selectedRegionId={selectedRegionId}
+            />
           </DashboardPanel>
 
           <DashboardPanel
@@ -173,10 +176,16 @@ function GestaoCampanha({ session, onLogout }) {
             title="Desempenho por regiao"
           >
             <div className={styles.performanceList}>
-              {regionPerformance.map((region) => (
+              {performanceRegions.map((region) => (
                 <ProgressBar
                   key={region.label}
+                  active={selectedRegionId === region.id}
                   label={region.label}
+                  onClick={() =>
+                    setSelectedRegionId((current) =>
+                      current === region.id ? null : region.id,
+                    )
+                  }
                   value={region.value}
                 />
               ))}

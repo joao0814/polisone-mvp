@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../GestaoCampanha.module.css";
 
 const legend = [
@@ -9,8 +9,35 @@ const legend = [
   { label: "Alto numero de equipes", tone: "high" },
 ];
 
-function BrazilMunicipalMap() {
+const MAX_ZOOM = 10;
+const REGION_FOCUS_MAX_ZOOM = 6;
+const ZOOM_BUTTON_STEP = 0.5;
+const ZOOM_WHEEL_STEP = 0.35;
+
+function BrazilMunicipalMap({
+  onRegionChange,
+  regions = [],
+  selectedRegionId = null,
+}) {
   const [municipalities, setMunicipalities] = useState([]);
+  const [view, setView] = useState({ scale: 1, x: 0, y: 0 });
+  const [drag, setDrag] = useState(null);
+  const mapStageRef = useRef(null);
+  const rafRef = useRef(null);
+  const pendingDeltaRef = useRef({ scale: 0, x: 0, y: 0 });
+  const selectedRegion = regions.find((item) => item.id === selectedRegionId);
+  const selectedRegionMatcher = useMemo(
+    () => createRegionMatcher(selectedRegion),
+    [selectedRegion],
+  );
+  const regionGroups = useMemo(() => groupRegions(regions), [regions]);
+  const focusedView = useMemo(
+    () => getRegionView(municipalities, selectedRegion),
+    [municipalities, selectedRegion],
+  );
+  const activeView = focusedView
+    ? getFocusedTransform(focusedView, view)
+    : view;
 
   useEffect(() => {
     let isActive = true;
@@ -36,24 +63,174 @@ function BrazilMunicipalMap() {
     };
   }, []);
 
+  const scheduleViewDelta = useCallback((delta) => {
+    pendingDeltaRef.current = {
+      scale: pendingDeltaRef.current.scale + (delta.scale ?? 0),
+      x: pendingDeltaRef.current.x + (delta.x ?? 0),
+      y: pendingDeltaRef.current.y + (delta.y ?? 0),
+    };
+
+    if (rafRef.current) {
+      return;
+    }
+
+    rafRef.current = window.requestAnimationFrame(() => {
+      const pendingDelta = pendingDeltaRef.current;
+      pendingDeltaRef.current = { scale: 0, x: 0, y: 0 };
+      rafRef.current = null;
+
+      setView((current) => {
+        const scale = clamp(
+          Number((current.scale + pendingDelta.scale).toFixed(2)),
+          1,
+          MAX_ZOOM,
+        );
+
+        return {
+          scale,
+          x: scale === 1 ? 0 : current.x + pendingDelta.x,
+          y: scale === 1 ? 0 : current.y + pendingDelta.y,
+        };
+      });
+    });
+  }, []);
+
+  const zoomBy = useCallback(
+    (step) => {
+      scheduleViewDelta({ scale: step });
+    },
+    [scheduleViewDelta],
+  );
+
+  useEffect(
+    () => () => {
+      if (rafRef.current) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const element = mapStageRef.current;
+
+    if (!element) {
+      return undefined;
+    }
+
+    function handleNativeWheel(event) {
+      if (event.target.closest("select, option")) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      zoomBy(event.deltaY > 0 ? -ZOOM_WHEEL_STEP : ZOOM_WHEEL_STEP);
+    }
+
+    element.addEventListener("wheel", handleNativeWheel, { passive: false });
+
+    return () => {
+      element.removeEventListener("wheel", handleNativeWheel);
+    };
+  }, [zoomBy]);
+
+  function resetZoom() {
+    setView({ scale: 1, x: 0, y: 0 });
+  }
+
+  function handlePointerDown(event) {
+    if (activeView.scale === 1) {
+      return;
+    }
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDrag({ x: event.clientX, y: event.clientY });
+  }
+
+  function handlePointerMove(event) {
+    if (!drag) {
+      return;
+    }
+
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+
+    scheduleViewDelta({ x: dx, y: dy });
+    setDrag({ x: event.clientX, y: event.clientY });
+  }
+
+  function handlePointerUp() {
+    setDrag(null);
+  }
+
+  function handleRegionChange(event) {
+    setView({ scale: 1, x: 0, y: 0 });
+    onRegionChange?.(event.target.value || null);
+  }
+
   return (
-    <div className={styles.mapStage}>
+    <div className={styles.mapStage} ref={mapStageRef}>
+      <div className={styles.mapControls} aria-label="Controles de zoom do mapa">
+        <button
+          type="button"
+          onClick={() => zoomBy(ZOOM_BUTTON_STEP)}
+          aria-label="Aproximar mapa"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          onClick={() => zoomBy(-ZOOM_BUTTON_STEP)}
+          aria-label="Afastar mapa"
+        >
+          -
+        </button>
+        <button type="button" onClick={resetZoom} aria-label="Resetar zoom do mapa">
+          1x
+        </button>
+      </div>
+
+      <label className={styles.regionSelector}>
+        <span>Regiao</span>
+        <select
+          aria-label="Filtro de regiao do mapa"
+          onChange={handleRegionChange}
+          value={selectedRegionId ?? ""}
+        >
+          <option value="">Todas</option>
+          {regionGroups.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.items.map((region) => (
+                <option key={region.id} value={region.id}>
+                  {region.label}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+
       {municipalities.length ? (
         <svg
           className={styles.brazilMap}
           role="img"
           viewBox="0 0 640 420"
           aria-label="Mapa do Brasil dividido por municipios"
+          onPointerDown={handlePointerDown}
+          onPointerLeave={handlePointerUp}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
         >
-          {municipalities.map((municipality) => (
-            <path
-              className={`${styles.cityCell} ${styles[municipality.tone]}`}
-              d={municipality.path}
-              key={municipality.id}
-            >
-              <title>Municipio IBGE {municipality.id}</title>
-            </path>
-          ))}
+          <g
+            transform={`translate(${activeView.x} ${activeView.y}) scale(${activeView.scale})`}
+          >
+            <MunicipalityPaths
+              hasSelectedRegion={Boolean(selectedRegionId)}
+              municipalities={municipalities}
+              selectedRegionMatcher={selectedRegionMatcher}
+            />
+          </g>
         </svg>
       ) : (
         <div className={styles.mapLoading}>Carregando malha municipal...</div>
@@ -70,6 +247,111 @@ function BrazilMunicipalMap() {
       </aside>
     </div>
   );
+}
+
+const MunicipalityPaths = memo(function MunicipalityPaths({
+  hasSelectedRegion,
+  municipalities,
+  selectedRegionMatcher,
+}) {
+  return municipalities.map((municipality) => {
+    const isSelectedRegion = selectedRegionMatcher(municipality.id);
+
+    return (
+      <path
+        className={[
+          styles.cityCell,
+          styles[municipality.tone],
+          hasSelectedRegion && !isSelectedRegion ? styles.regionMuted : "",
+          isSelectedRegion ? styles.regionSelected : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        d={municipality.path}
+        key={municipality.id}
+        vectorEffect="non-scaling-stroke"
+      />
+    );
+  });
+});
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function createRegionMatcher(region) {
+  const municipalityIds = new Set(region?.municipalityIds ?? []);
+  const statePrefixes = region?.statePrefixes ?? [];
+
+  return (municipalityId) =>
+    municipalityIds.has(municipalityId) ||
+    statePrefixes.some((prefix) => municipalityId.startsWith(prefix));
+}
+
+function groupRegions(regions) {
+  return regions.reduce((groups, region) => {
+    const label = region.group ?? "Regioes";
+    const currentGroup = groups.find((group) => group.label === label);
+
+    if (currentGroup) {
+      currentGroup.items.push(region);
+      return groups;
+    }
+
+    return [...groups, { label, items: [region] }];
+  }, []);
+}
+
+function getRegionView(municipalities, region) {
+  if (!municipalities.length || !region) {
+    return null;
+  }
+
+  const isInRegion = createRegionMatcher(region);
+  const selectedMunicipalities = municipalities.filter((municipality) =>
+    isInRegion(municipality.id),
+  );
+
+  if (!selectedMunicipalities.length) {
+    return null;
+  }
+
+  const bounds = selectedMunicipalities.reduce(
+    (result, municipality) => ({
+      maxX: Math.max(result.maxX, municipality.bounds.maxX),
+      maxY: Math.max(result.maxY, municipality.bounds.maxY),
+      minX: Math.min(result.minX, municipality.bounds.minX),
+      minY: Math.min(result.minY, municipality.bounds.minY),
+    }),
+    { maxX: -Infinity, maxY: -Infinity, minX: Infinity, minY: Infinity },
+  );
+  const regionWidth = Math.max(bounds.maxX - bounds.minX, 1);
+  const regionHeight = Math.max(bounds.maxY - bounds.minY, 1);
+  const scale = clamp(
+    Math.min((640 - 132) / regionWidth, (420 - 110) / regionHeight),
+    1.3,
+    REGION_FOCUS_MAX_ZOOM,
+  );
+  const centerX = bounds.minX + regionWidth / 2;
+  const centerY = bounds.minY + regionHeight / 2;
+
+  return {
+    centerX,
+    centerY,
+    scale,
+    x: 320 - centerX * scale,
+    y: 210 - centerY * scale,
+  };
+}
+
+function getFocusedTransform(focusedView, view) {
+  const scale = clamp(focusedView.scale + view.scale - 1, 1, MAX_ZOOM);
+
+  return {
+    scale,
+    x: 320 - focusedView.centerX * scale + view.x,
+    y: 210 - focusedView.centerY * scale + view.y,
+  };
 }
 
 function buildMunicipalPaths(geoJson) {
@@ -98,11 +380,31 @@ function buildMunicipalPaths(geoJson) {
     const id = feature.properties?.codarea ?? String(Math.random());
 
     return {
+      bounds: geometryBounds(feature.geometry, project),
       id,
       path: geometryToPath(feature.geometry, project),
       tone: getTone(id),
     };
   });
+}
+
+function geometryBounds(geometry, project) {
+  const bounds = {
+    maxX: -Infinity,
+    maxY: -Infinity,
+    minX: Infinity,
+    minY: Infinity,
+  };
+
+  walkCoordinates(geometry?.coordinates, (point) => {
+    const [x, y] = project(point);
+    bounds.minX = Math.min(bounds.minX, x);
+    bounds.maxX = Math.max(bounds.maxX, x);
+    bounds.minY = Math.min(bounds.minY, y);
+    bounds.maxY = Math.max(bounds.maxY, y);
+  });
+
+  return bounds;
 }
 
 function getBounds(features) {
