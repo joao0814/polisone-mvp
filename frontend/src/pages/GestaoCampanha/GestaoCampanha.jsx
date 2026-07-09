@@ -19,10 +19,10 @@ const menuItems = [
   { label: "Visao Geral", path: "/gestao-campanha" },
   { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
   { label: "Municipios", path: "/municipios" },
-  { label: "Emendas" },
+  { label: "Emendas", path: "/emendas" },
   { label: "Equipes" },
   { label: "Check-in" },
-  { label: "Pesquisa de campo" },
+  { label: "Pesquisa de campo", path: "/pesquisa-campo" },
   { label: "Territorio" },
 ];
 
