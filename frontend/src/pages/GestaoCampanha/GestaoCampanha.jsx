@@ -17,7 +17,7 @@ import styles from "./GestaoCampanha.module.css";
 const menuItems = [
   { label: "Portal do Candidato", path: "/" },
   { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral" },
+  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
   { label: "Municipios" },
   { label: "Emendas" },
   { label: "Equipes" },

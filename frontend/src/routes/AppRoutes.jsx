@@ -3,6 +3,7 @@ import Chamados from '../pages/Chamados/Chamados'
 import DetalheChamado from '../pages/Chamados/DetalheChamado/DetalheChamado'
 import NovoChamado from '../pages/Chamados/NovoChamado/NovoChamado'
 import GestaoCampanha from '../pages/GestaoCampanha/GestaoCampanha'
+import InteligenciaEleitoral from '../pages/InteligenciaEleitoral/InteligenciaEleitoral'
 import Login from '../pages/Login/Login'
 import Home from '../pages/Home/Home'
 
@@ -64,6 +65,16 @@ function AppRoutes({ session, onLogin, onRegister, onLogout }) {
         element={
           session ? (
             <GestaoCampanha session={session} onLogout={onLogout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/inteligencia-eleitoral"
+        element={
+          session ? (
+            <InteligenciaEleitoral session={session} onLogout={onLogout} />
           ) : (
             <Navigate to="/login" replace />
           )
