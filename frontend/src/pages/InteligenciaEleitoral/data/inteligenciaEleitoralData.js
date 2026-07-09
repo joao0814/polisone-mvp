@@ -2,7 +2,7 @@ export const menuItems = [
   { label: "Portal do Candidato", path: "/" },
   { label: "Visao Geral", path: "/gestao-campanha" },
   { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios" },
+  { label: "Municipios", path: "/municipios" },
   { label: "Emendas" },
   { label: "Equipes" },
   { label: "Check-in" },

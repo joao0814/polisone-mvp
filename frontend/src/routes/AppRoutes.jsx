@@ -6,6 +6,7 @@ import GestaoCampanha from '../pages/GestaoCampanha/GestaoCampanha'
 import InteligenciaEleitoral from '../pages/InteligenciaEleitoral/InteligenciaEleitoral'
 import Login from '../pages/Login/Login'
 import Home from '../pages/Home/Home'
+import Municipios from '../pages/Municipios/Municipios'
 
 function AppRoutes({ session, onLogin, onRegister, onLogout }) {
   return (
@@ -75,6 +76,16 @@ function AppRoutes({ session, onLogin, onRegister, onLogout }) {
         element={
           session ? (
             <InteligenciaEleitoral session={session} onLogout={onLogout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/municipios"
+        element={
+          session ? (
+            <Municipios session={session} onLogout={onLogout} />
           ) : (
             <Navigate to="/login" replace />
           )
