@@ -20,8 +20,8 @@ const menuItems = [
   { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
   { label: "Municipios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
-  { label: "Equipes" },
-  { label: "Check-in" },
+  { label: "Equipes", path: "/equipes" },
+  { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
   { label: "Territorio" },
 ];

@@ -163,6 +163,58 @@
   cursor: pointer;
 }
 
+.userMenuWrap {
+  position: relative;
+}
+
+.userMenu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 196px;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid rgba(255, 202, 24, 0.52);
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
+  z-index: 30;
+}
+
+.userMenu::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 13px;
+  width: 12px;
+  height: 12px;
+  border-left: 1px solid rgba(255, 202, 24, 0.52);
+  border-top: 1px solid rgba(255, 202, 24, 0.52);
+  background: #ffffff;
+  transform: rotate(45deg);
+}
+
+.userMenu button {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #111111;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.userMenu button:hover,
+.userMenu button:focus-visible {
+  background: rgba(255, 202, 24, 0.18);
+  outline: 0;
+}
+
 .ticketHero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

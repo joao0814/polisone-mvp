@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Sidebar.module.css";
 
@@ -11,6 +12,11 @@ function Sidebar({
   userName = "Usuario",
 }) {
   const navigate = useNavigate();
+  const hasActiveTerritoryChild = items.some(
+    (item) => isTerritoryChild(item.label) && item.label === activeItem,
+  );
+  const [isTerritoryOpen, setIsTerritoryOpen] = useState(hasActiveTerritoryChild);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   function handleLogout() {
     if (onLogout) {
@@ -30,33 +36,77 @@ function Sidebar({
         </Link>
 
         <section className={styles.user} aria-label="Candidato">
-          <div className={styles.avatar}>{getInitials(userName)}</div>
+          <button
+            aria-expanded={isProfileMenuOpen}
+            aria-label="Abrir opcoes do perfil"
+            className={styles.avatarButton}
+            type="button"
+            onClick={() => setIsProfileMenuOpen((current) => !current)}
+          >
+            <span className={styles.avatar}>{getInitials(userName)}</span>
+          </button>
           <p className={styles.name}>{userName}</p>
           <p className={styles.role}>{roleLabel}</p>
+
+          {isProfileMenuOpen ? (
+            <div className={styles.profileMenu}>
+              <button type="button">Alterar dados do perfil</button>
+              <button type="button" onClick={handleLogout}>
+                Sair da conta
+              </button>
+            </div>
+          ) : null}
         </section>
 
         <nav aria-label="Menu principal">
           <ul className={styles.sideItems}>
             {items.map((item) => {
-              const isActive = item.label === activeItem;
+              const isTerritoryParent = item.label === "Territorio";
+              const isChild = isTerritoryChild(item.label);
+              const isActive = item.label === activeItem || (isTerritoryParent && hasActiveTerritoryChild);
+
+              if (isChild && !isTerritoryOpen) {
+                return null;
+              }
+
               const content = (
                 <>
-                  <span className={styles.sideItemsIcons} aria-hidden="true">
-                    {item.icon || getIconFallback(item.label)}
-                  </span>
+                  <span
+                    className={`${styles.sideItemsIcons} ${styles[getIconClass(item.label)]}`}
+                    aria-hidden="true"
+                  />
                   <span className={styles.itemDescription}>{item.label}</span>
+                  {isTerritoryParent ? (
+                    <span
+                      className={`${styles.chevronIcon} ${
+                        isTerritoryOpen ? styles.chevronOpen : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  ) : null}
                 </>
               );
 
               return (
                 <li
-                  className={`${styles.sideItem} ${isActive ? styles.active : ""}`}
+                  className={`${styles.sideItem} ${isActive ? styles.active : ""} ${
+                    isChild ? styles.childItem : ""
+                  }`}
                   key={item.label}
                 >
                   {item.path ? (
                     <Link className={styles.sideLink} to={item.path}>
                       {content}
                     </Link>
+                  ) : isTerritoryParent ? (
+                    <button
+                      aria-expanded={isTerritoryOpen}
+                      className={styles.sideButton}
+                      type="button"
+                      onClick={() => setIsTerritoryOpen((current) => !current)}
+                    >
+                      {content}
+                    </button>
                   ) : (
                     <button className={styles.sideButton} type="button">
                       {content}
@@ -71,9 +121,7 @@ function Sidebar({
 
       <footer className={styles.sidebarFooter}>
         <button className={styles.logoutBtn} type="button" onClick={handleLogout}>
-          <span className={styles.logoutIcon} aria-hidden="true">
-            S
-          </span>
+          <span className={styles.logoutIcon} aria-hidden="true" />
           <span className={styles.itemDescription}>Sair</span>
         </button>
       </footer>
@@ -89,8 +137,26 @@ function getInitials(name = "") {
   return initials.toUpperCase() || "U";
 }
 
-function getIconFallback(label = "") {
-  return label.trim().charAt(0).toUpperCase() || "P";
+function getIconClass(label = "") {
+  const icons = {
+    "Portal do Candidato": "iconHome",
+    "Visao Geral": "iconTarget",
+    "Inteligencia Eleitoral": "iconIdea",
+    Municipios: "iconCity",
+    Emendas: "iconMoney",
+    Equipes: "iconUsers",
+    "Check-in": "iconCheck",
+    "Pesquisa de campo": "iconSearch",
+    Territorio: "iconMap",
+    "Mapa eleitoral": "iconMapPin",
+    Metricas: "iconBars",
+  };
+
+  return icons[label] || "iconTarget";
+}
+
+function isTerritoryChild(label = "") {
+  return ["Mapa eleitoral", "Metricas"].includes(label);
 }
 
 export default Sidebar;

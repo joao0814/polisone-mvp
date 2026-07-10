@@ -64,6 +64,7 @@ function Home({ session, onLogout }) {
 
 function Header({ user, onLogout }) {
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   function handleResourceSelect(path) {
@@ -116,14 +117,28 @@ function Header({ user, onLogout }) {
           <strong>09:52</strong>
           <small>31.01.2026</small>
         </div>
-        <button
-          className={styles.userButton}
-          type="button"
-          onClick={onLogout}
-          aria-label="Sair"
-        >
-          <span>{getInitials(user?.name)}</span>
-        </button>
+        <div className={styles.userMenuWrap}>
+          <button
+            aria-expanded={isUserMenuOpen}
+            aria-haspopup="menu"
+            aria-label="Abrir opcoes do usuario"
+            className={styles.userButton}
+            type="button"
+            onClick={() => setIsUserMenuOpen((isOpen) => !isOpen)}
+          >
+            <span>{getInitials(user?.name)}</span>
+          </button>
+          {isUserMenuOpen ? (
+            <div className={styles.userMenu} role="menu">
+              <button type="button" role="menuitem">
+                Alterar dados do perfil
+              </button>
+              <button type="button" onClick={onLogout} role="menuitem">
+                Sair da conta
+              </button>
+            </div>
+          ) : null}
+        </div>
       </div>
     </header>
   );

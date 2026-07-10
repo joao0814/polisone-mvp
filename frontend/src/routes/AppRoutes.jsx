@@ -1,7 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Chamados from '../pages/Chamados/Chamados'
+import CheckIn from '../pages/CheckIn/CheckIn'
 import DetalheChamado from '../pages/Chamados/DetalheChamado/DetalheChamado'
 import Emendas from '../pages/Emendas/Emendas'
+import Equipes from '../pages/Equipes/Equipes'
 import NovoChamado from '../pages/Chamados/NovoChamado/NovoChamado'
 import GestaoCampanha from '../pages/GestaoCampanha/GestaoCampanha'
 import InteligenciaEleitoral from '../pages/InteligenciaEleitoral/InteligenciaEleitoral'
@@ -98,6 +100,26 @@ function AppRoutes({ session, onLogin, onRegister, onLogout }) {
         element={
           session ? (
             <Emendas session={session} onLogout={onLogout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/equipes"
+        element={
+          session ? (
+            <Equipes session={session} onLogout={onLogout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/check-in"
+        element={
+          session ? (
+            <CheckIn session={session} onLogout={onLogout} />
           ) : (
             <Navigate to="/login" replace />
           )
