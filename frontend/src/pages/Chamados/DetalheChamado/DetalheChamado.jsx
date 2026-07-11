@@ -18,6 +18,7 @@ import {
 } from "../helpers";
 import { getClassificationLabel } from "../ticketOptions";
 import styles from "./DetalheChamado.module.css";
+import PortalNavbar from "../../../components/Common/PortalNavbar/PortalNavbar";
 
 const STATUS_OPTIONS = [
   { value: "OPEN", label: "Aberto" },
@@ -319,6 +320,10 @@ function DetalheChamado({ session, onLogout }) {
 }
 
 function Header({ user, onLogout }) {
+  return <PortalNavbar user={user} onLogout={onLogout} activeResource="chamados" />;
+}
+
+export function LegacyHeader({ user, onLogout }) {
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();

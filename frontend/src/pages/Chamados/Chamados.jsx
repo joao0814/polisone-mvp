@@ -4,6 +4,7 @@ import logoNav from "../../assets/images/home/logo nav.png";
 import { listTickets } from "../../services/tickets";
 import { formatTicketDate, mapStatusLabel, mapStatusTone } from "./helpers";
 import styles from "./Chamados.module.css";
+import PortalNavbar from "../../components/Common/PortalNavbar/PortalNavbar";
 
 function Chamados({ session, onLogout }) {
   const navigate = useNavigate();
@@ -275,6 +276,10 @@ function filterTickets(tickets, search) {
 }
 
 function Header({ user, onLogout }) {
+  return <PortalNavbar user={user} onLogout={onLogout} activeResource="chamados" />;
+}
+
+export function LegacyHeader({ user, onLogout }) {
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();

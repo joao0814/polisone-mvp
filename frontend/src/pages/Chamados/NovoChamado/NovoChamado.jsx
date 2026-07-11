@@ -12,6 +12,7 @@ import {
   getClassificationFieldLabel,
 } from "../ticketOptions";
 import styles from "./NovoChamado.module.css";
+import PortalNavbar from "../../../components/Common/PortalNavbar/PortalNavbar";
 
 function NovoChamado({ session, onLogout }) {
   const navigate = useNavigate();
@@ -179,6 +180,10 @@ function NovoChamado({ session, onLogout }) {
 }
 
 function Header({ user, onLogout }) {
+  return <PortalNavbar user={user} onLogout={onLogout} activeResource="chamados" />;
+}
+
+export function LegacyHeader({ user, onLogout }) {
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();

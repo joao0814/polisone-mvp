@@ -15,6 +15,7 @@ import Blog from '../pages/Blog/Blog'
 import BlogPostDetail from '../pages/Blog/BlogPostDetail'
 import BlogCreate from '../pages/Blog/BlogCreate'
 import BlogManage from '../pages/Blog/BlogManage'
+import PortalBannerAdmin from '../pages/PortalBannerAdmin/PortalBannerAdmin'
 import { canManageCommunications } from '../utils/communicationPermissions'
 
 function AppRoutes({ session, onLogin, onRegister, onLogout }) {
@@ -133,6 +134,7 @@ function AppRoutes({ session, onLogin, onRegister, onLogout }) {
       <Route path="/comunicados" element={session ? <Blog session={session} onLogout={onLogout} /> : <Navigate to="/login" replace />} />
       <Route path="/comunicados/novo" element={session ? (canManageCommunications(session.user) ? <BlogCreate session={session} onLogout={onLogout} /> : <Navigate to="/comunicados" replace />) : <Navigate to="/login" replace />} />
       <Route path="/comunicados/admin" element={session ? (canManageCommunications(session.user) ? <BlogManage session={session} onLogout={onLogout} /> : <Navigate to="/comunicados" replace />) : <Navigate to="/login" replace />} />
+      <Route path="/banners/admin" element={session ? (canManageCommunications(session.user) ? <PortalBannerAdmin session={session} onLogout={onLogout} /> : <Navigate to="/" replace />) : <Navigate to="/login" replace />} />
       <Route path="/comunicados/:slug" element={session ? <BlogPostDetail session={session} onLogout={onLogout} /> : <Navigate to="/login" replace />} />
       <Route
         path="/pesquisa-campo"

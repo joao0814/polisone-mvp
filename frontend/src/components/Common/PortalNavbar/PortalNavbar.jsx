@@ -37,7 +37,7 @@ export default function PortalNavbar({ user, onLogout, activeResource = "" }) {
         {resourcesOpen && <div className={styles.navMenu} role="menu">
           <button className={currentResource === "chamados" ? styles.currentItem : ""} type="button" onClick={() => go("/chamados")} role="menuitem" aria-current={currentResource === "chamados" ? "page" : undefined}>Chamados</button>
           <button className={currentResource === "comunicados" ? styles.currentItem : ""} type="button" onClick={() => go("/comunicados")} role="menuitem" aria-current={currentResource === "comunicados" ? "page" : undefined}>Comunicados</button>
-          <button type="button" role="menuitem">Gestão de banners</button>
+          <button className={currentResource === "banners" ? styles.currentItem : ""} type="button" onClick={() => go("/banners/admin")} role="menuitem" aria-current={currentResource === "banners" ? "page" : undefined}>Gestão de banners</button>
         </div>}
       </div>
     </nav>
