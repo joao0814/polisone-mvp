@@ -41,7 +41,8 @@ export class AddSupportTicketMessageUseCase {
       message: input.message,
     });
 
-    const storedMessage = await this.supportTicketRepository.addMessage(message);
+    const storedMessage =
+      await this.supportTicketRepository.addMessage(message);
 
     return SupportTicketOutputMapper['messageToOutput'](storedMessage);
   }

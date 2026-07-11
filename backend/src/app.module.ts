@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './nest_modules/auth/auth.module';
 import { SupportTicketsModule } from './nest_modules/support-tickets/support-tickets.module';
 import { DatabaseModule } from './shared/database/database.module';
+import { CommunicationsModule } from './nest_modules/communications/communications.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DatabaseModule } from './shared/database/database.module';
     DatabaseModule,
     AuthModule,
     SupportTicketsModule,
+    CommunicationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,10 @@
 import { PoolClient } from 'pg';
 import { Migration } from './migration.interface';
 
-async function hasTable(client: PoolClient, tableName: string): Promise<boolean> {
+async function hasTable(
+  client: PoolClient,
+  tableName: string,
+): Promise<boolean> {
   const result = await client.query<{ table_name: string }>(
     `
       SELECT table_name

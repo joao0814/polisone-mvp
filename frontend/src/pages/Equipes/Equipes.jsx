@@ -1,4 +1,4 @@
-import Sidebar from "../../components/Commom/Sidebar/Sidebar";
+import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
 import {
   countdowns,
@@ -229,7 +229,7 @@ function Equipes({ session, onLogout }) {
 
 function BooleanMark({ active }) {
   return (
-    <span className={active ? styles.checkMark : styles.crossMark} aria-label={active ? "Sim" : "Nao"}>
+    <span className={active ? styles.checkMark : styles.crossMark} aria-label={active ? "Sim" : "Não"}>
       {active ? "V" : "X"}
     </span>
   );

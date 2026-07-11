@@ -1,0 +1,21 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import PortalNavbar from "../../components/Common/PortalNavbar/PortalNavbar";
+import { useCommunications } from "../../hooks/useCommunications";
+import styles from "./Blog.module.css";
+import { canManageCommunications } from "../../utils/communicationPermissions";
+
+const formatDate = (value) => value ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(new Date(value)) : "Não publicado";
+const placeholder = { display:"grid", placeItems:"center", minHeight:220, background:"#111", color:"#ffca18", fontWeight:900, letterSpacing:".15em" };
+export default function Blog({ session, onLogout }) {
+  const api = useCommunications(); const { categories: loadCategories, list } = api; const [posts, setPosts] = useState([]); const [categories, setCategories] = useState([]); const [search, setSearch] = useState(""); const [category, setCategory] = useState("");
+  useEffect(() => { loadCategories().then(setCategories).catch(() => {}); }, [loadCategories]);
+  useEffect(() => { const timer = setTimeout(() => list({ search, category, limit: 30 }).then((result) => setPosts(result.data)).catch(() => setPosts([])), 250); return () => clearTimeout(timer); }, [list, category, search]);
+  const featured = posts[0]; const remaining = posts.slice(1);
+  return <main className={styles.page}><PortalNavbar user={session?.user} onLogout={onLogout} activeResource="comunicados" />
+    <section className={styles.hero}><div><span className={styles.eyebrow}>Central de conteúdo</span><h1>Comunicados</h1><p>Informações importantes, novidades e atualizações para manter toda a equipe na mesma direção.</p></div><strong>{String(posts.length).padStart(2,"0")}<small> publicações</small></strong></section>
+    {canManageCommunications(session?.user) ? <div style={{display:"flex",justifyContent:"flex-end",gap:10,margin:"28px 0 -10px"}}><Link to="/comunicados/admin" style={{display:"inline-flex",alignItems:"center",minHeight:44,padding:"0 20px",borderRadius:999,border:"1px solid #111",color:"#111",fontSize:13,fontWeight:900,textDecoration:"none"}}>Gerenciar</Link><Link to="/comunicados/novo" style={{display:"inline-flex",alignItems:"center",minHeight:44,padding:"0 20px",borderRadius:999,background:"#111",color:"#ffca18",fontSize:13,fontWeight:900,textDecoration:"none"}}>+ Criar comunicado</Link></div> : null}
+    <section className={styles.toolbar}><label className={styles.search}><span className={styles.srOnly}>Buscar</span><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Busque por título ou assunto..." /></label><div className={styles.categories}><button type="button" className={!category ? styles.selected : ""} onClick={() => setCategory("")}>Todas</button>{categories.map((item) => <button type="button" className={category === item.slug ? styles.selected : ""} onClick={() => setCategory(item.slug)} key={item.id}>{item.name}</button>)}</div></section>
+    {api.loading && !posts.length ? <section className={styles.empty}><h2>Carregando comunicados...</h2></section> : api.error ? <section className={styles.empty}><h2>Não foi possível carregar</h2><p>{api.error}</p></section> : featured ? <><Link to={`/comunicados/${featured.slug}`} className={styles.featured}><div style={{...placeholder,minHeight:410}}>POLIS ONE</div><div><span className={styles.badge}>{featured.category?.name}</span><h2>{featured.title}</h2><p>{featured.description}</p><footer><time>{formatDate(featured.publishedAt)}</time></footer><b>Continuar lendo →</b></div></Link><div className={styles.sectionTitle}><div><span>Últimas atualizações</span><h2>Fique por dentro</h2></div><small>{posts.length} resultado(s)</small></div><section className={styles.grid}>{remaining.map((item) => <Link to={`/comunicados/${item.slug}`} className={styles.card} key={item.id}><div style={placeholder}>POLIS ONE</div><div className={styles.cardBody}><time>{formatDate(item.publishedAt)}</time><h3>{item.title}</h3><p>{item.description}</p><footer><span>{item.category?.name}</span><b>{item.views} leituras</b></footer></div></Link>)}</section></> : <section className={styles.empty}><h2>Nenhum comunicado publicado</h2></section>}
+  </main>;
+}

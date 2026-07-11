@@ -138,7 +138,7 @@ export const perceptionPanels = [
       { label: "Sim", value: 38 },
       { label: "Ja ouvi falar", value: 34 },
       { label: "Conheco de vista", value: 20 },
-      { label: "Nao conheco", value: 18 },
+      { label: "Não conheço", value: 18 },
     ],
   },
   {
@@ -147,7 +147,7 @@ export const perceptionPanels = [
       { label: "Com certeza", value: 38 },
       { label: "Provavel votar", value: 34 },
       { label: "Ainda estou indeciso", value: 20 },
-      { label: "Nao votaria", value: 18 },
+      { label: "Não votaria", value: 18 },
     ],
   },
   {
@@ -156,7 +156,7 @@ export const perceptionPanels = [
       { label: "Com certeza", value: 38 },
       { label: "Provavel votar", value: 34 },
       { label: "Ainda estou indeciso", value: 20 },
-      { label: "Nao votaria", value: 18 },
+      { label: "Não votaria", value: 18 },
     ],
   },
 ];

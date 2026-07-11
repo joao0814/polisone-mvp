@@ -52,7 +52,9 @@ async function run(): Promise<void> {
 
     if (command === 'status') {
       for (const migration of migrations) {
-        const status = executedNames.has(migration.name) ? 'applied' : 'pending';
+        const status = executedNames.has(migration.name)
+          ? 'applied'
+          : 'pending';
         console.log(`${migration.name}: ${status}`);
       }
 

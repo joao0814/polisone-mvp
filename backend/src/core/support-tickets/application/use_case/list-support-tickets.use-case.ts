@@ -51,7 +51,9 @@ export class ListSupportTicketsUseCase {
       await this.supportTicketRepository.findMany(filters);
 
     return {
-      items: result.items.map((item) => SupportTicketOutputMapper.toOutput(item)),
+      items: result.items.map((item) =>
+        SupportTicketOutputMapper.toOutput(item),
+      ),
       total: result.total,
       page: result.page,
       limit: result.limit,

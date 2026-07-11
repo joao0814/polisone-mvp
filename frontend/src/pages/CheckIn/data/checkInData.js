@@ -103,7 +103,7 @@ export const checkPerformance = [
   { label: "Check-in", value: "70,3%", color: "#00b765" },
   { label: "Atividades", value: "19,3%", color: "#1687df" },
   { label: "Check-Out", value: "8%", color: "#ff9518" },
-  { label: "Nao Realizado", value: "2%", color: "#ff3030" },
+  { label: "Não realizado", value: "2%", color: "#ff3030" },
 ];
 
 export const photoCards = [

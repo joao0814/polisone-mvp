@@ -1,6 +1,4 @@
-import {
-  ListSupportTicketsOutput,
-} from '../../../core/support-tickets/application/use_case/list-support-tickets.use-case';
+import { ListSupportTicketsOutput } from '../../../core/support-tickets/application/use_case/list-support-tickets.use-case';
 import {
   SupportTicketMessageOutput,
   SupportTicketOutput,

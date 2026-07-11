@@ -1,4 +1,4 @@
-import Sidebar from "../../components/Commom/Sidebar/Sidebar";
+import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import cityNightImage from "../../assets/images/campaign/sao-jose-night.jpg";
 import logoNav from "../../assets/images/home/logo nav.png";
 import {

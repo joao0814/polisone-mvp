@@ -1,9 +1,4 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 import { SupportTicketDepartment } from '../../../core/support-tickets/domain/enums/support-ticket-department.enum';
 import { SupportTicketPriority } from '../../../core/support-tickets/domain/enums/support-ticket-priority.enum';
 

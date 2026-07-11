@@ -45,9 +45,7 @@ export const normalizeUsersTableDefaultsMigration: Migration = {
       columnsResult.rows.map((row) => [row.column_name, row]),
     );
 
-    if (
-      !hasExpectedDefault(columns.id?.column_default, ['gen_random_uuid'])
-    ) {
+    if (!hasExpectedDefault(columns.id?.column_default, ['gen_random_uuid'])) {
       throw new Error(
         'Validation failed: users.id must default to gen_random_uuid()',
       );

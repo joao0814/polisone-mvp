@@ -2,7 +2,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 const AUTH_STORAGE_KEY = 'polisone.auth'
 
 export async function login({ email, password }) {
-  return authenticate('/auth/login', { email, password }, 'Nao foi possivel entrar. Verifique seus dados.')
+  return authenticate('/auth/login', { email, password }, 'Não foi possível entrar. Verifique seus dados.')
 }
 
 export async function register({ name, email, password }) {
@@ -10,7 +10,7 @@ export async function register({ name, email, password }) {
     name,
     email,
     password,
-  }, 'Nao foi possivel criar a conta. Revise os dados informados.')
+  }, 'Não foi possível criar a conta. Revise os dados informados.')
 }
 
 export function getStoredSession() {
@@ -21,10 +21,34 @@ export function getStoredSession() {
   }
 
   try {
-    return JSON.parse(rawSession)
+    const stored = JSON.parse(rawSession)
+    const accessToken = stored.accessToken ?? stored.access_token
+
+    if (!accessToken || isTokenExpired(accessToken)) {
+      localStorage.removeItem(AUTH_STORAGE_KEY)
+      return null
+    }
+
+    const session = {
+      accessToken,
+      tokenType: stored.tokenType ?? stored.token_type ?? 'Bearer',
+      user: stored.user,
+    }
+
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session))
+    return session
   } catch {
     localStorage.removeItem(AUTH_STORAGE_KEY)
     return null
+  }
+}
+
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return !payload.exp || payload.exp * 1000 <= Date.now()
+  } catch {
+    return true
   }
 }
 

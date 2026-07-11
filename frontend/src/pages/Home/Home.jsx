@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Home.module.css";
 import bannerImage from "../../assets/images/home/banner.png";
 import biImage from "../../assets/images/home/BI.png";
-import comunicado1Image from "../../assets/images/home/comunicados/comunicado1.png";
-import comunicado2Image from "../../assets/images/home/comunicados/comunicado2.png";
-import comunicado3Image from "../../assets/images/home/comunicados/comunidade3.png";
+import { useCommunications } from "../../hooks/useCommunications";
+import PortalNavbar from "../../components/Common/PortalNavbar/PortalNavbar";
 import gestaoCampanhaImage from "../../assets/images/home/gestao_campanha.png";
 import gestaoMandatoImage from "../../assets/images/home/gestao_mandato.png";
 import iaImage from "../../assets/images/home/IA.png";
@@ -25,21 +24,6 @@ const systems = [
   { label: "Gestão de Mandato", image: gestaoMandatoImage },
   { label: "BI", image: biImage },
   { label: "IA", image: iaImage },
-];
-
-const comunicados = [
-  {
-    title: "Sentem o que voce nao sente. Torca com consciencia!!!",
-    image: comunicado1Image,
-  },
-  {
-    title: "Urgente!!!",
-    image: comunicado2Image,
-  },
-  {
-    title: "Dia do case em nova odessa",
-    image: comunicado3Image,
-  },
 ];
 
 const days = Array.from({ length: 31 }, (_, index) => index + 1);
@@ -63,6 +47,10 @@ function Home({ session, onLogout }) {
 }
 
 function Header({ user, onLogout }) {
+  return <PortalNavbar user={user} onLogout={onLogout} />;
+}
+
+export function LegacyHeader({ user, onLogout }) {
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -101,7 +89,7 @@ function Header({ user, onLogout }) {
               >
                 Chamados
               </button>
-              <button type="button" role="menuitem">
+              <button type="button" onClick={() => handleResourceSelect("/comunicados")} role="menuitem">
                 Comunicados
               </button>
               <button type="button" role="menuitem">
@@ -229,33 +217,35 @@ function HeroSection() {
 }
 
 function Comunicados() {
+  const { list, loading, error } = useCommunications();
+  const [comunicados, setComunicados] = useState([]);
+
+  useEffect(() => {
+    list({ limit: 3 }).then((result) => setComunicados(result.data)).catch(() => setComunicados([]));
+  }, [list]);
+
   return (
-    <section className={styles.comunicados}>
-      <h2>Comunicados</h2>
+    <section className={styles.comunicados} id="calendarios">
+      <div className={styles.comunicadosHeading}><h2>Comunicados</h2><Link to="/comunicados">Ver todos →</Link></div>
       <div className={styles.comunicadoGrid}>
+        {loading && !comunicados.length ? <p>Carregando comunicados...</p> : null}
+        {!loading && error ? <p>Não foi possível carregar os comunicados.</p> : null}
+        {!loading && !error && !comunicados.length ? <p>Nenhum comunicado publicado.</p> : null}
         {comunicados.map((comunicado) => (
-          <article className={styles.comunicadoCard} key={comunicado.title}>
+          <Link to={`/comunicados/${comunicado.slug}`} className={styles.comunicadoCard} key={comunicado.id}>
             <div className={styles.comunicadoImage}>
-              <img src={comunicado.image} alt={comunicado.title} />
+              <span>POLIS ONE</span>
             </div>
             <div className={styles.comunicadoBody}>
-              <h3>Título do comunicado</h3>
-              <span>Autor</span>
-              <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s.
-              </p>
+              <h3>{comunicado.title}</h3>
+              <span>{comunicado.category?.name || "Comunicado"}</span>
+              <p>{comunicado.description}</p>
               <footer>
-                <span>◉ 0</span>
-                <span>♥ 0</span>
-                <span>● 0</span>
-                <span>★</span>
-                <span>↗</span>
-                <time>27/01/2025</time>
+                <span>{comunicado.views} leituras</span>
+                <time>{comunicado.publishedAt ? new Intl.DateTimeFormat("pt-BR").format(new Date(comunicado.publishedAt)) : ""}</time>
               </footer>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>

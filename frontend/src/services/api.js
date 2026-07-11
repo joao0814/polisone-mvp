@@ -23,10 +23,11 @@ export async function apiRequest(path, options = {}) {
 
   if (response.status === 401) {
     logout()
+    if (window.location.pathname !== '/login') window.location.assign('/login')
   }
 
   if (!response.ok) {
-    throw new Error(resolveApiError(data, 'Nao foi possivel concluir a requisicao.'))
+    throw new Error(resolveApiError(data, 'Não foi possível concluir a requisição.'))
   }
 
   return data

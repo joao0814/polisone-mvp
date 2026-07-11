@@ -1,7 +1,7 @@
 import { useState } from "react";
 import BrazilMunicipalMap from "./components/BrazilMunicipalMap";
 import CampaignHeader from "./components/CampaignHeader";
-import Sidebar from "../../components/Commom/Sidebar/Sidebar";
+import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
 import CostRanking from "./components/CostRanking";
 import DailySummaryCard from "./components/DailySummaryCard";

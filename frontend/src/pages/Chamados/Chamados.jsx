@@ -293,6 +293,7 @@ function Header({ user, onLogout }) {
         <a href="#calendarios">Calendarios e comunicados</a>
         <div className={styles.navSelect}>
           <button
+            style={{ color: "#ffca18" }}
             type="button"
             onClick={() => setIsResourcesOpen((isOpen) => !isOpen)}
             aria-expanded={isResourcesOpen}
@@ -309,13 +310,14 @@ function Header({ user, onLogout }) {
           {isResourcesOpen && (
             <div className={styles.navMenu} role="menu">
               <button
+                style={{ background: "rgba(255, 202, 24, 0.22)", fontWeight: 900 }}
                 type="button"
                 onClick={() => handleResourceSelect("/chamados")}
                 role="menuitem"
               >
                 Chamados
               </button>
-              <button type="button" role="menuitem">
+              <button type="button" onClick={() => handleResourceSelect("/comunicados")} role="menuitem">
                 Comunicados
               </button>
               <button type="button" role="menuitem">

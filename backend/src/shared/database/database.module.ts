@@ -5,6 +5,14 @@ import { SupportTicketAttachmentModel } from '../../core/support-tickets/infrast
 import { SupportTicketMessageModel } from '../../core/support-tickets/infrastructure/database/sequelize/models/support-ticket-message.model';
 import { SupportTicketModel } from '../../core/support-tickets/infrastructure/database/sequelize/models/support-ticket.model';
 import { UserModel } from '../../core/users/infrastructure/database/sequelize/models/user.model';
+import {
+  CommunicationAuditLogModel,
+  CommunicationCategoryModel,
+  CommunicationModel,
+  CommunicationTagLinkModel,
+  CommunicationTagModel,
+  CommunicationViewModel,
+} from '../../core/communications/infrastructure/database/sequelize/models/communication.models';
 
 @Module({
   imports: [
@@ -23,6 +31,12 @@ import { UserModel } from '../../core/users/infrastructure/database/sequelize/mo
           SupportTicketModel,
           SupportTicketMessageModel,
           SupportTicketAttachmentModel,
+          CommunicationModel,
+          CommunicationCategoryModel,
+          CommunicationTagModel,
+          CommunicationTagLinkModel,
+          CommunicationViewModel,
+          CommunicationAuditLogModel,
         ],
         autoLoadModels: true,
         synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',

@@ -14,7 +14,9 @@ export type SupportTicketMessageProps = {
 };
 
 export class SupportTicketMessageEntity {
-  private constructor(private readonly props: Required<SupportTicketMessageProps>) {}
+  private constructor(
+    private readonly props: Required<SupportTicketMessageProps>,
+  ) {}
 
   static create(props: SupportTicketMessageProps): SupportTicketMessageEntity {
     const message = new SupportTicketMessageEntity({

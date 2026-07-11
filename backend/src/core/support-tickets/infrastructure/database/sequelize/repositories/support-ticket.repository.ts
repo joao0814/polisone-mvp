@@ -15,16 +15,17 @@ import { SupportTicketModelMapper } from '../models/support-ticket.model.mapper'
 import { FindOptions, Op, WhereOptions } from 'sequelize';
 
 @Injectable()
-export class SupportTicketSequelizeRepository
-  implements SupportTicketRepositoryContract
-{
+export class SupportTicketSequelizeRepository implements SupportTicketRepositoryContract {
   constructor(
     @InjectModel(SupportTicketModel)
     private readonly supportTicketModel: typeof SupportTicketModel,
   ) {}
 
   async findById(id: string): Promise<SupportTicketEntity | null> {
-    const ticket = await this.supportTicketModel.findByPk(id, this.buildFindOptions());
+    const ticket = await this.supportTicketModel.findByPk(
+      id,
+      this.buildFindOptions(),
+    );
 
     return ticket ? SupportTicketModelMapper.toEntity(ticket) : null;
   }
@@ -105,7 +106,13 @@ export class SupportTicketSequelizeRepository
           include: [SupportTicketAttachmentModel],
         },
       ],
-      order: [[{ model: SupportTicketMessageModel, as: 'messages' }, 'createdAt', 'ASC']],
+      order: [
+        [
+          { model: SupportTicketMessageModel, as: 'messages' },
+          'createdAt',
+          'ASC',
+        ],
+      ],
     };
   }
 

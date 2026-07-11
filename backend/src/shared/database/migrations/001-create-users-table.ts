@@ -14,8 +14,7 @@ async function hasUniqueIndexOnEmail(client: PoolClient): Promise<boolean> {
 
   return result.rows.some(
     (row) =>
-      row.indexdef.includes('UNIQUE') &&
-      row.indexdef.includes('(email)'),
+      row.indexdef.includes('UNIQUE') && row.indexdef.includes('(email)'),
   );
 }
 

@@ -17,7 +17,9 @@ export class SupportTicketModelMapper {
       priority: model.priority,
       status: model.status,
       closedAt: model.closedAt,
-      messages: (model.messages ?? []).map((message) => this.messageToEntity(message)),
+      messages: (model.messages ?? []).map((message) =>
+        this.messageToEntity(message),
+      ),
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
     });

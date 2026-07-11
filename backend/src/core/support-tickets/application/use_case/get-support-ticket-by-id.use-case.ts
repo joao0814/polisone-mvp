@@ -16,7 +16,9 @@ export class GetSupportTicketByIdUseCase {
     private readonly supportTicketRepository: SupportTicketRepository,
   ) {}
 
-  async execute(input: GetSupportTicketByIdInput): Promise<SupportTicketOutput> {
+  async execute(
+    input: GetSupportTicketByIdInput,
+  ): Promise<SupportTicketOutput> {
     const ticket = await this.supportTicketRepository.findById(input.id);
 
     if (!ticket) {

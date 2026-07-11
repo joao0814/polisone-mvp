@@ -189,7 +189,10 @@ export class SupportTicketsController {
 
       return SupportTicketPresenter.toHTTP(output);
     } catch (error) {
-      if (error instanceof Error && error.message === 'Support ticket not found') {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket not found'
+      ) {
         throw new NotFoundException(error.message);
       }
 
@@ -220,15 +223,24 @@ export class SupportTicketsController {
 
       return SupportTicketPresenter.toHTTP(output);
     } catch (error) {
-      if (error instanceof Error && error.message === 'Support ticket not found') {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket not found'
+      ) {
         throw new NotFoundException(error.message);
       }
 
-      if (error instanceof Error && error.message === 'Support ticket close denied') {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket close denied'
+      ) {
         throw new UnauthorizedException(error.message);
       }
 
-      if (error instanceof Error && error.message === 'Support ticket is already closed') {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket is already closed'
+      ) {
         throw new BadRequestException(error.message);
       }
 
@@ -252,15 +264,24 @@ export class SupportTicketsController {
 
       return SupportTicketPresenter.toHTTP(output);
     } catch (error) {
-      if (error instanceof Error && error.message === 'Support ticket not found') {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket not found'
+      ) {
         throw new NotFoundException(error.message);
       }
 
-      if (error instanceof Error && error.message === 'Support ticket reopen denied') {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket reopen denied'
+      ) {
         throw new UnauthorizedException(error.message);
       }
 
-      if (error instanceof Error && error.message === 'Support ticket is not closed') {
+      if (
+        error instanceof Error &&
+        error.message === 'Support ticket is not closed'
+      ) {
         throw new BadRequestException(error.message);
       }
 

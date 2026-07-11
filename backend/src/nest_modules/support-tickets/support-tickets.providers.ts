@@ -45,10 +45,7 @@ export const supportTicketsProviders = [
       supportTicketRepository: SupportTicketSequelizeRepository,
       userRepository: UserRepository,
     ) =>
-      new CreateSupportTicketUseCase(
-        supportTicketRepository,
-        userRepository,
-      ),
+      new CreateSupportTicketUseCase(supportTicketRepository, userRepository),
     inject: [SUPPORT_TICKET_REPOSITORY, USER_REPOSITORY],
   },
   {
