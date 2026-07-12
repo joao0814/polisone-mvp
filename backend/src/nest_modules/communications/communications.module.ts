@@ -16,6 +16,7 @@ import {
 import { COMMUNICATION_REPOSITORY } from '../../core/communications/domain/contracts/communication-repository.interface';
 import { CommunicationSequelizeRepository } from '../../core/communications/infrastructure/database/sequelize/repositories/communication.repository';
 import { communicationProviders } from './communications.providers';
+import { StorageModule } from '../storage/storage.module';
 
 export const communicationModels = [
   CommunicationModel,
@@ -27,7 +28,7 @@ export const communicationModels = [
 ];
 
 @Module({
-  imports: [AuthModule, SequelizeModule.forFeature(communicationModels)],
+  imports: [AuthModule, StorageModule, SequelizeModule.forFeature(communicationModels)],
   controllers: [CommunicationsController, AdminCommunicationsController],
   providers: [
     CommunicationSequelizeRepository,

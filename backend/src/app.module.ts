@@ -7,6 +7,8 @@ import { SupportTicketsModule } from './nest_modules/support-tickets/support-tic
 import { DatabaseModule } from './shared/database/database.module';
 import { CommunicationsModule } from './nest_modules/communications/communications.module';
 import { CalendarEventsModule } from './nest_modules/calendar-events/calendar-events.module';
+import { StorageModule } from './nest_modules/storage/storage.module';
+import { PortalBannersModule } from './nest_modules/portal-banners/portal-banners.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { CalendarEventsModule } from './nest_modules/calendar-events/calendar-ev
     SupportTicketsModule,
     CommunicationsModule,
     CalendarEventsModule,
+    StorageModule,
+    PortalBannersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

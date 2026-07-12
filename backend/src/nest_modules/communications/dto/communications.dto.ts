@@ -32,12 +32,36 @@ export class ListCommunicationsDto {
   @IsOptional() @IsEnum(CommunicationStatus) status?: CommunicationStatus;
 }
 
+function transformTags({ value }: { value: unknown }) {
+  if (Array.isArray(value)) {
+    return value.map(String);
+  }
+
+  if (typeof value !== 'string' || !value.trim()) {
+    return undefined;
+  }
+
+  try {
+    const parsedValue = JSON.parse(value);
+    if (Array.isArray(parsedValue)) {
+      return parsedValue.map(String);
+    }
+  } catch {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return undefined;
+}
+
 export class CreateCommunicationDto {
   @IsString() @MinLength(3) @MaxLength(180) title!: string;
   @IsString() @MinLength(3) @MaxLength(500) description!: string;
   @IsString() @MinLength(1) content!: string;
   @IsUUID() categoryId!: string;
-  @IsOptional() @IsArray() @IsString({ each: true }) tags?: string[];
+  @IsOptional() @Transform(transformTags) @IsArray() @IsString({ each: true }) tags?: string[];
 }
 
 export class UpdateCommunicationDto {
@@ -45,5 +69,5 @@ export class UpdateCommunicationDto {
   @IsOptional() @IsString() @MinLength(3) @MaxLength(500) description?: string;
   @IsOptional() @IsString() @MinLength(1) content?: string;
   @IsOptional() @IsUUID() categoryId?: string;
-  @IsOptional() @IsArray() @IsString({ each: true }) tags?: string[];
+  @IsOptional() @Transform(transformTags) @IsArray() @IsString({ each: true }) tags?: string[];
 }

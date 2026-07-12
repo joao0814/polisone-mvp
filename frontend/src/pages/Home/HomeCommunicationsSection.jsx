@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ProtectedStorageImage from "../../components/Common/ProtectedStorageImage/ProtectedStorageImage";
 import { useCommunications } from "../../hooks/useCommunications";
 import styles from "./Home.module.css";
 
@@ -25,7 +26,11 @@ function HomeCommunicationsSection() {
         {comunicados.map((comunicado) => (
           <Link to={`/comunicados/${comunicado.slug}`} className={styles.comunicadoCard} key={comunicado.id}>
             <div className={styles.comunicadoImage}>
-              <span>POLIS ONE</span>
+              <ProtectedStorageImage
+                storagePath={comunicado.coverImagePath}
+                alt={comunicado.title}
+                fallback={<span>POLIS ONE</span>}
+              />
             </div>
             <div className={styles.comunicadoBody}>
               <h3>{comunicado.title}</h3>

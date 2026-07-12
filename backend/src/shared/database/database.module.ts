@@ -15,6 +15,7 @@ import {
 } from '../../core/communications/infrastructure/database/sequelize/models/communication.models';
 import { CalendarEventModel } from '../../core/calendar-events/infrastructure/database/sequelize/models/calendar-event.model';
 import { CalendarEventAuditLogModel } from '../../core/calendar-events/infrastructure/database/sequelize/models/calendar-event-audit-log.model';
+import { PortalBannerModel } from '../../nest_modules/portal-banners/portal-banner.model';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CalendarEventAuditLogModel } from '../../core/calendar-events/infrastru
           CommunicationAuditLogModel,
           CalendarEventModel,
           CalendarEventAuditLogModel,
+          PortalBannerModel,
         ],
         autoLoadModels: true,
         synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',

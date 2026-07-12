@@ -507,11 +507,11 @@
   position: relative;
   height: calc((var(--system-card-height) * 4) + (var(--system-card-gap) * 3));
   min-height: 0;
-  margin-top: 45px;
   overflow: hidden;
   border-radius: 18px;
   background: #171717;
   color: #fff;
+  cursor: pointer;
 }
 
 .banner img {
@@ -522,19 +522,60 @@
   object-fit: cover;
 }
 
+.bannerWrap {
+  display: grid;
+  gap: 18px;
+  margin-top: 45px;
+}
+
+.bannerArrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.48);
+  color: #ffffff;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background 140ms ease,
+    transform 140ms ease;
+}
+
+.bannerArrow:hover {
+  background: rgba(0, 0, 0, 0.68);
+  transform: translateY(-50%) scale(1.04);
+}
+
+.bannerArrowLeft {
+  left: 18px;
+}
+
+.bannerArrowRight {
+  right: 18px;
+}
+
 .dots {
-  grid-column: 2;
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 18px;
 }
 
-.dots span {
+.dotButton {
   width: 11px;
   height: 11px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background: #dfdfdf;
+  cursor: pointer;
 }
 
 .dots .dotActive {
@@ -1357,7 +1398,6 @@
 
   .banner {
     min-height: 420px;
-    margin-top: 0;
   }
 
   .banner img {
@@ -1365,8 +1405,8 @@
     object-position: center;
   }
 
-  .dots {
-    grid-column: 1;
+  .bannerWrap {
+    margin-top: 0;
   }
 
   .comunicadoGrid {
@@ -1415,6 +1455,12 @@
   .banner,
   .banner img {
     min-height: 260px;
+  }
+
+  .bannerArrow {
+    width: 36px;
+    height: 36px;
+    font-size: 26px;
   }
 
   .systemCard {

@@ -119,6 +119,8 @@ export class CommunicationSequelizeRepository implements CommunicationRepository
           title: dto.title.trim(),
           description: dto.description.trim(),
           content: sanitizeHtml(dto.content),
+          coverImagePath: dto.coverImagePath ?? null,
+          coverImageName: dto.coverImageName ?? null,
           categoryId: dto.categoryId,
           authorId: actorId,
           slug: await this.uniqueSlug(dto.title, transaction),
@@ -153,6 +155,10 @@ export class CommunicationSequelizeRepository implements CommunicationRepository
         changes.description = dto.description.trim();
       if (dto.content !== undefined)
         changes.content = sanitizeHtml(dto.content);
+      if (dto.coverImagePath !== undefined)
+        changes.coverImagePath = dto.coverImagePath;
+      if (dto.coverImageName !== undefined)
+        changes.coverImageName = dto.coverImageName;
       if (dto.categoryId !== undefined) changes.categoryId = dto.categoryId;
       await item.update(changes, { transaction });
       if (dto.tags) await this.syncTags(id, dto.tags, transaction);
@@ -302,6 +308,8 @@ export class CommunicationSequelizeRepository implements CommunicationRepository
       title: item.title,
       description: item.description,
       content: item.content,
+      coverImagePath: item.coverImagePath,
+      coverImageName: item.coverImageName,
       status: item.status,
       category,
       authorId: item.authorId,

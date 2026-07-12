@@ -9,8 +9,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   CreateCommunicationUseCase,
   DeleteCommunicationUseCase,
@@ -37,6 +40,14 @@ import {
 } from './dto/communications.dto';
 import { CommunicationPresenter } from './presenters/communication.presenter';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { memoryStorage } from 'multer';
+import { StorageService } from '../storage/storage.service';
+
+type UploadedCoverImage = {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+};
 
 @ApiTags('Comunicados')
 @ApiBearerAuth()
@@ -90,25 +101,69 @@ export class AdminCommunicationsController {
     private readonly auditUC: GetCommunicationAuditUseCase,
     @Inject(communicationUseCaseTokens.metrics)
     private readonly metricsUC: GetCommunicationMetricsUseCase,
+    private readonly storageService: StorageService,
   ) {}
   @Get() list(@Query() query: ListCommunicationsDto) {
     return this.listUC.execute(query, true);
   }
-  @Post() create(
+  @Post()
+  @UseInterceptors(
+    FileInterceptor('cover_image', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  async create(
     @Body() dto: CreateCommunicationDto,
+    @UploadedFile() coverImage: UploadedCoverImage | undefined,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.createUC.execute(dto, user.sub);
+    const uploadedCover = coverImage
+      ? await this.storageService.uploadCommunicationCover(coverImage)
+      : null;
+
+    return this.createUC.execute(
+      {
+        ...dto,
+        coverImagePath: uploadedCover?.key ?? null,
+        coverImageName: uploadedCover?.originalName ?? null,
+      },
+      user.sub,
+    );
   }
   @Get(':id') get(@Param('id') id: string) {
     return this.getUC.executeAdmin(id);
   }
-  @Patch(':id') update(
+  @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('cover_image', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateCommunicationDto,
+    @UploadedFile() coverImage: UploadedCoverImage | undefined,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.updateUC.execute(id, dto, user.sub);
+    const uploadedCover = coverImage
+      ? await this.storageService.uploadCommunicationCover(coverImage)
+      : null;
+
+    return this.updateUC.execute(
+      id,
+      {
+        ...dto,
+        ...(uploadedCover
+          ? {
+              coverImagePath: uploadedCover.key,
+              coverImageName: uploadedCover.originalName,
+            }
+          : {}),
+      },
+      user.sub,
+    );
   }
   @Post(':id/publish') publish(
     @Param('id') id: string,

@@ -6,6 +6,8 @@ import { createCommunicationsTablesMigration } from './004-create-communications
 import { createCalendarEventsTableMigration } from './005-create-calendar-events-table';
 import { createCalendarEventAuditLogsTableMigration } from './006-create-calendar-event-audit-logs-table';
 import { addCalendarEventRecurrenceFieldsMigration } from './007-add-calendar-event-recurrence-fields';
+import { addCoverImageToCommunicationsMigration } from './008-add-cover-image-to-communications';
+import { createPortalBannersTableMigration } from './009-create-portal-banners-table';
 
 export const migrations: Migration[] = [
   createUsersTableMigration,
@@ -15,4 +17,6 @@ export const migrations: Migration[] = [
   createCalendarEventsTableMigration,
   createCalendarEventAuditLogsTableMigration,
   addCalendarEventRecurrenceFieldsMigration,
+  addCoverImageToCommunicationsMigration,
+  createPortalBannersTableMigration,
 ];

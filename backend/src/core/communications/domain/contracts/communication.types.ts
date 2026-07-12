@@ -14,6 +14,8 @@ export interface CreateCommunicationInput {
   content: string;
   categoryId: string;
   tags?: string[];
+  coverImagePath?: string | null;
+  coverImageName?: string | null;
 }
 export interface UpdateCommunicationInput {
   title?: string;
@@ -21,6 +23,8 @@ export interface UpdateCommunicationInput {
   content?: string;
   categoryId?: string;
   tags?: string[];
+  coverImagePath?: string | null;
+  coverImageName?: string | null;
 }
 export interface CategoryOutput {
   id: string;
@@ -38,6 +42,8 @@ export interface CommunicationOutput {
   title: string;
   description: string;
   content: string;
+  coverImagePath: string | null;
+  coverImageName: string | null;
   status: CommunicationStatus;
   category: CategoryOutput | null;
   authorId: string;

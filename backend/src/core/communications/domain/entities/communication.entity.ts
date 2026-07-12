@@ -6,6 +6,8 @@ export interface CommunicationProps {
   title: string;
   description: string;
   content: string;
+  coverImagePath?: string | null;
+  coverImageName?: string | null;
   status?: CommunicationStatus;
   categoryId: string;
   authorId: string;
@@ -67,6 +69,12 @@ export class CommunicationEntity {
   }
   get content() {
     return this.props.content;
+  }
+  get coverImagePath() {
+    return this.props.coverImagePath ?? null;
+  }
+  get coverImageName() {
+    return this.props.coverImageName ?? null;
   }
   get status() {
     return this.props.status!;

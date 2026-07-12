@@ -46,6 +46,10 @@ export class CommunicationModel extends Model {
   @AllowNull(false) @Column(DataType.STRING(180)) declare title: string;
   @AllowNull(false) @Column(DataType.STRING(500)) declare description: string;
   @AllowNull(false) @Column(DataType.TEXT) declare content: string;
+  @Column({ type: DataType.STRING(500), field: 'cover_image_path' })
+  declare coverImagePath: string | null;
+  @Column({ type: DataType.STRING(255), field: 'cover_image_name' })
+  declare coverImageName: string | null;
   @AllowNull(false)
   @Default(CommunicationStatus.DRAFT)
   @Column(DataType.ENUM(...Object.values(CommunicationStatus)))
