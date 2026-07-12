@@ -1,25 +1,18 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useMemo, useState } from "react";
-import { FaCalendarAlt, FaClock } from "react-icons/fa";
-import Modal from "../../components/Common/Modal/Modal";
-import LabeledInput from "../../components/Common/LabeledInput/LabeledInput";
-import ButtonOrange from "../../components/Common/ButtonOrange/ButtonOrange";
+import { useEffect, useId, useRef, useState } from "react";
 import styles from "./CalendarEventModal.module.css";
 
+const STATUS_OPTIONS = [
+  { value: "active", label: "Ativo" },
+  { value: "completed", label: "Concluido" },
+  { value: "canceled", label: "Cancelado" },
+];
 const RECURRENCE_OPTIONS = [
-  { value: "none", label: "Não repetir" },
+  { value: "none", label: "Nao repetir" },
   { value: "daily", label: "Diariamente" },
   { value: "weekly", label: "Semanalmente" },
   { value: "monthly", label: "Mensalmente" },
   { value: "yearly", label: "Anualmente" },
 ];
-
-const STATUS_OPTIONS = [
-  { value: "ativo", label: "Ativo" },
-  { value: "concluido", label: "Concluído" },
-  { value: "cancelado", label: "Cancelado" },
-];
-
 const WEEK_DAYS = [
   { value: 0, label: "Dom" },
   { value: 1, label: "Seg" },
@@ -34,284 +27,306 @@ function normalizeTime(value) {
   return value ? String(value).slice(0, 5) : "";
 }
 
+function createInitialForm(initialValues, selectedDate) {
+  return {
+    title: initialValues?.title ?? "",
+    description: initialValues?.description ?? "",
+    event_date: initialValues?.event_date ?? selectedDate ?? "",
+    all_day: initialValues?.all_day ?? true,
+    start_time: normalizeTime(initialValues?.start_time) || "09:00",
+    end_time: normalizeTime(initialValues?.end_time) || "10:00",
+    category: initialValues?.category ?? "",
+    status: initialValues?.status ?? "active",
+    recurrence_type: initialValues?.recurrence_type ?? "none",
+    recurrence_interval: initialValues?.recurrence_interval ?? 1,
+    recurrence_until: initialValues?.recurrence_until ?? "",
+    recurrence_days: Array.isArray(initialValues?.recurrence_days)
+      ? initialValues.recurrence_days
+      : [],
+  };
+}
+
 export default function CalendarEventModal({
   isOpen,
   onClose,
   onSave,
-  isSubmitting,
+  isSubmitting = false,
   selectedDate,
   initialValues,
 }) {
+  const titleId = useId();
+  const titleInputRef = useRef(null);
   const isEdit = Boolean(initialValues?.id);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [eventDate, setEventDate] = useState(selectedDate || "");
-  const [allDay, setAllDay] = useState(true);
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("10:00");
-  const [category, setCategory] = useState("");
-  const [status, setStatus] = useState("ativo");
-  const [recurrenceType, setRecurrenceType] = useState("none");
-  const [recurrenceInterval, setRecurrenceInterval] = useState(1);
-  const [recurrenceUntil, setRecurrenceUntil] = useState("");
-  const [recurrenceDays, setRecurrenceDays] = useState([]);
+  const [form, setForm] = useState(() => createInitialForm(initialValues, selectedDate));
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
 
-    setTitle(initialValues?.title ?? "");
-    setDescription(initialValues?.description ?? "");
-    setEventDate(initialValues?.event_date ?? selectedDate ?? "");
-    setAllDay(initialValues?.all_day ?? true);
-    setStartTime(normalizeTime(initialValues?.start_time) || "09:00");
-    setEndTime(normalizeTime(initialValues?.end_time) || "10:00");
-    setCategory(initialValues?.category ?? "");
-    setStatus(initialValues?.status ?? "ativo");
-    setRecurrenceType(initialValues?.recurrence_type ?? "none");
-    setRecurrenceInterval(initialValues?.recurrence_interval ?? 1);
-    setRecurrenceUntil(initialValues?.recurrence_until ?? "");
-    setRecurrenceDays(
-      Array.isArray(initialValues?.recurrence_days)
-        ? initialValues.recurrence_days
-        : [],
-    );
-  }, [isOpen, initialValues, selectedDate]);
+    const timeoutId = window.setTimeout(() => {
+      titleInputRef.current?.focus();
+    }, 0);
 
-  const isTimedInvalid = useMemo(() => {
-    if (allDay) return false;
-    if (!startTime || !endTime) return true;
-    return endTime <= startTime;
-  }, [allDay, startTime, endTime]);
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
 
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const isTimedInvalid =
+    !form.all_day &&
+    (!form.start_time || !form.end_time || form.end_time <= form.start_time);
   const isRecurrenceInvalid =
-    recurrenceType !== "none" && !recurrenceUntil;
+    form.recurrence_type !== "none" &&
+    form.recurrence_until &&
+    form.recurrence_until < form.event_date;
 
   const isSaveDisabled =
     isSubmitting ||
-    !title.trim() ||
-    !eventDate ||
+    !form.title.trim() ||
+    !form.event_date ||
     isTimedInvalid ||
     isRecurrenceInvalid;
 
-  function toggleRecurrenceDay(day) {
-    setRecurrenceDays((current) =>
-      current.includes(day)
-        ? current.filter((item) => item !== day)
-        : [...current, day].sort((a, b) => a - b),
-    );
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
   }
 
-  function handleSubmit() {
+  function toggleRecurrenceDay(day) {
+    setForm((current) => ({
+      ...current,
+      recurrence_days: current.recurrence_days.includes(day)
+        ? current.recurrence_days.filter((item) => item !== day)
+        : [...current.recurrence_days, day].sort((a, b) => a - b),
+    }));
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
     if (isSaveDisabled) return;
 
     onSave({
-      title: title.trim(),
-      description: description.trim() || null,
-      event_date: eventDate,
-      all_day: allDay,
-      start_time: allDay ? null : startTime,
-      end_time: allDay ? null : endTime,
-      category: category.trim() || null,
-      status,
-      recurrence_type: recurrenceType,
-      recurrence_interval: Number(recurrenceInterval) || 1,
-      recurrence_until:
-        recurrenceType === "none" ? null : recurrenceUntil || null,
+      ...initialValues,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      event_date: form.event_date,
+      all_day: form.all_day,
+      start_time: form.all_day ? null : form.start_time,
+      end_time: form.all_day ? null : form.end_time,
+      category: form.category.trim(),
+      status: form.status,
+      recurrence_type: form.recurrence_type,
+      recurrence_interval: Number(form.recurrence_interval) || 1,
+      recurrence_until: form.recurrence_type === "none" ? null : form.recurrence_until || null,
       recurrence_days:
-        recurrenceType === "weekly" && recurrenceDays.length
-          ? recurrenceDays
-          : null,
+        form.recurrence_type === "weekly" ? form.recurrence_days : [],
     });
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className={styles.container}>
+    <div className={styles.overlay} onMouseDown={onClose}>
+      <div
+        className={styles.modal}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         <div className={styles.header}>
-          <span className={styles.eyebrow}>Calendário</span>
-          <h2 className={styles.title}>
-            {isEdit ? "Editar evento" : "Adicionar evento"}
+          <span className={styles.eyebrow}>Calendario</span>
+          <h2 className={styles.title} id={titleId}>
+            {isEdit ? "Editar evento" : "Adicionar novo evento"}
           </h2>
+          <button
+            className={styles.closeButton}
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar modal"
+          >
+            ×
+          </button>
         </div>
 
-        <div className={styles.body}>
-          <section className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <FaCalendarAlt className={styles.panelIcon} />
-              <span className={styles.panelTitle}>Dados principais</span>
-            </div>
-
-            <div className={styles.fieldsGrid}>
-              <LabeledInput
-                id="calendar-title"
-                label="Título"
-                placeholder="Ex: Treinamento comercial"
-                value={title}
-                onChange={setTitle}
-                maxLength={255}
-              />
-              <LabeledInput
-                id="calendar-category"
-                label="Categoria"
-                placeholder="Ex: treinamento"
-                value={category}
-                onChange={setCategory}
-                maxLength={80}
-              />
-              <LabeledInput
-                id="calendar-date"
-                label="Data"
-                type="date"
-                value={eventDate}
-                onChange={setEventDate}
-              />
-
-              <label className={styles.fieldGroup} htmlFor="calendar-status">
-                <span>Status</span>
-                <select
-                  id="calendar-status"
-                  value={status}
-                  onChange={(event) => setStatus(event.target.value)}
-                  className={styles.select}
-                >
-                  {STATUS_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <label className={styles.textareaGroup} htmlFor="calendar-description">
-              <span>Descrição</span>
-              <textarea
-                id="calendar-description"
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                placeholder="Detalhes do evento"
-                maxLength={2000}
-                rows={4}
-              />
-            </label>
-          </section>
-
-          <section className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <FaClock className={styles.panelIcon} />
-              <span className={styles.panelTitle}>Horário e repetição</span>
-            </div>
-
-            <label className={styles.switchRow}>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.grid}>
+            <label className={styles.field}>
+              <span>Nome do evento</span>
               <input
-                type="checkbox"
-                checked={allDay}
-                onChange={(event) => setAllDay(event.target.checked)}
+                ref={titleInputRef}
+                type="text"
+                value={form.title}
+                onChange={(event) => updateField("title", event.target.value)}
+                placeholder="Ex: Reuniao com equipe"
+                maxLength={120}
               />
-              <span>Evento de dia inteiro</span>
             </label>
 
-            <div className={styles.fieldsGrid}>
-              <LabeledInput
-                id="calendar-start-time"
-                label="Início"
-                type="time"
-                value={startTime}
-                onChange={setStartTime}
-                disabled={allDay}
+            <label className={styles.field}>
+              <span>Categoria</span>
+              <input
+                type="text"
+                value={form.category}
+                onChange={(event) => updateField("category", event.target.value)}
+                placeholder="Ex: Campanha"
+                maxLength={60}
               />
-              <LabeledInput
-                id="calendar-end-time"
-                label="Fim"
-                type="time"
-                value={endTime}
-                onChange={setEndTime}
-                disabled={allDay}
-              />
-              <label className={styles.fieldGroup} htmlFor="calendar-recurrence">
-                <span>Repetição</span>
-                <select
-                  id="calendar-recurrence"
-                  value={recurrenceType}
-                  onChange={(event) => setRecurrenceType(event.target.value)}
-                  className={styles.select}
-                >
-                  {RECURRENCE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <LabeledInput
-                id="calendar-recurrence-interval"
-                label="Intervalo"
-                type="number"
-                min={1}
-                value={recurrenceInterval}
-                onChange={setRecurrenceInterval}
-                disabled={recurrenceType === "none"}
-              />
-              <LabeledInput
-                id="calendar-recurrence-until"
-                label="Repetir até"
+            </label>
+
+            <label className={styles.field}>
+              <span>Data</span>
+              <input
                 type="date"
-                value={recurrenceUntil}
-                onChange={setRecurrenceUntil}
-                disabled={recurrenceType === "none"}
+                value={form.event_date}
+                onChange={(event) => updateField("event_date", event.target.value)}
               />
-            </div>
+            </label>
 
-            {recurrenceType === "weekly" && (
-              <div className={styles.weekDaysGroup}>
-                <span>Dias da semana</span>
-                <div className={styles.weekDays}>
-                  {WEEK_DAYS.map((day) => (
-                    <button
-                      type="button"
-                      key={day.value}
-                      className={`${styles.weekDayButton} ${
-                        recurrenceDays.includes(day.value) ? styles.active : ""
-                      }`}
-                      onClick={() => toggleRecurrenceDay(day.value)}
-                    >
-                      {day.label}
-                    </button>
-                  ))}
-                </div>
+            <label className={styles.field}>
+              <span>Status</span>
+              <select
+                value={form.status}
+                onChange={(event) => updateField("status", event.target.value)}
+              >
+                {STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className={styles.grid}>
+            <label className={styles.field}>
+              <span>Recorrencia</span>
+              <select
+                value={form.recurrence_type}
+                onChange={(event) => updateField("recurrence_type", event.target.value)}
+              >
+                {RECURRENCE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className={styles.field}>
+              <span>Intervalo</span>
+              <input
+                type="number"
+                min="1"
+                value={form.recurrence_interval}
+                onChange={(event) => updateField("recurrence_interval", event.target.value)}
+                disabled={form.recurrence_type === "none"}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span>Repetir ate</span>
+              <input
+                type="date"
+                value={form.recurrence_until}
+                onChange={(event) => updateField("recurrence_until", event.target.value)}
+                disabled={form.recurrence_type === "none"}
+              />
+            </label>
+          </div>
+
+          {form.recurrence_type === "weekly" ? (
+            <div className={styles.weekDaysGroup}>
+              <span>Dias da semana</span>
+              <div className={styles.weekDays}>
+                {WEEK_DAYS.map((day) => (
+                  <button
+                    key={day.value}
+                    type="button"
+                    className={`${styles.weekDayButton} ${
+                      form.recurrence_days.includes(day.value) ? styles.weekDayActive : ""
+                    }`}
+                    onClick={() => toggleRecurrenceDay(day.value)}
+                  >
+                    {day.label}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
+          ) : null}
 
-            {isTimedInvalid && (
-              <p className={styles.validationMessage}>
-                O horário final precisa ser maior que o horário inicial.
-              </p>
-            )}
-            {isRecurrenceInvalid && (
-              <p className={styles.validationMessage}>
-                Informe a data limite para eventos recorrentes.
-              </p>
-            )}
-          </section>
-        </div>
+          <label className={styles.descriptionField}>
+            <span>Descricao</span>
+            <textarea
+              value={form.description}
+              onChange={(event) => updateField("description", event.target.value)}
+              placeholder="Adicione os detalhes importantes do evento"
+              rows={4}
+              maxLength={400}
+            />
+          </label>
 
-        <div className={styles.actions}>
-          <span className={styles.actionsHint}>
-            O evento será exibido no calendário do Portal IXER.
-          </span>
-          <ButtonOrange
-            label={
-              isSubmitting
-                ? "Salvando..."
-                : isEdit
-                  ? "Salvar alterações"
-                  : "Salvar evento"
-            }
-            onClick={handleSubmit}
-            disabled={isSaveDisabled}
-          />
-        </div>
+          <label className={styles.checkboxRow}>
+            <input
+              type="checkbox"
+              checked={form.all_day}
+              onChange={(event) => updateField("all_day", event.target.checked)}
+            />
+            <span>Evento de dia inteiro</span>
+          </label>
+
+          <div className={styles.grid}>
+            <label className={styles.field}>
+              <span>Horario inicial</span>
+              <input
+                type="time"
+                value={form.start_time}
+                onChange={(event) => updateField("start_time", event.target.value)}
+                disabled={form.all_day}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span>Horario final</span>
+              <input
+                type="time"
+                value={form.end_time}
+                onChange={(event) => updateField("end_time", event.target.value)}
+                disabled={form.all_day}
+              />
+            </label>
+          </div>
+
+          {isTimedInvalid ? (
+            <p className={styles.validationMessage}>
+              O horario final precisa ser maior que o horario inicial.
+            </p>
+          ) : null}
+
+          {isRecurrenceInvalid ? (
+            <p className={styles.validationMessage}>
+              A data final da recorrencia precisa ser igual ou maior que a data do evento.
+            </p>
+          ) : null}
+
+          <div className={styles.actions}>
+            <button className={styles.secondaryButton} type="button" onClick={onClose}>
+              Cancelar
+            </button>
+            <button className={styles.primaryButton} type="submit" disabled={isSaveDisabled}>
+              {isSubmitting ? "Salvando..." : isEdit ? "Salvar alteracoes" : "Salvar evento"}
+            </button>
+          </div>
+        </form>
       </div>
-    </Modal>
+    </div>
   );
 }

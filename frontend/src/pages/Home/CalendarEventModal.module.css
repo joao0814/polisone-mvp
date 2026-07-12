@@ -1,316 +1,248 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.45rem;
-  width: clamp(960px, 78vw, 1180px);
-  max-width: 100%;
-  margin: 0 auto;
-  color: #153a66;
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  width: min(760px, 100%);
+  max-height: min(92vh, 900px);
+  overflow: auto;
+  padding: 28px;
+  border: 2px solid rgba(255, 202, 24, 0.28);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 202, 24, 0.2), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.3);
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  padding-right: 2.5rem;
+  position: relative;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding-right: 44px;
 }
 
 .eyebrow {
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  padding: 0.35rem 0.7rem;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(248, 77, 36, 0.12);
-  color: #f84d24;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  background: rgba(255, 202, 24, 0.18);
+  color: #6f5700;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .title {
   margin: 0;
-  font-size: 1.8rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: #153a66;
+  color: #121212;
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1;
 }
 
-.body {
-  display: grid;
-  grid-template-columns: minmax(0, 1.16fr) minmax(360px, 0.84fr);
-  gap: 1.25rem;
-  align-items: start;
-}
-
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.05rem;
-  min-width: 0;
-  padding: 1.25rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(243, 248, 253, 0.98) 100%);
-  border: 1px solid rgba(21, 58, 102, 0.08);
-  border-radius: 1.25rem;
-  box-shadow: 0 18px 40px rgba(21, 58, 102, 0.08);
-}
-
-.panelHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.panelIcon {
-  color: #f84d24;
-  font-size: 0.95rem;
-}
-
-.panelTitle {
-  font-size: 0.96rem;
-  font-weight: 800;
-  color: #153a66;
-}
-
-.fieldsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem 1.15rem;
-}
-
-.fieldGroup,
-.textareaGroup,
-.weekDaysGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-.fieldGroup span,
-.textareaGroup span,
-.weekDaysGroup > span {
-  position: relative;
-  left: 1rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #153a66;
-}
-
-.panel input:not([type="checkbox"]),
-.select,
-.textareaGroup textarea {
-  width: 100%;
-  border: 1px solid #eef6ff;
-  border-radius: 1.5rem;
-  background-color: #eef6ff;
-  box-shadow: 6px 6px 8px rgba(31, 120, 180, 0.15);
-  color: #333;
-  font-size: 1rem;
-  outline: none;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
-}
-
-.select {
-  min-height: 54px;
-  padding: 0 1.25rem;
-  color: #153a66;
-}
-
-.textareaGroup textarea {
-  resize: vertical;
-  min-height: 128px;
-  padding: 1rem 1.25rem;
-  font-family: inherit;
-  line-height: 1.5;
-}
-
-.panel input:not([type="checkbox"])::placeholder,
-.textareaGroup textarea::placeholder {
-  color: #757575;
-}
-
-.panel input:not([type="checkbox"]):hover:not(:disabled),
-.select:hover:not(:disabled),
-.textareaGroup textarea:hover:not(:disabled) {
-  transform: translateY(-2px);
-  border-color: var(--login-accent-soft, #ffb8a8);
-  box-shadow: 0 6px 14px var(--login-accent-shadow-soft, rgba(255, 69, 0, 0.4));
-}
-
-.panel input:not([type="checkbox"]):focus,
-.panel input:not([type="checkbox"]):focus-visible,
-.select:focus,
-.select:focus-visible,
-.textareaGroup textarea:focus {
-  transform: translateY(-2px);
-  border-color: var(--login-accent, #f84d24);
-  box-shadow: 0 6px 14px var(--login-accent-shadow, rgba(255, 69, 0, 0.6));
-}
-
-.panel input:not([type="checkbox"]):disabled,
-.select:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 6px 6px 8px rgba(31, 120, 180, 0.1);
-}
-
-.panel input:not([type="checkbox"]):disabled:hover,
-.select:disabled:hover {
-  transform: none;
-  border-color: #eef6ff;
-  box-shadow: 6px 6px 8px rgba(31, 120, 180, 0.1);
-}
-
-.switchRow {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: fit-content;
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #153a66;
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #111111;
+  color: #ffffff;
+  font-size: 26px;
+  line-height: 1;
   cursor: pointer;
 }
 
-.switchRow input {
-  width: 18px;
-  height: 18px;
-  accent-color: #f84d24;
+.form {
+  display: grid;
+  gap: 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
+}
+
+.field,
+.descriptionField {
+  display: grid;
+  gap: 8px;
+}
+
+.field span,
+.descriptionField span {
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.field input,
+.field select,
+.descriptionField textarea {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 18px;
+  border: 1px solid #d8d8d8;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.06), 0 10px 22px rgba(0, 0, 0, 0.06);
+  color: #191919;
+  font: inherit;
+  outline: none;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.field input:focus,
+.field select:focus,
+.descriptionField textarea:focus {
+  border-color: #ffca18;
+  box-shadow: inset 0 -2px 0 rgba(255, 202, 24, 0.18), 0 0 0 4px rgba(255, 202, 24, 0.2);
+  transform: translateY(-1px);
+}
+
+.field input:disabled {
+  opacity: 0.56;
+  cursor: not-allowed;
+}
+
+.field input[type="number"] {
+  appearance: textfield;
+}
+
+.descriptionField textarea {
+  min-height: 132px;
+  padding: 16px 18px;
+  resize: vertical;
+}
+
+.weekDaysGroup {
+  display: grid;
+  gap: 10px;
+}
+
+.weekDaysGroup > span {
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .weekDays {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 8px;
 }
 
 .weekDayButton {
-  min-width: 42px;
-  min-height: 34px;
-  border: 1px solid rgba(21, 58, 102, 0.14);
-  border-radius: 0.7rem;
+  min-width: 52px;
+  min-height: 38px;
+  border: 1px solid #d8d8d8;
+  border-radius: 999px;
   background: #ffffff;
-  color: #48627f;
-  font-size: 0.78rem;
+  color: #191919;
+  font: inherit;
+  font-size: 13px;
   font-weight: 800;
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
 }
 
-.weekDayButton:hover,
-.weekDayButton.active {
-  background: #f84d24;
-  border-color: #f84d24;
-  color: #ffffff;
+.weekDayActive {
+  border-color: #ffca18;
+  background: #ffca18;
+  color: #121212;
+}
+
+.checkboxRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  color: #1b1b1b;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkboxRow input {
+  width: 18px;
+  height: 18px;
+  accent-color: #ffca18;
 }
 
 .validationMessage {
-  margin: 0;
-  color: #b42318;
-  font-size: 0.82rem;
-  line-height: 1.45;
+  margin: -4px 0 0;
+  color: #a53f00;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.84fr);
-  align-items: center;
-  gap: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
 }
 
-.actionsHint {
-  color: #6a7f96;
-  font-size: 0.82rem;
-  line-height: 1.5;
+.secondaryButton,
+.primaryButton {
+  min-width: 164px;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
-.actions :global(button) {
-  justify-self: center;
-  min-width: 255px;
+.secondaryButton {
+  background: #1b1b1b;
+  color: #ffffff;
 }
 
-:global(body.dark) .container,
-:global(body.dark) .panel {
-  background: #111317;
-  border-color: #3a3a3a;
-  color: #f1f1f1;
+.primaryButton {
+  background: #ffca18;
+  color: #121212;
 }
 
-:global(body.dark) .title,
-:global(body.dark) .panelTitle,
-:global(body.dark) .fieldGroup span,
-:global(body.dark) .textareaGroup span,
-:global(body.dark) .weekDaysGroup > span {
-  color: #f1f1f1;
+.primaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
-:global(body.dark) .panel input:not([type="checkbox"]),
-:global(body.dark) .select,
-:global(body.dark) .textareaGroup textarea,
-:global(body.dark) .weekDayButton {
-  background: #1a1f29;
-  border-color: #3a3a3a;
-  color: #f1f1f1;
-}
-
-:global(body.dark) .actionsHint {
-  color: #a9b1bd;
-}
-
-@media (max-width: 1040px) {
-  .container {
-    width: min(100%, 900px);
+@media (max-width: 720px) {
+  .modal {
+    padding: 22px 18px;
+    border-radius: 22px;
   }
 
-  .body {
+  .grid {
     grid-template-columns: 1fr;
   }
 
   .actions {
-    grid-template-columns: 1fr;
+    flex-direction: column-reverse;
   }
 
-  .actions :global(button) {
-    justify-self: end;
-  }
-}
-
-@media (max-width: 620px) {
-  .container {
-    gap: 1.1rem;
-  }
-
-  .header {
-    padding-right: 1.5rem;
-  }
-
-  .title {
-    font-size: 1.45rem;
-  }
-
-  .fieldsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .actions {
-    align-items: stretch;
-  }
-
-  .actionsHint {
-    max-width: none;
-  }
-
-  .actions :global(button) {
-    justify-self: stretch;
+  .secondaryButton,
+  .primaryButton {
+    width: 100%;
     min-width: 0;
   }
 }

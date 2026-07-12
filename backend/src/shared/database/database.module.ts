@@ -13,6 +13,8 @@ import {
   CommunicationTagModel,
   CommunicationViewModel,
 } from '../../core/communications/infrastructure/database/sequelize/models/communication.models';
+import { CalendarEventModel } from '../../core/calendar-events/infrastructure/database/sequelize/models/calendar-event.model';
+import { CalendarEventAuditLogModel } from '../../core/calendar-events/infrastructure/database/sequelize/models/calendar-event-audit-log.model';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import {
           CommunicationTagLinkModel,
           CommunicationViewModel,
           CommunicationAuditLogModel,
+          CalendarEventModel,
+          CalendarEventAuditLogModel,
         ],
         autoLoadModels: true,
         synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',
