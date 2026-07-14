@@ -7,6 +7,7 @@ export type UserOutput = {
   email: string;
   roles: UserRole[];
   isActive: boolean;
+  profileImagePath: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -19,6 +20,7 @@ export class UserOutputMapper {
       email: user.email,
       roles: user.roles,
       isActive: user.isActive,
+      profileImagePath: user.profileImagePath,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

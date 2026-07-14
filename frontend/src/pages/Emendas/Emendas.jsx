@@ -24,6 +24,7 @@ function Emendas({ session, onLogout }) {
         brandLabel="Campanha"
         items={menuItems}
         onLogout={onLogout}
+        profileImagePath={session?.user?.profile_image_path}
         roleLabel="Candidato"
         userName={userName}
       />

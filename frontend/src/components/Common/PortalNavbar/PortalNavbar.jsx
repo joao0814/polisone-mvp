@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoNav from "../../../assets/images/home/logo nav.png";
+import ProtectedStorageImage from "../ProtectedStorageImage/ProtectedStorageImage";
 import styles from "./PortalNavbar.module.css";
 
 function getInitials(name = "") {
@@ -43,7 +44,7 @@ export default function PortalNavbar({ user, onLogout, activeResource = "" }) {
     </nav>
     <div className={styles.headerRight}>
       <div className={styles.clock}><span>Horário de Brasília</span><strong>{now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</strong><small>{now.toLocaleDateString("pt-BR")}</small></div>
-      <div className={styles.userWrap}><button className={styles.userButton} type="button" onClick={() => setUserOpen((open) => !open)} aria-expanded={userOpen} aria-haspopup="menu">{getInitials(user?.name)}</button>{userOpen && <div className={styles.userMenu} role="menu"><button type="button" role="menuitem">Alterar dados do perfil</button><button type="button" onClick={onLogout} role="menuitem">Sair da conta</button></div>}</div>
+      <div className={styles.userWrap}><button className={styles.userButton} type="button" onClick={() => setUserOpen((open) => !open)} aria-expanded={userOpen} aria-haspopup="menu"><ProtectedStorageImage storagePath={user?.profile_image_path} alt={`Foto de ${user?.name || "usuário"}`} className={styles.userImage} fallback={getInitials(user?.name)} /></button>{userOpen && <div className={styles.userMenu} role="menu"><button type="button" onClick={() => go("/meus-dados")} role="menuitem">Alterar dados do perfil</button><button type="button" onClick={onLogout} role="menuitem">Sair da conta</button></div>}</div>
     </div>
   </header>;
 }

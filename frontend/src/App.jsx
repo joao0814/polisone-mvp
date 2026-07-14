@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppRoutes from './routes/AppRoutes'
-import { getStoredSession, login, logout, register } from './services/auth'
+import { getStoredSession, login, logout, register, updateStoredUser } from './services/auth'
 
 function App() {
   const [session, setSession] = useState(() => getStoredSession())
@@ -27,12 +27,18 @@ function App() {
     navigate('/login')
   }
 
+  function handleUserUpdate(user) {
+    const nextSession = updateStoredUser(user)
+    if (nextSession) setSession(nextSession)
+  }
+
   return (
     <AppRoutes
       session={session}
       onLogin={handleLogin}
       onRegister={handleRegister}
       onLogout={handleLogout}
+      onUserUpdate={handleUserUpdate}
     />
   )
 }

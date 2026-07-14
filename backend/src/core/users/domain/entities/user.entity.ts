@@ -8,6 +8,7 @@ export type UserProps = {
   passwordHash: string;
   roles?: UserRole[];
   isActive?: boolean;
+  profileImagePath?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -23,6 +24,7 @@ export class UserEntity {
       passwordHash: props.passwordHash,
       roles: props.roles?.length ? props.roles : [UserRole.USER],
       isActive: props.isActive ?? true,
+      profileImagePath: props.profileImagePath ?? null,
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? new Date(),
     });
@@ -53,6 +55,10 @@ export class UserEntity {
 
   get isActive(): boolean {
     return this.props.isActive;
+  }
+
+  get profileImagePath(): string | null {
+    return this.props.profileImagePath;
   }
 
   get createdAt(): Date {

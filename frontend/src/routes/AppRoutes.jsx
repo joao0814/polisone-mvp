@@ -16,9 +16,10 @@ import BlogPostDetail from '../pages/Blog/BlogPostDetail'
 import BlogCreate from '../pages/Blog/BlogCreate'
 import BlogManage from '../pages/Blog/BlogManage'
 import PortalBannerAdmin from '../pages/PortalBannerAdmin/PortalBannerAdmin'
+import MeusDados from '../pages/MeusDados/MeusDados'
 import { canManageCommunications } from '../utils/communicationPermissions'
 
-function AppRoutes({ session, onLogin, onRegister, onLogout }) {
+function AppRoutes({ session, onLogin, onRegister, onLogout, onUserUpdate }) {
   return (
     <Routes>
       <Route
@@ -70,6 +71,10 @@ function AppRoutes({ session, onLogin, onRegister, onLogout }) {
             <Navigate to="/login" replace />
           )
         }
+      />
+      <Route
+        path="/meus-dados"
+        element={session ? <MeusDados session={session} onLogout={onLogout} onUserUpdate={onUserUpdate} /> : <Navigate to="/login" replace />}
       />
       <Route
         path="/gestao-campanha"

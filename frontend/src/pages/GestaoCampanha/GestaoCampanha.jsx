@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BrazilMunicipalMap from "./components/BrazilMunicipalMap";
 import CampaignHeader from "./components/CampaignHeader";
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
@@ -11,6 +11,7 @@ import MetricCard from "./components/MetricCard";
 import MunicipalityRanking from "./components/MunicipalityRanking";
 import ProgressBar from "./components/ProgressBar";
 import RealtimeActivities from "./components/RealtimeActivities";
+import { getProfile } from "../../services/profile";
 import campaignRegions from "./data/campaignRegions";
 import styles from "./GestaoCampanha.module.css";
 
@@ -27,7 +28,7 @@ const menuItems = [
 ];
 
 const metrics = [
-  { label: "Meta de votos", value: "120.000", icon: "chart" },
+  { label: "Meta de votos", value: null, icon: "chart" },
   { label: "Votos necessarios", value: "80.000", icon: "ballot" },
   { label: "Total de votos", value: "86.000", icon: "vote" },
   { label: "Municipios ativos", value: "142", icon: "pin" },
@@ -124,6 +125,34 @@ const performanceRegions = campaignRegions.filter(
 function GestaoCampanha({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato Alan Leal";
   const [selectedRegionId, setSelectedRegionId] = useState(null);
+  const [voteGoal, setVoteGoal] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    getProfile()
+      .then((data) => {
+        if (!active) return;
+        setVoteGoal(data?.campaign?.vote_goal ?? null);
+      })
+      .catch(() => {
+        if (!active) return;
+        setVoteGoal(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const resolvedMetrics = metrics.map((metric) =>
+    metric.label === "Meta de votos"
+      ? {
+          ...metric,
+          value: formatVoteGoal(voteGoal),
+        }
+      : metric,
+  );
 
   return (
     <main className={styles.page}>
@@ -133,6 +162,7 @@ function GestaoCampanha({ session, onLogout }) {
         brandLabel="Campanha"
         items={menuItems}
         onLogout={onLogout}
+        profileImagePath={session?.user?.profile_image_path}
         roleLabel="Candidato"
         userName={userName}
       />
@@ -141,7 +171,7 @@ function GestaoCampanha({ session, onLogout }) {
         <CampaignHeader userName={userName} />
 
         <section className={styles.metricsGrid} aria-label="Indicadores da campanha">
-          {metrics.map((metric) => (
+          {resolvedMetrics.map((metric) => (
             <MetricCard
               icon={metric.icon}
               key={metric.label}
@@ -270,6 +300,14 @@ function GestaoCampanha({ session, onLogout }) {
       </section>
     </main>
   );
+}
+
+function formatVoteGoal(value) {
+  if (typeof value !== "number" || Number.isNaN(value) || value <= 0) {
+    return "--";
+  }
+
+  return new Intl.NumberFormat("pt-BR").format(value);
 }
 
 export default GestaoCampanha;

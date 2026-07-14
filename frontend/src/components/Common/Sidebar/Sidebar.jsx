@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ProtectedStorageImage from "../ProtectedStorageImage/ProtectedStorageImage";
 import styles from "./Sidebar.module.css";
 
 function Sidebar({
@@ -8,6 +9,7 @@ function Sidebar({
   brandLabel = "Campanha",
   items = [],
   onLogout,
+  profileImagePath,
   roleLabel = "Candidato",
   userName = "Usuario",
 }) {
@@ -43,14 +45,21 @@ function Sidebar({
             type="button"
             onClick={() => setIsProfileMenuOpen((current) => !current)}
           >
-            <span className={styles.avatar}>{getInitials(userName)}</span>
+            <ProtectedStorageImage
+              storagePath={profileImagePath}
+              alt={`Foto de ${userName}`}
+              className={styles.avatarImage}
+              fallback={<span className={styles.avatar}>{getInitials(userName)}</span>}
+            />
           </button>
           <p className={styles.name}>{userName}</p>
           <p className={styles.role}>{roleLabel}</p>
 
           {isProfileMenuOpen ? (
             <div className={styles.profileMenu}>
-              <button type="button">Alterar dados do perfil</button>
+              <button type="button" onClick={() => navigate("/meus-dados")}>
+                Alterar dados do perfil
+              </button>
               <button type="button" onClick={handleLogout}>
                 Sair da conta
               </button>

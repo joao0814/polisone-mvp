@@ -16,6 +16,8 @@ import {
 import { CalendarEventModel } from '../../core/calendar-events/infrastructure/database/sequelize/models/calendar-event.model';
 import { CalendarEventAuditLogModel } from '../../core/calendar-events/infrastructure/database/sequelize/models/calendar-event-audit-log.model';
 import { PortalBannerModel } from '../../nest_modules/portal-banners/portal-banner.model';
+import { CampaignModel } from '../../nest_modules/profile/campaign.model';
+import { TeamModel } from '../../nest_modules/teams/team.model';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { PortalBannerModel } from '../../nest_modules/portal-banners/portal-bann
           CalendarEventModel,
           CalendarEventAuditLogModel,
           PortalBannerModel,
+          CampaignModel,
+          TeamModel,
         ],
         autoLoadModels: true,
         synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',

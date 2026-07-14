@@ -48,6 +48,10 @@ export class UserModel extends Model {
   @Column(DataType.BOOLEAN)
   declare isActive: boolean;
 
+  @AllowNull(true)
+  @Column(DataType.STRING(500))
+  declare profileImagePath: string | null;
+
   @CreatedAt
   declare createdAt: Date;
 

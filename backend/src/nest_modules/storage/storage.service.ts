@@ -36,6 +36,10 @@ export class StorageService {
     return this.uploadImage(file, 'portal-banners');
   }
 
+  async uploadProfileImage(file: UploadableFile): Promise<UploadedStorageFile> {
+    return this.uploadImage(file, 'profiles');
+  }
+
   private async uploadImage(file: UploadableFile, folder: string): Promise<UploadedStorageFile> {
     if (!file?.buffer?.length) {
       throw new BadRequestException('Arquivo de imagem inválido.');

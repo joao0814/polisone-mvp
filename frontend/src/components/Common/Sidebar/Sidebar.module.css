@@ -115,6 +115,22 @@
     transform 150ms ease;
 }
 
+.avatarImage {
+  width: 118px;
+  height: 118px;
+  display: block;
+  object-fit: cover;
+  border: 3px solid #f0f3f7;
+  border-radius: 18px;
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.34);
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.avatarButton:hover .avatarImage {
+  border-color: #ffca18;
+  transform: translateY(-1px);
+}
+
 .name {
   margin: 0;
   color: #f7f8fb;

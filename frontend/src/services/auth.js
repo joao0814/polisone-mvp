@@ -56,6 +56,15 @@ export function logout() {
   localStorage.removeItem(AUTH_STORAGE_KEY)
 }
 
+export function updateStoredUser(user) {
+  const session = getStoredSession()
+  if (!session) return null
+
+  const nextSession = { ...session, user }
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextSession))
+  return nextSession
+}
+
 async function authenticate(path, payload, fallbackMessage) {
   const response = await fetch(`${API_URL}${path}`, {
     method: 'POST',
