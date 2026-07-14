@@ -126,7 +126,7 @@ const fieldTeams = [
 ];
 
 function GestaoCampanha({ session, onLogout }) {
-  const userName = session?.user?.name || "Candidato Alan Leal";
+  const userName = session?.user?.name || "Candidato";
   const [selectedRegionId, setSelectedRegionId] = useState(null);
   const [voteGoal, setVoteGoal] = useState(null);
   const [summary, setSummary] = useState(null);

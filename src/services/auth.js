@@ -3,7 +3,7 @@ const USERS_STORAGE_KEY = 'polisone.users'
 
 const defaultUser = {
   id: 'local-user',
-  name: 'Candidato Alan Leal',
+  name: 'Candidato',
   email: 'candidato@polisone.local',
   role: 'ADMIN',
   profile_image_path: null,
@@ -46,7 +46,14 @@ export async function register({ name, email, password }) {
 
 export function getStoredSession() {
   try {
-    return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)) || null
+    const session = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)) || null
+
+    if (session?.user?.name === 'Candidato Alan Leal') {
+      session.user.name = 'Candidato'
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session))
+    }
+
+    return session
   } catch {
     localStorage.removeItem(AUTH_STORAGE_KEY)
     return null
