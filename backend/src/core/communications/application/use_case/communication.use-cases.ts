@@ -1,9 +1,0 @@
-export { ListCommunicationsUseCase } from './list-communications.use-case';
-export { GetCommunicationUseCase } from './get-communication.use-case';
-export { CreateCommunicationUseCase } from './create-communication.use-case';
-export { UpdateCommunicationUseCase } from './update-communication.use-case';
-export { TransitionCommunicationUseCase } from './transition-communication.use-case';
-export { DeleteCommunicationUseCase } from './delete-communication.use-case';
-export { ListCommunicationCategoriesUseCase } from './list-communication-categories.use-case';
-export { GetCommunicationAuditUseCase } from './get-communication-audit.use-case';
-export { GetCommunicationMetricsUseCase } from './get-communication-metrics.use-case';
