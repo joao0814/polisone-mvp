@@ -11,6 +11,8 @@ import { StorageModule } from './nest_modules/storage/storage.module';
 import { PortalBannersModule } from './nest_modules/portal-banners/portal-banners.module';
 import { ProfileModule } from './nest_modules/profile/profile.module';
 import { DashboardModule } from './nest_modules/dashboard/dashboard.module';
+import { CampaignOperationsModule } from './nest_modules/campaign-operations/campaign-operations.module';
+import { CampaignCostsModule } from './nest_modules/campaign-costs/campaign-costs.module';
 import { TeamsModule } from './nest_modules/teams/teams.module';
 
 @Module({
@@ -27,6 +29,8 @@ import { TeamsModule } from './nest_modules/teams/teams.module';
     PortalBannersModule,
     ProfileModule,
     DashboardModule,
+    CampaignOperationsModule,
+    CampaignCostsModule,
     TeamsModule,
   ],
   controllers: [AppController],

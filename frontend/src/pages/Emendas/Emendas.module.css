@@ -242,10 +242,32 @@
   box-shadow: 0 10px 16px rgba(0, 0, 0, 0.28);
 }
 
+.secondaryButton {
+  min-height: 32px;
+  padding: 0 18px;
+  border: 1px solid var(--yellow);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--yellow);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 .financialGrid {
   display: grid;
   grid-template-columns: repeat(5, minmax(150px, 1fr));
   gap: 9px;
+  margin-top: 14px;
+}
+
+.costsGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.78fr);
+  gap: 14px;
+  align-items: start;
   margin-top: 14px;
 }
 
@@ -334,9 +356,78 @@
 
 .tablePanel {
   min-height: 532px;
-  margin-top: 14px;
   padding: 16px 19px 28px;
   border-radius: 24px;
+}
+
+.formPanel {
+  min-height: 532px;
+  padding: 18px 19px 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(8, 21, 34, 0.96);
+}
+
+.formHeader h2 {
+  margin: 4px 0 0;
+  color: var(--yellow);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.costForm {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.costForm label {
+  display: grid;
+  gap: 5px;
+}
+
+.costForm span {
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.costForm input,
+.costForm select,
+.costForm textarea {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--yellow);
+  border-radius: 10px;
+  background: #03080f;
+  color: #ffffff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.costForm textarea {
+  min-height: 130px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.notesField {
+  min-height: 0;
+}
+
+.emptyCell {
+  padding: 28px 0 !important;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.emptyPanel {
+  margin: 18px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
 }
 
 .tableToolbar {
@@ -429,46 +520,34 @@
 
 .amendmentsTable th:nth-child(1),
 .amendmentsTable td:nth-child(1) {
-  width: 13%;
+  width: 18%;
 }
 
 .amendmentsTable th:nth-child(2),
 .amendmentsTable td:nth-child(2) {
-  width: 10%;
+  width: 12%;
 }
 
 .amendmentsTable th:nth-child(3),
 .amendmentsTable td:nth-child(3) {
-  width: 18%;
+  width: 19%;
 }
 
 .amendmentsTable th:nth-child(4),
 .amendmentsTable td:nth-child(4) {
-  width: 13%;
+  width: 14%;
+  text-align: center;
 }
 
 .amendmentsTable th:nth-child(5),
 .amendmentsTable td:nth-child(5) {
-  width: 14%;
+  width: 12%;
   text-align: center;
 }
 
 .amendmentsTable th:nth-child(6),
 .amendmentsTable td:nth-child(6) {
-  width: 15%;
-  text-align: center;
-}
-
-.amendmentsTable th:nth-child(7),
-.amendmentsTable td:nth-child(7) {
-  width: 12%;
-  text-align: center;
-}
-
-.amendmentsTable th:nth-child(8),
-.amendmentsTable td:nth-child(8) {
-  width: 8%;
-  text-align: center;
+  width: 25%;
 }
 
 .typeBadge,
@@ -504,64 +583,20 @@
 }
 
 .actions button {
-  width: 28px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border: 0;
+  min-width: 72px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border: 1px solid var(--yellow);
   border-radius: 999px;
-  background: var(--yellow);
-  color: #07121f;
+  background: transparent;
+  color: var(--yellow);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
   cursor: pointer;
-}
-
-.actions button span {
-  width: 15px;
-  height: 10px;
-  display: block;
-  border: 3px solid currentColor;
-  border-radius: 999px / 80%;
-  position: relative;
-}
-
-.actions button span::after {
-  content: "";
-  width: 5px;
-  height: 5px;
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.actions button i,
-.actions button i::before,
-.actions button i::after {
-  width: 4px;
-  height: 4px;
-  display: block;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.actions button i {
-  position: relative;
-}
-
-.actions button i::before,
-.actions button i::after {
-  content: "";
-  position: absolute;
-  left: 0;
-}
-
-.actions button i::before {
-  top: -7px;
-}
-
-.actions button i::after {
-  top: 7px;
 }
 
 .pagination {
@@ -603,7 +638,7 @@
 
 .analyticsGrid {
   display: grid;
-  grid-template-columns: minmax(270px, 0.9fr) minmax(340px, 1fr) minmax(280px, 0.94fr);
+  grid-template-columns: minmax(320px, 1fr) minmax(280px, 0.94fr);
   gap: 13px;
   margin-top: 12px;
 }
@@ -788,7 +823,8 @@
 @media (max-width: 1280px) {
   .filtersRow,
   .header,
-  .analyticsGrid {
+  .analyticsGrid,
+  .costsGrid {
     grid-template-columns: 1fr;
   }
 

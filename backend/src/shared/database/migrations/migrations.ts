@@ -11,6 +11,10 @@ import { createPortalBannersTableMigration } from './009-create-portal-banners-t
 import { createUserProfilesAndCampaignsMigration } from './010-create-user-profiles-and-campaigns';
 import { createTeamsTableMigration } from './011-create-teams-table';
 import { createTeamMembersTableMigration } from './012-create-team-members-table';
+import { createCampaignCheckInsTableMigration } from './013-create-campaign-check-ins-table';
+import { createFieldActivitiesTableMigration } from './014-create-field-activities-table';
+import { createCampaignLeadersTableMigration } from './015-create-campaign-leaders-table';
+import { createCampaignCostsTableMigration } from './016-create-campaign-costs-table';
 
 export const migrations: Migration[] = [
   createUsersTableMigration,
@@ -25,4 +29,8 @@ export const migrations: Migration[] = [
   createUserProfilesAndCampaignsMigration,
   createTeamsTableMigration,
   createTeamMembersTableMigration,
+  createCampaignCheckInsTableMigration,
+  createFieldActivitiesTableMigration,
+  createCampaignLeadersTableMigration,
+  createCampaignCostsTableMigration,
 ];

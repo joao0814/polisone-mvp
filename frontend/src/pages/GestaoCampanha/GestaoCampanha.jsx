@@ -11,6 +11,12 @@ import MetricCard from "./components/MetricCard";
 import MunicipalityRanking from "./components/MunicipalityRanking";
 import ProgressBar from "./components/ProgressBar";
 import RealtimeActivities from "./components/RealtimeActivities";
+import {
+  getCostRanking,
+  getDailySummary,
+  getMunicipalityRanking,
+  getRealtimeActivities,
+} from "../../services/dashboard";
 import { getProfile } from "../../services/profile";
 import { getTeamsMap, getTeamsSummary } from "../../services/teams";
 import campaignRegions from "./data/campaignRegions";
@@ -38,11 +44,11 @@ const metrics = [
 ];
 
 const dailySummary = [
-  { label: "Eventos", value: "21", note: "Agendados" },
-  { label: "Municipios visitados", value: "5", note: "Hoje" },
-  { label: "Equipes em campo", value: "18", note: "Ativas agora" },
-  { label: "Atividades registradas", value: "312", note: "Hoje" },
-  { label: "Novas liderancas", value: "28", note: "Hoje" },
+  { key: "events_scheduled", label: "Eventos", value: "--", note: "Agendados" },
+  { key: "municipalities_visited_today", label: "Municipios visitados", value: "--", note: "Hoje" },
+  { key: "field_teams_active_now", label: "Equipes em campo", value: "--", note: "Ativas agora" },
+  { key: "activities_registered_today", label: "Atividades registradas", value: "0", note: "Hoje" },
+  { key: "new_leaders_today", label: "Novas liderancas", value: "0", note: "Hoje" },
 ];
 
 const municipalityRanking = [
@@ -129,12 +135,25 @@ function GestaoCampanha({ session, onLogout }) {
   const [voteGoal, setVoteGoal] = useState(null);
   const [summary, setSummary] = useState(null);
   const [mapData, setMapData] = useState(null);
+  const [dailySummaryData, setDailySummaryData] = useState(null);
+  const [municipalityRankingData, setMunicipalityRankingData] = useState(null);
+  const [costRankingMode, setCostRankingMode] = useState("region");
+  const [costRankingData, setCostRankingData] = useState(null);
+  const [realtimeActivitiesData, setRealtimeActivitiesData] = useState(null);
 
   useEffect(() => {
     let active = true;
 
-    Promise.allSettled([getProfile(), getTeamsSummary(), getTeamsMap()]).then(
-      ([profileResult, summaryResult, mapResult]) => {
+    Promise.allSettled([
+      getProfile(),
+      getTeamsSummary(),
+      getTeamsMap(),
+      getDailySummary(),
+      getMunicipalityRanking(),
+      getCostRanking(costRankingMode),
+      getRealtimeActivities(),
+    ]).then(
+      ([profileResult, summaryResult, mapResult, dailySummaryResult, municipalityRankingResult, costRankingResult, realtimeActivitiesResult]) => {
         if (!active) return;
 
         setVoteGoal(
@@ -146,13 +165,29 @@ function GestaoCampanha({ session, onLogout }) {
           summaryResult.status === "fulfilled" ? summaryResult.value : null,
         );
         setMapData(mapResult.status === "fulfilled" ? mapResult.value : null);
+        setDailySummaryData(
+          dailySummaryResult.status === "fulfilled" ? dailySummaryResult.value : null,
+        );
+        setMunicipalityRankingData(
+          municipalityRankingResult.status === "fulfilled"
+            ? municipalityRankingResult.value
+            : null,
+        );
+        setCostRankingData(
+          costRankingResult.status === "fulfilled" ? costRankingResult.value : null,
+        );
+        setRealtimeActivitiesData(
+          realtimeActivitiesResult.status === "fulfilled"
+            ? realtimeActivitiesResult.value
+            : null,
+        );
       },
     );
 
     return () => {
       active = false;
     };
-  }, []);
+  }, [costRankingMode]);
 
   const resolvedMetrics = metrics.map((metric) => {
     if (metric.label === "Meta de votos") {
@@ -183,23 +218,44 @@ function GestaoCampanha({ session, onLogout }) {
     return metric;
   });
 
-  const resolvedDailySummary = dailySummary.map((item) =>
-    item.label === "Equipes em campo"
-      ? {
-          ...item,
-          value: formatInteger(summary?.totals?.active_teams),
-          note: "Ativas agora",
-        }
-      : item,
-  );
+  const resolvedDailySummary = dailySummary.map((item) => {
+    const apiItem = dailySummaryData?.items?.[item.key];
+
+    if (!apiItem) {
+      return item;
+    }
+
+    const resolvedValue =
+      apiItem.value ?? apiItem.fallback_value ?? item.value;
+
+    return {
+      ...item,
+      value:
+        resolvedValue === "--"
+          ? resolvedValue
+          : formatInteger(resolvedValue),
+    };
+  });
 
   const resolvedMunicipalityRanking =
-    summary?.municipality_ranking?.length
-      ? summary.municipality_ranking
+    municipalityRankingData?.items?.length
+      ? municipalityRankingData.items
       : municipalityRanking;
 
   const resolvedFieldTeams =
     summary?.field_teams?.length ? summary.field_teams : fieldTeams;
+  const resolvedCostRanking =
+    costRankingData?.items?.length
+      ? costRankingData.items.map((item) => ({
+          region: item.label,
+          amount: formatCurrency(item.amount),
+          percent: item.percent,
+        }))
+      : costRanking;
+  const resolvedRealtimeActivities =
+    realtimeActivitiesData?.items?.length
+      ? realtimeActivitiesData.items
+      : realtimeActivities;
 
   const resolvedRegions = campaignRegions.map((region) => {
     const regionStats = mapData?.regions?.find((item) => item.id === region.id);
@@ -322,15 +378,25 @@ function GestaoCampanha({ session, onLogout }) {
           <DashboardPanel
             actions={
               <div className={styles.smallSegmented}>
-                <button type="button">Regiao</button>
-                <button type="button">Cidades</button>
+                <button
+                  type="button"
+                  onClick={() => setCostRankingMode("region")}
+                >
+                  Regiao
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCostRankingMode("city")}
+                >
+                  Cidades
+                </button>
               </div>
             }
             className={styles.costPanel}
             subtitle="Ranking de custo financeiro"
             title="Custo por regiao"
           >
-            <CostRanking items={costRanking} />
+            <CostRanking items={resolvedCostRanking} />
             <button className={styles.moreButton} type="button">
               Ver mais
             </button>
@@ -347,7 +413,7 @@ function GestaoCampanha({ session, onLogout }) {
             className={styles.activitiesPanel}
             title="Atividade em tempo real"
           >
-            <RealtimeActivities items={realtimeActivities} />
+            <RealtimeActivities items={resolvedRealtimeActivities} />
           </DashboardPanel>
 
           <DashboardPanel
@@ -377,6 +443,14 @@ function formatVoteGoal(value) {
 
 function formatInteger(value) {
   return new Intl.NumberFormat("pt-BR").format(Number(value) || 0);
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
 }
 
 export default GestaoCampanha;
