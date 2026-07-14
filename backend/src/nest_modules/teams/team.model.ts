@@ -7,11 +7,13 @@ import {
   Default,
   ForeignKey,
   Model,
+  HasMany,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
 import { CampaignModel } from '../profile/campaign.model';
+import { TeamMemberModel } from './team-member.model';
 
 export enum TeamStatus {
   ACTIVE = 'ACTIVE',
@@ -61,6 +63,9 @@ export class TeamModel extends Model {
 
   @BelongsTo(() => CampaignModel, 'campaignId')
   declare campaign?: CampaignModel;
+
+  @HasMany(() => TeamMemberModel, 'teamId')
+  declare members?: TeamMemberModel[];
 
   @CreatedAt
   declare createdAt: Date;

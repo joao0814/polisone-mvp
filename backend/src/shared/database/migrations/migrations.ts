@@ -10,6 +10,7 @@ import { addCoverImageToCommunicationsMigration } from './008-add-cover-image-to
 import { createPortalBannersTableMigration } from './009-create-portal-banners-table';
 import { createUserProfilesAndCampaignsMigration } from './010-create-user-profiles-and-campaigns';
 import { createTeamsTableMigration } from './011-create-teams-table';
+import { createTeamMembersTableMigration } from './012-create-team-members-table';
 
 export const migrations: Migration[] = [
   createUsersTableMigration,
@@ -23,4 +24,5 @@ export const migrations: Migration[] = [
   createPortalBannersTableMigration,
   createUserProfilesAndCampaignsMigration,
   createTeamsTableMigration,
+  createTeamMembersTableMigration,
 ];
