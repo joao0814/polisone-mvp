@@ -10,6 +10,7 @@ import { CalendarEventsModule } from './nest_modules/calendar-events/calendar-ev
 import { StorageModule } from './nest_modules/storage/storage.module';
 import { PortalBannersModule } from './nest_modules/portal-banners/portal-banners.module';
 import { ProfileModule } from './nest_modules/profile/profile.module';
+import { DashboardModule } from './nest_modules/dashboard/dashboard.module';
 import { TeamsModule } from './nest_modules/teams/teams.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { TeamsModule } from './nest_modules/teams/teams.module';
     StorageModule,
     PortalBannersModule,
     ProfileModule,
+    DashboardModule,
     TeamsModule,
   ],
   controllers: [AppController],

@@ -9,12 +9,43 @@ const legend = [
   { label: "Alto numero de equipes", tone: "high" },
 ];
 
+const states = [
+  { id: "state-ac", group: "Estados", label: "Acre", statePrefixes: ["12"] },
+  { id: "state-al", group: "Estados", label: "Alagoas", statePrefixes: ["27"] },
+  { id: "state-ap", group: "Estados", label: "Amapa", statePrefixes: ["16"] },
+  { id: "state-am", group: "Estados", label: "Amazonas", statePrefixes: ["13"] },
+  { id: "state-ba", group: "Estados", label: "Bahia", statePrefixes: ["29"] },
+  { id: "state-ce", group: "Estados", label: "Ceara", statePrefixes: ["23"] },
+  { id: "state-df", group: "Estados", label: "Distrito Federal", statePrefixes: ["53"] },
+  { id: "state-es", group: "Estados", label: "Espirito Santo", statePrefixes: ["32"] },
+  { id: "state-go", group: "Estados", label: "Goias", statePrefixes: ["52"] },
+  { id: "state-ma", group: "Estados", label: "Maranhao", statePrefixes: ["21"] },
+  { id: "state-mt", group: "Estados", label: "Mato Grosso", statePrefixes: ["51"] },
+  { id: "state-ms", group: "Estados", label: "Mato Grosso do Sul", statePrefixes: ["50"] },
+  { id: "state-mg", group: "Estados", label: "Minas Gerais", statePrefixes: ["31"] },
+  { id: "state-pa", group: "Estados", label: "Para", statePrefixes: ["15"] },
+  { id: "state-pb", group: "Estados", label: "Paraiba", statePrefixes: ["25"] },
+  { id: "state-pr", group: "Estados", label: "Parana", statePrefixes: ["41"] },
+  { id: "state-pe", group: "Estados", label: "Pernambuco", statePrefixes: ["26"] },
+  { id: "state-pi", group: "Estados", label: "Piaui", statePrefixes: ["22"] },
+  { id: "state-rj", group: "Estados", label: "Rio de Janeiro", statePrefixes: ["33"] },
+  { id: "state-rn", group: "Estados", label: "Rio Grande do Norte", statePrefixes: ["24"] },
+  { id: "state-rs", group: "Estados", label: "Rio Grande do Sul", statePrefixes: ["43"] },
+  { id: "state-ro", group: "Estados", label: "Rondonia", statePrefixes: ["11"] },
+  { id: "state-rr", group: "Estados", label: "Roraima", statePrefixes: ["14"] },
+  { id: "state-sc", group: "Estados", label: "Santa Catarina", statePrefixes: ["42"] },
+  { id: "state-sp", group: "Estados", label: "Sao Paulo", statePrefixes: ["35"] },
+  { id: "state-se", group: "Estados", label: "Sergipe", statePrefixes: ["28"] },
+  { id: "state-to", group: "Estados", label: "Tocantins", statePrefixes: ["17"] },
+];
+
 const MAX_ZOOM = 10;
 const REGION_FOCUS_MAX_ZOOM = 6;
 const ZOOM_BUTTON_STEP = 0.5;
 const ZOOM_WHEEL_STEP = 0.35;
 
 function BrazilMunicipalMap({
+  municipalityStats = [],
   onRegionChange,
   regions = [],
   selectedRegionId = null,
@@ -25,12 +56,24 @@ function BrazilMunicipalMap({
   const mapStageRef = useRef(null);
   const rafRef = useRef(null);
   const pendingDeltaRef = useRef({ scale: 0, x: 0, y: 0 });
-  const selectedRegion = regions.find((item) => item.id === selectedRegionId);
+  const selectableRegions = useMemo(() => [...states, ...regions], [regions]);
+  const selectedRegion = selectableRegions.find((item) => item.id === selectedRegionId);
   const selectedRegionMatcher = useMemo(
     () => createRegionMatcher(selectedRegion),
     [selectedRegion],
   );
-  const regionGroups = useMemo(() => groupRegions(regions), [regions]);
+  const isStateSelection = selectedRegion?.group === "Estados";
+  const municipalityToneMap = useMemo(
+    () =>
+      new Map(
+        municipalityStats.map((item) => [item.city_ibge_code, item.tone ?? "empty"]),
+      ),
+    [municipalityStats],
+  );
+  const regionGroups = useMemo(
+    () => groupRegions(selectableRegions),
+    [selectableRegions],
+  );
   const focusedView = useMemo(
     () => getRegionView(municipalities, selectedRegion),
     [municipalities, selectedRegion],
@@ -227,7 +270,9 @@ function BrazilMunicipalMap({
           >
             <MunicipalityPaths
               hasSelectedRegion={Boolean(selectedRegionId)}
+              isStateSelection={isStateSelection}
               municipalities={municipalities}
+              municipalityToneMap={municipalityToneMap}
               selectedRegionMatcher={selectedRegionMatcher}
             />
           </g>
@@ -251,19 +296,28 @@ function BrazilMunicipalMap({
 
 const MunicipalityPaths = memo(function MunicipalityPaths({
   hasSelectedRegion,
+  isStateSelection,
   municipalities,
+  municipalityToneMap,
   selectedRegionMatcher,
 }) {
-  return municipalities.map((municipality) => {
+  const visibleMunicipalities =
+    hasSelectedRegion && isStateSelection
+      ? municipalities.filter((municipality) => selectedRegionMatcher(municipality.id))
+      : municipalities;
+
+  return visibleMunicipalities.map((municipality) => {
     const isSelectedRegion = selectedRegionMatcher(municipality.id);
+    const tone = municipalityToneMap.get(municipality.id) ?? "empty";
 
     return (
       <path
         className={[
           styles.cityCell,
-          styles[municipality.tone],
+          styles[tone],
           hasSelectedRegion && !isSelectedRegion ? styles.regionMuted : "",
           isSelectedRegion ? styles.regionSelected : "",
+          isStateSelection ? styles.stateFocusedCell : "",
         ]
           .filter(Boolean)
           .join(" ")}
@@ -383,7 +437,7 @@ function buildMunicipalPaths(geoJson) {
       bounds: geometryBounds(feature.geometry, project),
       id,
       path: geometryToPath(feature.geometry, project),
-      tone: getTone(id),
+      tone: "empty",
     };
   });
 }
@@ -467,30 +521,6 @@ function polygonToPath(rings, project) {
         .concat(" Z"),
     )
     .join(" ");
-}
-
-function getTone(id) {
-  const score = String(id)
-    .split("")
-    .reduce((total, char) => total + Number(char), 0);
-
-  if (score % 11 === 0) {
-    return "empty";
-  }
-
-  if (score % 5 === 0) {
-    return "high";
-  }
-
-  if (score % 3 === 0) {
-    return "good";
-  }
-
-  if (score % 2 === 0) {
-    return "medium";
-  }
-
-  return "low";
 }
 
 export default BrazilMunicipalMap;

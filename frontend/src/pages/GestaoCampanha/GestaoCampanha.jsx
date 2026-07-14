@@ -12,6 +12,7 @@ import MunicipalityRanking from "./components/MunicipalityRanking";
 import ProgressBar from "./components/ProgressBar";
 import RealtimeActivities from "./components/RealtimeActivities";
 import { getProfile } from "../../services/profile";
+import { getTeamsMap, getTeamsSummary } from "../../services/teams";
 import campaignRegions from "./data/campaignRegions";
 import styles from "./GestaoCampanha.module.css";
 
@@ -126,32 +127,95 @@ function GestaoCampanha({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato Alan Leal";
   const [selectedRegionId, setSelectedRegionId] = useState(null);
   const [voteGoal, setVoteGoal] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const [mapData, setMapData] = useState(null);
 
   useEffect(() => {
     let active = true;
 
-    getProfile()
-      .then((data) => {
+    Promise.allSettled([getProfile(), getTeamsSummary(), getTeamsMap()]).then(
+      ([profileResult, summaryResult, mapResult]) => {
         if (!active) return;
-        setVoteGoal(data?.campaign?.vote_goal ?? null);
-      })
-      .catch(() => {
-        if (!active) return;
-        setVoteGoal(null);
-      });
+
+        setVoteGoal(
+          profileResult.status === "fulfilled"
+            ? profileResult.value?.campaign?.vote_goal ?? null
+            : null,
+        );
+        setSummary(
+          summaryResult.status === "fulfilled" ? summaryResult.value : null,
+        );
+        setMapData(mapResult.status === "fulfilled" ? mapResult.value : null);
+      },
+    );
 
     return () => {
       active = false;
     };
   }, []);
 
-  const resolvedMetrics = metrics.map((metric) =>
-    metric.label === "Meta de votos"
+  const resolvedMetrics = metrics.map((metric) => {
+    if (metric.label === "Meta de votos") {
+      return { ...metric, value: formatVoteGoal(voteGoal) };
+    }
+
+    if (metric.label === "Municipios ativos") {
+      return {
+        ...metric,
+        value: formatInteger(summary?.metrics?.municipalities_active),
+      };
+    }
+
+    if (metric.label === "Liderancas") {
+      return {
+        ...metric,
+        value: formatInteger(summary?.metrics?.leaders),
+      };
+    }
+
+    if (metric.label === "Representantes") {
+      return {
+        ...metric,
+        value: formatInteger(summary?.metrics?.representatives),
+      };
+    }
+
+    return metric;
+  });
+
+  const resolvedDailySummary = dailySummary.map((item) =>
+    item.label === "Equipes em campo"
       ? {
-          ...metric,
-          value: formatVoteGoal(voteGoal),
+          ...item,
+          value: formatInteger(summary?.totals?.active_teams),
+          note: "Ativas agora",
         }
-      : metric,
+      : item,
+  );
+
+  const resolvedMunicipalityRanking =
+    summary?.municipality_ranking?.length
+      ? summary.municipality_ranking
+      : municipalityRanking;
+
+  const resolvedFieldTeams =
+    summary?.field_teams?.length ? summary.field_teams : fieldTeams;
+
+  const resolvedRegions = campaignRegions.map((region) => {
+    const regionStats = mapData?.regions?.find((item) => item.id === region.id);
+
+    return regionStats
+      ? {
+          ...region,
+          value: regionStats.value,
+          teamCount: regionStats.team_count,
+          membersCount: regionStats.members_count,
+        }
+      : region;
+  });
+
+  const resolvedPerformanceRegions = resolvedRegions.filter(
+    (region) => region.showInPerformance !== false,
   );
 
   return (
@@ -194,8 +258,9 @@ function GestaoCampanha({ session, onLogout }) {
             title="Mapa Eleitoral"
           >
             <BrazilMunicipalMap
+              municipalityStats={mapData?.municipalities ?? []}
               onRegionChange={setSelectedRegionId}
-              regions={campaignRegions}
+              regions={resolvedRegions}
               selectedRegionId={selectedRegionId}
             />
           </DashboardPanel>
@@ -206,7 +271,7 @@ function GestaoCampanha({ session, onLogout }) {
             title="Desempenho por regiao"
           >
             <div className={styles.performanceList}>
-              {performanceRegions.map((region) => (
+              {resolvedPerformanceRegions.map((region) => (
                 <ProgressBar
                   key={region.label}
                   active={selectedRegionId === region.id}
@@ -229,7 +294,7 @@ function GestaoCampanha({ session, onLogout }) {
         <section className={styles.dailySection} aria-label="Resumo do dia">
           <h2>Resumo do dia</h2>
           <div className={styles.dailyGrid}>
-            {dailySummary.map((item) => (
+            {resolvedDailySummary.map((item) => (
               <DailySummaryCard
                 key={item.label}
                 label={item.label}
@@ -251,7 +316,7 @@ function GestaoCampanha({ session, onLogout }) {
             subtitle="Top 5 por desempenho"
             title="Ranking de Municipios"
           >
-            <MunicipalityRanking items={municipalityRanking} />
+            <MunicipalityRanking items={resolvedMunicipalityRanking} />
           </DashboardPanel>
 
           <DashboardPanel
@@ -294,7 +359,7 @@ function GestaoCampanha({ session, onLogout }) {
             className={styles.fieldTeamsPanel}
             title="Equipes em campo agora"
           >
-            <FieldTeamsPanel teams={fieldTeams} />
+            <FieldTeamsPanel teams={resolvedFieldTeams} />
           </DashboardPanel>
         </section>
       </section>
@@ -308,6 +373,10 @@ function formatVoteGoal(value) {
   }
 
   return new Intl.NumberFormat("pt-BR").format(value);
+}
+
+function formatInteger(value) {
+  return new Intl.NumberFormat("pt-BR").format(Number(value) || 0);
 }
 
 export default GestaoCampanha;

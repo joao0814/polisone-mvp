@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CampaignModel } from '../profile/campaign.model';
+import { campaignRegions, matchesRegion } from './campaign-regions';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { CreateTeamMemberDto } from './dto/create-team-member.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
@@ -108,6 +109,100 @@ export class TeamsService {
     await member.destroy();
   }
 
+  async getSummary(userId: string) {
+    const teams = await this.getTeamsWithMembers(userId);
+    const activeTeams = teams.filter((team) => team.status === TeamStatus.ACTIVE);
+    const totalMembers = teams.reduce(
+      (accumulator, team) => accumulator + (team.members?.length ?? 0),
+      0,
+    );
+    const activeMembers = teams.reduce(
+      (accumulator, team) =>
+        accumulator +
+        (team.members?.filter((member) => member.status === TeamMemberStatus.ACTIVE)
+          .length ?? 0),
+      0,
+    );
+    const cityMap = this.buildCityMap(teams);
+    const ranking = [...cityMap.values()]
+      .sort(
+        (left, right) =>
+          right.members_count - left.members_count ||
+          right.team_count - left.team_count ||
+          left.city_name.localeCompare(right.city_name),
+      )
+      .slice(0, 5)
+      .map((city) => ({
+        name: city.city_name,
+        value: city.members_count || city.team_count,
+      }));
+    const fieldTeams = activeTeams
+      .sort(
+        (left, right) =>
+          (right.members?.length ?? 0) - (left.members?.length ?? 0) ||
+          left.name.localeCompare(right.name),
+      )
+      .slice(0, 4)
+      .map((team) => ({
+        id: team.id,
+        name: team.name,
+        city: team.cityName,
+        activities: team.members?.length ?? 0,
+        people: (team.members ?? []).slice(0, 3).map((member) => member.name),
+      }));
+
+    return {
+      totals: {
+        active_members: activeMembers,
+        active_teams: activeTeams.length,
+        total_members: totalMembers,
+        total_teams: teams.length,
+        total_cities: cityMap.size,
+      },
+      metrics: {
+        municipalities_active: cityMap.size,
+        leaders: teams.filter((team) => team.coordinatorName).length,
+        representatives: totalMembers,
+      },
+      municipality_ranking: ranking,
+      field_teams: fieldTeams,
+    };
+  }
+
+  async getMap(userId: string) {
+    const teams = await this.getTeamsWithMembers(userId);
+    const cityMap = this.buildCityMap(teams);
+    const regionSummaries = campaignRegions.map((region) => {
+      const matchingCities = [...cityMap.values()].filter((city) =>
+        matchesRegion(region, city.city_ibge_code),
+      );
+      const teamCount = matchingCities.reduce(
+        (accumulator, city) => accumulator + city.team_count,
+        0,
+      );
+      const membersCount = matchingCities.reduce(
+        (accumulator, city) => accumulator + city.members_count,
+        0,
+      );
+
+      return {
+        id: region.id,
+        label: region.label,
+        team_count: teamCount,
+        members_count: membersCount,
+        value: teamCount > 0 ? this.getRegionValue(teamCount, teams.length) : 0,
+      };
+    });
+
+    return {
+      municipalities: [...cityMap.values()].map((city) => ({
+        ...city,
+        tone: this.getToneForTeamCount(city.team_count),
+      })),
+      regions: regionSummaries,
+    };
+  }
+
   private async getCampaignForUser(userId: string) {
     const campaign = await this.campaignModel.findOne({
       where: { ownerUserId: userId },
@@ -151,6 +246,58 @@ export class TeamsService {
     }
 
     return member;
+  }
+
+  private async getTeamsWithMembers(userId: string) {
+    const campaign = await this.getCampaignForUser(userId);
+
+    return this.teamModel.findAll({
+      where: { campaignId: campaign.id },
+      include: [TeamMemberModel],
+      order: [
+        ['createdAt', 'DESC'],
+        ['name', 'ASC'],
+      ],
+    });
+  }
+
+  private buildCityMap(teams: TeamModel[]) {
+    return teams.reduce<Map<string, {
+      city_ibge_code: string;
+      city_name: string;
+      state: string;
+      team_count: number;
+      active_team_count: number;
+      members_count: number;
+    }>>((accumulator, team) => {
+      const current = accumulator.get(team.cityIbgeCode) ?? {
+        city_ibge_code: team.cityIbgeCode,
+        city_name: team.cityName,
+        state: team.state,
+        team_count: 0,
+        active_team_count: 0,
+        members_count: 0,
+      };
+
+      current.team_count += 1;
+      current.active_team_count += team.status === TeamStatus.ACTIVE ? 1 : 0;
+      current.members_count += team.members?.length ?? 0;
+      accumulator.set(team.cityIbgeCode, current);
+      return accumulator;
+    }, new Map());
+  }
+
+  private getToneForTeamCount(teamCount: number) {
+    if (teamCount <= 0) return 'empty';
+    if (teamCount === 1) return 'low';
+    if (teamCount === 2) return 'medium';
+    if (teamCount <= 4) return 'good';
+    return 'high';
+  }
+
+  private getRegionValue(teamCount: number, totalTeams: number) {
+    if (!totalTeams) return 0;
+    return Math.max(8, Math.min(100, Math.round((teamCount / totalTeams) * 100)));
   }
 
   private normalizeInput(dto: CreateTeamDto | UpdateTeamDto) {

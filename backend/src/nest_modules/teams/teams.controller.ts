@@ -33,6 +33,16 @@ export class TeamsController {
     return this.teamsService.list(currentUser.sub);
   }
 
+  @Get('summary')
+  summary(@CurrentUser() currentUser: AuthenticatedUser) {
+    return this.teamsService.getSummary(currentUser.sub);
+  }
+
+  @Get('map')
+  map(@CurrentUser() currentUser: AuthenticatedUser) {
+    return this.teamsService.getMap(currentUser.sub);
+  }
+
   @Post()
   create(
     @CurrentUser() currentUser: AuthenticatedUser,

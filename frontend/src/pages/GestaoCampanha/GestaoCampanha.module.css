@@ -1453,14 +1453,19 @@
 }
 
 .regionMuted {
-  opacity: 0.18;
-  filter: grayscale(0.35) brightness(0.72);
+  opacity: 0.14;
 }
 
 .regionSelected {
-  filter: saturate(1.2) brightness(1.12);
+  opacity: 1;
   stroke: #fff;
   stroke-width: 1.05;
+}
+
+.stateFocusedCell {
+  stroke: rgba(7, 18, 31, 0.78);
+  stroke-width: 0.78;
+  paint-order: stroke fill;
 }
 
 .cityCell {
@@ -1508,6 +1513,8 @@
   gap: 14px;
   margin-top: 18px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  contain: layout paint;
   padding-right: 4px;
 }
 
