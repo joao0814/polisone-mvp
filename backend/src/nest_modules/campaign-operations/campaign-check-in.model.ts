@@ -16,9 +16,24 @@ import { TeamMemberModel } from '../teams/team-member.model';
 import { TeamModel } from '../teams/team.model';
 
 export enum CampaignCheckInType {
-  FIELD_VISIT = 'FIELD_VISIT',
-  EVENT_SUPPORT = 'EVENT_SUPPORT',
-  LEADERSHIP_MEETING = 'LEADERSHIP_MEETING',
+  PANFLETAGEM = 'PANFLETAGEM',
+  ADESIVAGEM = 'ADESIVAGEM',
+  VISITA = 'VISITA',
+  REUNIAO = 'REUNIAO',
+  EVENTO = 'EVENTO',
+  PESQUISA_CAMPO = 'PESQUISA_CAMPO',
+  OUTRO = 'OUTRO',
+}
+
+export enum CampaignCheckInPersonType {
+  LEADER = 'LEADER',
+  REPRESENTATIVE = 'REPRESENTATIVE',
+}
+
+export enum CampaignCheckInStatus {
+  CHECKED_IN = 'CHECKED_IN',
+  CHECKED_OUT = 'CHECKED_OUT',
+  CANCELED = 'CANCELED',
 }
 
 @Table({ tableName: 'campaign_check_ins', timestamps: true, underscored: true })
@@ -34,9 +49,21 @@ export class CampaignCheckInModel extends Model {
   declare campaignId: string;
 
   @ForeignKey(() => TeamModel)
-  @AllowNull(true)
+  @AllowNull(false)
   @Column(DataType.UUID)
-  declare teamId: string | null;
+  declare teamId: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(20))
+  declare personType: CampaignCheckInPersonType;
+
+  @AllowNull(false)
+  @Column(DataType.UUID)
+  declare personId: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(140))
+  declare personName: string;
 
   @ForeignKey(() => TeamMemberModel)
   @AllowNull(true)
@@ -56,9 +83,9 @@ export class CampaignCheckInModel extends Model {
   declare state: string;
 
   @AllowNull(false)
-  @Default(CampaignCheckInType.FIELD_VISIT)
-  @Column(DataType.STRING(40))
-  declare type: CampaignCheckInType;
+  @Default(CampaignCheckInType.OUTRO)
+  @Column({ type: DataType.STRING(40), field: 'type' })
+  declare activityType: CampaignCheckInType;
 
   @AllowNull(true)
   @Column(DataType.TEXT)
@@ -68,6 +95,15 @@ export class CampaignCheckInModel extends Model {
   @Default(DataType.NOW)
   @Column(DataType.DATE)
   declare checkedInAt: Date;
+
+  @AllowNull(true)
+  @Column(DataType.DATE)
+  declare checkedOutAt: Date | null;
+
+  @AllowNull(false)
+  @Default(CampaignCheckInStatus.CHECKED_IN)
+  @Column(DataType.STRING(20))
+  declare status: CampaignCheckInStatus;
 
   @BelongsTo(() => CampaignModel, 'campaignId')
   declare campaign?: CampaignModel;

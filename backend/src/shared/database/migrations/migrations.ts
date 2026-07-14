@@ -15,6 +15,7 @@ import { createCampaignCheckInsTableMigration } from './013-create-campaign-chec
 import { createFieldActivitiesTableMigration } from './014-create-field-activities-table';
 import { createCampaignLeadersTableMigration } from './015-create-campaign-leaders-table';
 import { createCampaignCostsTableMigration } from './016-create-campaign-costs-table';
+import { extendCampaignCheckInsTableMigration } from './017-extend-campaign-check-ins-table';
 
 export const migrations: Migration[] = [
   createUsersTableMigration,
@@ -33,4 +34,5 @@ export const migrations: Migration[] = [
   createFieldActivitiesTableMigration,
   createCampaignLeadersTableMigration,
   createCampaignCostsTableMigration,
+  extendCampaignCheckInsTableMigration,
 ];
