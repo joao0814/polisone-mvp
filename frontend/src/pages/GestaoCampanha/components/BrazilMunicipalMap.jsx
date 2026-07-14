@@ -96,10 +96,10 @@ function BrazilMunicipalMap({
     let isActive = true;
 
     async function loadMap() {
-      let response = await fetch("/data/br-municipios.geojson");
+      let response = await fetch(`${import.meta.env.BASE_URL}data/br-municipios.geojson`);
 
       if (!response.ok) {
-        response = await fetch("/data/sp-municipios.geojson");
+        response = await fetch(`${import.meta.env.BASE_URL}data/sp-municipios.geojson`);
       }
 
       const geoJson = await response.json();
