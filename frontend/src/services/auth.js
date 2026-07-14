@@ -1,54 +1,55 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 const AUTH_STORAGE_KEY = 'polisone.auth'
+const USERS_STORAGE_KEY = 'polisone.users'
+
+const defaultUser = {
+  id: 'local-user',
+  name: 'Candidato Alan Leal',
+  email: 'candidato@polisone.local',
+  role: 'ADMIN',
+  profile_image_path: null,
+}
 
 export async function login({ email, password }) {
-  return authenticate('/auth/login', { email, password }, 'Não foi possível entrar. Verifique seus dados.')
+  const users = readUsers()
+  const normalizedEmail = email.trim().toLowerCase()
+  const user = users.find((item) => item.email.toLowerCase() === normalizedEmail)
+
+  if (user && user.password !== password) {
+    throw new Error('E-mail ou senha invalidos.')
+  }
+
+  const resolvedUser = user
+    ? withoutPassword(user)
+    : { ...defaultUser, email: normalizedEmail || defaultUser.email }
+
+  return storeSession(resolvedUser)
 }
 
 export async function register({ name, email, password }) {
-  return authenticate('/auth/register', {
-    name,
-    email,
+  const users = readUsers()
+  const normalizedEmail = email.trim().toLowerCase()
+
+  if (users.some((item) => item.email.toLowerCase() === normalizedEmail)) {
+    throw new Error('Este e-mail ja esta cadastrado.')
+  }
+
+  const user = {
+    ...defaultUser,
+    id: crypto.randomUUID(),
+    name: name.trim(),
+    email: normalizedEmail,
     password,
-  }, 'Não foi possível criar a conta. Revise os dados informados.')
+  }
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([...users, user]))
+  return storeSession(withoutPassword(user))
 }
 
 export function getStoredSession() {
-  const rawSession = localStorage.getItem(AUTH_STORAGE_KEY)
-
-  if (!rawSession) {
-    return null
-  }
-
   try {
-    const stored = JSON.parse(rawSession)
-    const accessToken = stored.accessToken ?? stored.access_token
-
-    if (!accessToken || isTokenExpired(accessToken)) {
-      localStorage.removeItem(AUTH_STORAGE_KEY)
-      return null
-    }
-
-    const session = {
-      accessToken,
-      tokenType: stored.tokenType ?? stored.token_type ?? 'Bearer',
-      user: stored.user,
-    }
-
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session))
-    return session
+    return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)) || null
   } catch {
     localStorage.removeItem(AUTH_STORAGE_KEY)
     return null
-  }
-}
-
-function isTokenExpired(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
-    return !payload.exp || payload.exp * 1000 <= Date.now()
-  } catch {
-    return true
   }
 }
 
@@ -65,58 +66,22 @@ export function updateStoredUser(user) {
   return nextSession
 }
 
-async function authenticate(path, payload, fallbackMessage) {
-  const response = await fetch(`${API_URL}${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  })
-
-  const data = await parseJson(response)
-
-  if (!response.ok) {
-    throw new Error(resolveApiError(data, fallbackMessage))
-  }
-
-  const session = {
-    accessToken: data.access_token,
-    tokenType: data.token_type,
-    user: data.user,
-  }
-
+function storeSession(user) {
+  const session = { accessToken: 'local-only', tokenType: 'Local', user }
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session))
-
   return session
 }
 
-async function parseJson(response) {
-  const text = await response.text()
-
-  if (!text) {
-    return null
-  }
-
+function readUsers() {
   try {
-    return JSON.parse(text)
+    return JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)) || []
   } catch {
-    return null
+    return []
   }
 }
 
-function resolveApiError(data, fallback) {
-  if (data?.message === 'Invalid credentials') {
-    return 'E-mail ou senha inválidos.'
-  }
-
-  if (data?.message === 'User email already registered') {
-    return 'Este e-mail já está cadastrado.'
-  }
-
-  if (Array.isArray(data?.message)) {
-    return data.message.join(' ')
-  }
-
-  return data?.message ?? fallback
+function withoutPassword(storedUser) {
+  const user = { ...storedUser }
+  delete user.password
+  return user
 }

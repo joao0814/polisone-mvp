@@ -125,10 +125,6 @@ const fieldTeams = [
   },
 ];
 
-const performanceRegions = campaignRegions.filter(
-  (region) => region.showInPerformance !== false,
-);
-
 function GestaoCampanha({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato Alan Leal";
   const [selectedRegionId, setSelectedRegionId] = useState(null);

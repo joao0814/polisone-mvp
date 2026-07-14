@@ -44,7 +44,7 @@ function Emendas({ session, onLogout }) {
     setCostsResponse(response);
   }
 
-  const allCosts = costsResponse?.items ?? [];
+  const allCosts = useMemo(() => costsResponse?.items ?? [], [costsResponse]);
   const cityOptions = useMemo(
     () =>
       ["TODOS", ...new Set(allCosts.map((item) => item.city_name).filter(Boolean))],

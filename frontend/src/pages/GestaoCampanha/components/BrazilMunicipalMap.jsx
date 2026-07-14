@@ -43,6 +43,16 @@ const MAX_ZOOM = 10;
 const REGION_FOCUS_MAX_ZOOM = 6;
 const ZOOM_BUTTON_STEP = 0.5;
 const ZOOM_WHEEL_STEP = 0.35;
+const POPULATED_TONES = [
+  "low",
+  "low",
+  "medium",
+  "medium",
+  "medium",
+  "good",
+  "good",
+  "high",
+];
 
 function BrazilMunicipalMap({
   municipalityStats = [],
@@ -308,7 +318,9 @@ const MunicipalityPaths = memo(function MunicipalityPaths({
 
   return visibleMunicipalities.map((municipality) => {
     const isSelectedRegion = selectedRegionMatcher(municipality.id);
-    const tone = municipalityToneMap.get(municipality.id) ?? "empty";
+    const tone =
+      municipalityToneMap.get(municipality.id) ??
+      getStaticMunicipalityTone(municipality.id);
 
     return (
       <path
@@ -328,6 +340,22 @@ const MunicipalityPaths = memo(function MunicipalityPaths({
     );
   });
 });
+
+function getStaticMunicipalityTone(municipalityId) {
+  const hash = String(municipalityId)
+    .split("")
+    .reduce((total, character, index) => {
+      return total + Number(character || 0) * (index + 3);
+    }, 0);
+
+  // Mantem alguns municipios sem equipe para que a legenda continue util,
+  // mas distribui atividade pela maior parte do mapa de forma deterministica.
+  if (hash % 7 === 0) {
+    return "empty";
+  }
+
+  return POPULATED_TONES[hash % POPULATED_TONES.length];
+}
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);

@@ -71,11 +71,12 @@ function Equipes({ session, onLogout }) {
 
   useEffect(() => {
     loadTeams();
+    // A carga inicial deve acontecer apenas na montagem da tela.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (!selectedTeamId) {
-      setMembers([]);
       return;
     }
 
@@ -150,6 +151,7 @@ function Equipes({ session, onLogout }) {
 
       if (!items.length) {
         setSelectedTeamId(null);
+        setMembers([]);
         return;
       }
 
