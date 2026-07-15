@@ -112,28 +112,94 @@ function CheckIn({ session, onLogout }) {
   );
   const tableSearchTerm = normalizeText(tableSearch);
   const activeTeamRows = useMemo(() => {
-    return todayCheckIns
+    const teamItems = teamsResponse?.items ?? [];
+    const grouped = new Map();
+
+    todayCheckIns
       .filter((item) => item.status === "CHECKED_IN")
+      .forEach((item) => {
+        const resolvedTeam =
+          teamItems.find((team) => team.id === item.team_id) ||
+          teamItems.find(
+            (team) =>
+              team.city_ibge_code === item.city_ibge_code ||
+              normalizeText(team.city_name) === normalizeText(item.city_name),
+          ) ||
+          null;
+        const groupKey = item.team_id || item.city_ibge_code || item.id;
+        const checkedInTimestamp = new Date(item.checked_in_at).getTime();
+        const current =
+          grouped.get(groupKey) ?? {
+            id: groupKey,
+            raw: item,
+            name: resolvedTeam?.name || `Equipe ${item.city_name}`,
+            city: item.city_name,
+            people: new Set(),
+            activityCounts: new Map(),
+            openCount: 0,
+            latestCheckedInAt: checkedInTimestamp,
+            earliestCheckedInAt: checkedInTimestamp,
+          };
+
+        current.people.add(item.person_name);
+        current.openCount += 1;
+        current.activityCounts.set(
+          item.activity_type,
+          (current.activityCounts.get(item.activity_type) ?? 0) + 1,
+        );
+        current.earliestCheckedInAt = Math.min(
+          current.earliestCheckedInAt,
+          checkedInTimestamp,
+        );
+
+        if (checkedInTimestamp >= current.latestCheckedInAt) {
+          current.latestCheckedInAt = checkedInTimestamp;
+          current.raw = item;
+          current.name = resolvedTeam?.name || current.name;
+        }
+
+        grouped.set(groupKey, current);
+      });
+
+    return [...grouped.values()]
+      .map((item) => {
+        const primaryActivity = resolvePrimaryActivityType(
+          item.activityCounts,
+          item.raw.activity_type,
+        );
+        const peopleCount = item.people.size;
+
+        return {
+          id: item.id,
+          raw: item.raw,
+          name: item.name,
+          city: item.city,
+          peopleLabel: `${peopleCount} pessoa${peopleCount > 1 ? "s" : ""} em campo`,
+          badge: formatActivityType(primaryActivity),
+          badgeTone: resolveBadgeTone(primaryActivity),
+          badgeMeta:
+            item.openCount > 1
+              ? `${item.openCount} atividades abertas`
+              : "1 atividade aberta",
+          initials: getInitials(item.name),
+          status: "Em atividade",
+          checkin: formatTime(new Date(item.earliestCheckedInAt)),
+          checkout: "--",
+        };
+      })
       .filter((item) => {
         if (!tableSearchTerm) return true;
 
         return normalizeText(
-          `${item.person_name} ${item.city_name} ${item.activity_type}`,
+          `${item.name} ${item.city} ${item.badge} ${item.peopleLabel}`,
         ).includes(tableSearchTerm);
       })
-      .map((item) => ({
-        id: item.id,
-        raw: item,
-        name: item.person_name,
-        city: item.city_name,
-        badge: formatActivityType(item.activity_type),
-        badgeTone: resolveBadgeTone(item.activity_type),
-        initials: getInitials(item.person_name),
-        status: "Em atividade",
-        checkin: formatTime(item.checked_in_at),
-        checkout: item.checked_out_at ? formatTime(item.checked_out_at) : "--",
-      }));
-  }, [tableSearchTerm, todayCheckIns]);
+      .sort(
+        (left, right) =>
+          new Date(right.raw.checked_in_at).getTime() -
+          new Date(left.raw.checked_in_at).getTime(),
+      );
+  }, [tableSearchTerm, teamsResponse, todayCheckIns]);
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(activeTeamRows.length / pageSize)),
     [activeTeamRows.length],
@@ -188,9 +254,10 @@ function CheckIn({ session, onLogout }) {
       (item) =>
         item.person_type === "REPRESENTATIVE" && item.status === "CHECKED_IN",
     ).length;
-    const activitiesToday = activities.filter(
-      (item) => String(item.created_at).slice(0, 10) === todayKey,
-    );
+    const activitiesToday = todayCheckIns.length;
+    const openCheckInsToday = todayCheckIns.filter(
+      (item) => item.status === "CHECKED_IN",
+    ).length;
     const leadersCreatedToday = leaders.filter(
       (item) => String(item.created_at).slice(0, 10) === todayKey,
     ).length;
@@ -214,20 +281,15 @@ function CheckIn({ session, onLogout }) {
       {
         tone: "cyan",
         title: "Atividades realizadas",
-        value: formatInteger(
-          activitiesToday.reduce(
-            (accumulator, item) => accumulator + (Number(item.quantity) || 1),
-            0,
-          ),
-        ),
-        note: "100% do total do dia",
+        value: formatInteger(activitiesToday),
+        note: `${formatInteger(openCheckInsToday)} em aberto agora`,
       },
       {
         tone: "orange",
         title: "Check-in",
-        value: formatInteger(todayCheckIns.length),
+        value: formatInteger(openCheckInsToday),
         note: `${formatPercent(
-          todayCheckIns.length,
+          openCheckInsToday,
           leaders.length + allRepresentatives.length,
         )} do total`,
       },
@@ -238,7 +300,7 @@ function CheckIn({ session, onLogout }) {
         note: "base cadastrada no dia",
       },
     ];
-  }, [activities, allRepresentatives, leaders, todayCheckIns, todayKey]);
+  }, [allRepresentatives, leaders, todayCheckIns, todayKey]);
 
   const activityTypes = useMemo(() => {
     const totals = groupByActivityType(todayCheckIns);
@@ -613,37 +675,50 @@ function CheckIn({ session, onLogout }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedActiveTeamRows.map((team) => (
-                    <tr key={team.id}>
-                      <td>
-                        <div className={styles.personCell}>
-                          <span className={styles.avatar}>{team.initials}</span>
-                          <div>
-                            <strong>{team.name}</strong>
-                            <small>{team.city}</small>
+                  {paginatedActiveTeamRows.length ? (
+                    paginatedActiveTeamRows.map((team) => (
+                      <tr key={team.id}>
+                        <td>
+                          <div className={styles.personCell}>
+                            <span className={styles.avatar}>{team.initials}</span>
+                            <div>
+                              <strong>{team.name}</strong>
+                              <small>
+                                {team.city} • {team.peopleLabel}
+                              </small>
+                            </div>
                           </div>
-                        </div>
+                        </td>
+                        <td>
+                          <div className={styles.activityCell}>
+                            <em className={`${styles.activityBadge} ${styles[team.badgeTone]}`}>
+                              {team.badge}
+                            </em>
+                            <small>{team.badgeMeta}</small>
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className={styles.statusBadge}
+                            onClick={() => handleStatusAction(team.raw)}
+                            onKeyDown={(event) => handleStatusKeyDown(event, team.raw)}
+                            role="button"
+                            tabIndex={0}
+                          >
+                            {team.status}
+                          </span>
+                        </td>
+                        <td>{team.checkin}</td>
+                        <td>{team.checkout}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className={styles.emptyCell} colSpan="5">
+                        Nenhuma equipe em atividade encontrada.
                       </td>
-                      <td>
-                        <em className={`${styles.activityBadge} ${styles[team.badgeTone]}`}>
-                          {team.badge}
-                        </em>
-                      </td>
-                      <td>
-                        <span
-                          className={styles.statusBadge}
-                          onClick={() => handleStatusAction(team.raw)}
-                          onKeyDown={(event) => handleStatusKeyDown(event, team.raw)}
-                          role="button"
-                          tabIndex={0}
-                        >
-                          {team.status}
-                        </span>
-                      </td>
-                      <td>{team.checkin}</td>
-                      <td>{team.checkout}</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -708,6 +783,14 @@ function CheckIn({ session, onLogout }) {
       ) : null}
     </main>
   );
+}
+
+function resolvePrimaryActivityType(activityCounts, fallback) {
+  const ranked = [...activityCounts.entries()].sort(
+    (left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
+  );
+
+  return ranked[0]?.[0] || fallback || "OUTRO";
 }
 
 function CheckInModal({
