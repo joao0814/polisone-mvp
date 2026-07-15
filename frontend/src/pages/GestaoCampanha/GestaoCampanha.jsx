@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BrazilMunicipalMap from "./components/BrazilMunicipalMap";
 import CampaignHeader from "./components/CampaignHeader";
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
@@ -57,6 +58,7 @@ const performanceRegions = campaignRegions.filter(
 );
 
 function GestaoCampanha({ session, onLogout }) {
+  const navigate = useNavigate();
   const userName = session?.user?.name || "Candidato";
   const [selectedRegionId, setSelectedRegionId] = useState(null);
   const [overviewMetricsData, setOverviewMetricsData] = useState(null);
@@ -244,7 +246,11 @@ function GestaoCampanha({ session, onLogout }) {
                 />
               ))}
             </div>
-            <button className={styles.moreButton} type="button">
+            <button
+              className={styles.moreButton}
+              type="button"
+              onClick={() => navigate("/municipios")}
+            >
               Ver mais
             </button>
           </DashboardPanel>
@@ -267,7 +273,11 @@ function GestaoCampanha({ session, onLogout }) {
         <section className={styles.rankingsGrid} aria-label="Rankings da campanha">
           <DashboardPanel
             actions={
-              <button className={styles.moreButton} type="button">
+              <button
+                className={styles.moreButton}
+                type="button"
+                onClick={() => navigate("/municipios")}
+              >
                 Ver mais
               </button>
             }
@@ -300,7 +310,11 @@ function GestaoCampanha({ session, onLogout }) {
             title="Custo por regiao"
           >
             <CostRanking items={resolvedCostRanking} />
-            <button className={styles.moreButton} type="button">
+            <button
+              className={styles.moreButton}
+              type="button"
+              onClick={() => navigate("/emendas")}
+            >
               Ver mais
             </button>
           </DashboardPanel>
@@ -309,7 +323,11 @@ function GestaoCampanha({ session, onLogout }) {
         <section className={styles.operationGrid} aria-label="Operacao em campo">
           <DashboardPanel
             actions={
-              <button className={styles.moreButton} type="button">
+              <button
+                className={styles.moreButton}
+                type="button"
+                onClick={() => navigate("/check-in")}
+              >
                 Ver todas
               </button>
             }
@@ -321,7 +339,11 @@ function GestaoCampanha({ session, onLogout }) {
 
           <DashboardPanel
             actions={
-              <button className={styles.moreButton} type="button">
+              <button
+                className={styles.moreButton}
+                type="button"
+                onClick={() => navigate("/equipes")}
+              >
                 Ver todas
               </button>
             }
