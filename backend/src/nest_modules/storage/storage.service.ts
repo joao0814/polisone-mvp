@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import sharp from 'sharp';
@@ -73,9 +78,20 @@ export class StorageService {
       Key: key,
     });
 
-    const response = await this.getS3Client().send(command);
+    let response;
+
+    try {
+      response = await this.getS3Client().send(command);
+    } catch (error) {
+      if (isStorageFileNotFound(error)) {
+        throw new NotFoundException('Arquivo não encontrado no storage.');
+      }
+
+      throw error;
+    }
+
     if (!response.Body) {
-      throw new InternalServerErrorException('Arquivo não encontrado no storage.');
+      throw new NotFoundException('Arquivo não encontrado no storage.');
     }
 
     const bytes = await response.Body.transformToByteArray();
@@ -186,4 +202,26 @@ function sanitizeFilename(filename: string) {
 function extractFilename(key: string) {
   const segments = key.split('/');
   return segments[segments.length - 1] || 'arquivo';
+}
+
+function isStorageFileNotFound(error: unknown) {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const storageError = error as {
+    name?: string;
+    Code?: string;
+    code?: string;
+    $metadata?: {
+      httpStatusCode?: number;
+    };
+  };
+
+  return (
+    storageError.name === 'NoSuchKey' ||
+    storageError.Code === 'NoSuchKey' ||
+    storageError.code === 'NoSuchKey' ||
+    storageError.$metadata?.httpStatusCode === 404
+  );
 }

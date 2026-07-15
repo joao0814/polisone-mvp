@@ -14,10 +14,11 @@ import RealtimeActivities from "./components/RealtimeActivities";
 import {
   getCostRanking,
   getDailySummary,
+  getFieldTeamsNow,
   getMunicipalityRanking,
+  getOverviewMetrics,
   getRealtimeActivities,
 } from "../../services/dashboard";
-import { getProfile } from "../../services/profile";
 import { getTeamsMap, getTeamsSummary } from "../../services/teams";
 import campaignRegions from "./data/campaignRegions";
 import styles from "./GestaoCampanha.module.css";
@@ -36,11 +37,11 @@ const menuItems = [
 
 const metrics = [
   { label: "Meta de votos", value: null, icon: "chart" },
-  { label: "Votos necessarios", value: "80.000", icon: "ballot" },
-  { label: "Total de votos", value: "86.000", icon: "vote" },
-  { label: "Municipios ativos", value: "142", icon: "pin" },
-  { label: "Liderancas", value: "180", icon: "network" },
-  { label: "Representantes", value: "650", icon: "person" },
+  { label: "Votos necessarios", value: null, icon: "ballot" },
+  { label: "Total de votos", value: null, icon: "vote" },
+  { label: "Municipios ativos", value: null, icon: "pin" },
+  { label: "Liderancas", value: null, icon: "network" },
+  { label: "Representantes", value: null, icon: "person" },
 ];
 
 const dailySummary = [
@@ -51,80 +52,6 @@ const dailySummary = [
   { key: "new_leaders_today", label: "Novas liderancas", value: "0", note: "Hoje" },
 ];
 
-const municipalityRanking = [
-  { name: "Sumare", value: 95 },
-  { name: "Guaratingueta", value: 89 },
-  { name: "Sao Paulo", value: 85 },
-  { name: "Campinas", value: 83 },
-  { name: "Sao Jose dos Campos", value: 79 },
-];
-
-const costRanking = [
-  { region: "Regiao metropolitana", amount: "R$ 800.000", percent: 38 },
-  { region: "Regiao de Campinas", amount: "R$ 650.000", percent: 31 },
-  { region: "Vale do Paraiba", amount: "R$ 400.000", percent: 26 },
-  { region: "Litoral Sul", amount: "R$ 230.000", percent: 16 },
-  { region: "Regiao de Ribeirao Preto", amount: "R$ 200.000", percent: 14 },
-];
-
-const realtimeActivities = [
-  {
-    person: "Julia Rocha",
-    time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
-    tag: "Panfletagem",
-  },
-  {
-    person: "Marcos Lima",
-    time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
-    tag: "Panfletagem",
-  },
-  {
-    person: "Rafael Torres",
-    time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
-    tag: "Panfletagem",
-  },
-  {
-    person: "Alan Leal",
-    time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
-    tag: "Panfletagem",
-  },
-];
-
-const fieldTeams = [
-  {
-    id: "centro-1",
-    name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
-    activities: 12,
-    people: ["Julia Rocha", "Marcos Lima", "Ana Paula"],
-  },
-  {
-    id: "centro-2",
-    name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
-    activities: 12,
-    people: ["Rafael Torres", "Camila Reis", "Bruna Alves"],
-  },
-  {
-    id: "centro-3",
-    name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
-    activities: 12,
-    people: ["Leandro Dias", "Paula Nunes", "Daniel Costa"],
-  },
-  {
-    id: "centro-4",
-    name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
-    activities: 12,
-    people: ["Marina Souza", "Igor Ramos", "Bianca Prado"],
-  },
-];
-
 const performanceRegions = campaignRegions.filter(
   (region) => region.showInPerformance !== false,
 );
@@ -132,37 +59,35 @@ const performanceRegions = campaignRegions.filter(
 function GestaoCampanha({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato Alan Leal";
   const [selectedRegionId, setSelectedRegionId] = useState(null);
-  const [voteGoal, setVoteGoal] = useState(null);
-  const [summary, setSummary] = useState(null);
+  const [overviewMetricsData, setOverviewMetricsData] = useState(null);
   const [mapData, setMapData] = useState(null);
   const [dailySummaryData, setDailySummaryData] = useState(null);
   const [municipalityRankingData, setMunicipalityRankingData] = useState(null);
   const [costRankingMode, setCostRankingMode] = useState("region");
   const [costRankingData, setCostRankingData] = useState(null);
   const [realtimeActivitiesData, setRealtimeActivitiesData] = useState(null);
+  const [fieldTeamsData, setFieldTeamsData] = useState(null);
 
   useEffect(() => {
     let active = true;
 
     Promise.allSettled([
-      getProfile(),
+      getOverviewMetrics(),
       getTeamsSummary(),
       getTeamsMap(),
       getDailySummary(),
       getMunicipalityRanking(),
       getCostRanking(costRankingMode),
       getRealtimeActivities(),
+      getFieldTeamsNow(),
     ]).then(
-      ([profileResult, summaryResult, mapResult, dailySummaryResult, municipalityRankingResult, costRankingResult, realtimeActivitiesResult]) => {
+      ([overviewMetricsResult, summaryResult, mapResult, dailySummaryResult, municipalityRankingResult, costRankingResult, realtimeActivitiesResult, fieldTeamsResult]) => {
         if (!active) return;
 
-        setVoteGoal(
-          profileResult.status === "fulfilled"
-            ? profileResult.value?.campaign?.vote_goal ?? null
+        setOverviewMetricsData(
+          overviewMetricsResult.status === "fulfilled"
+            ? overviewMetricsResult.value
             : null,
-        );
-        setSummary(
-          summaryResult.status === "fulfilled" ? summaryResult.value : null,
         );
         setMapData(mapResult.status === "fulfilled" ? mapResult.value : null);
         setDailySummaryData(
@@ -181,6 +106,9 @@ function GestaoCampanha({ session, onLogout }) {
             ? realtimeActivitiesResult.value
             : null,
         );
+        setFieldTeamsData(
+          fieldTeamsResult.status === "fulfilled" ? fieldTeamsResult.value : null,
+        );
       },
     );
 
@@ -190,32 +118,13 @@ function GestaoCampanha({ session, onLogout }) {
   }, [costRankingMode]);
 
   const resolvedMetrics = metrics.map((metric) => {
-    if (metric.label === "Meta de votos") {
-      return { ...metric, value: formatVoteGoal(voteGoal) };
-    }
+    const metricKey = getOverviewMetricKey(metric.label);
+    const apiItem = metricKey ? overviewMetricsData?.items?.[metricKey] : null;
 
-    if (metric.label === "Municipios ativos") {
-      return {
-        ...metric,
-        value: formatInteger(summary?.metrics?.municipalities_active),
-      };
-    }
-
-    if (metric.label === "Liderancas") {
-      return {
-        ...metric,
-        value: formatInteger(summary?.metrics?.leaders),
-      };
-    }
-
-    if (metric.label === "Representantes") {
-      return {
-        ...metric,
-        value: formatInteger(summary?.metrics?.representatives),
-      };
-    }
-
-    return metric;
+    return {
+      ...metric,
+      value: formatMetricValue(apiItem?.value),
+    };
   });
 
   const resolvedDailySummary = dailySummary.map((item) => {
@@ -237,25 +146,19 @@ function GestaoCampanha({ session, onLogout }) {
     };
   });
 
-  const resolvedMunicipalityRanking =
-    municipalityRankingData?.items?.length
-      ? municipalityRankingData.items
-      : municipalityRanking;
+  const resolvedMunicipalityRanking = municipalityRankingData?.items ?? [];
 
-  const resolvedFieldTeams =
-    summary?.field_teams?.length ? summary.field_teams : fieldTeams;
+  const resolvedFieldTeams = fieldTeamsData?.items ?? [];
   const resolvedCostRanking =
     costRankingData?.items?.length
       ? costRankingData.items.map((item) => ({
+          id: item.id,
           region: item.label,
           amount: formatCurrency(item.amount),
           percent: item.percent,
         }))
-      : costRanking;
-  const resolvedRealtimeActivities =
-    realtimeActivitiesData?.items?.length
-      ? realtimeActivitiesData.items
-      : realtimeActivities;
+      : [];
+  const resolvedRealtimeActivities = realtimeActivitiesData?.items ?? [];
 
   const resolvedRegions = campaignRegions.map((region) => {
     const regionStats = mapData?.regions?.find((item) => item.id === region.id);
@@ -433,14 +336,6 @@ function GestaoCampanha({ session, onLogout }) {
   );
 }
 
-function formatVoteGoal(value) {
-  if (typeof value !== "number" || Number.isNaN(value) || value <= 0) {
-    return "--";
-  }
-
-  return new Intl.NumberFormat("pt-BR").format(value);
-}
-
 function formatInteger(value) {
   return new Intl.NumberFormat("pt-BR").format(Number(value) || 0);
 }
@@ -451,6 +346,32 @@ function formatCurrency(value) {
     currency: "BRL",
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
+}
+
+function formatMetricValue(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    Number.isNaN(Number(value))
+  ) {
+    return "--";
+  }
+
+  return formatInteger(value);
+}
+
+function getOverviewMetricKey(label) {
+  const map = {
+    "Meta de votos": "vote_goal",
+    "Votos necessarios": "votes_needed",
+    "Total de votos": "total_votes",
+    "Municipios ativos": "municipalities_active",
+    Liderancas: "leaders",
+    Representantes: "representatives",
+  };
+
+  return map[label] ?? null;
 }
 
 export default GestaoCampanha;

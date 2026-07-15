@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppRoutes from './routes/AppRoutes'
-import { getStoredSession, login, logout, register, updateStoredUser } from './services/auth'
+import { changePassword, getStoredSession, login, logout, register, updateStoredUser } from './services/auth'
 
 function App() {
   const [session, setSession] = useState(() => getStoredSession())
@@ -11,7 +11,7 @@ function App() {
     const nextSession = await login(credentials)
 
     setSession(nextSession)
-    navigate('/')
+    navigate(nextSession.user?.must_change_password ? '/primeiro-acesso' : '/')
   }
 
   async function handleRegister(input) {
@@ -32,6 +32,12 @@ function App() {
     if (nextSession) setSession(nextSession)
   }
 
+  async function handleChangePassword(input) {
+    const nextSession = await changePassword(input)
+    setSession(nextSession)
+    navigate('/')
+  }
+
   return (
     <AppRoutes
       session={session}
@@ -39,6 +45,7 @@ function App() {
       onRegister={handleRegister}
       onLogout={handleLogout}
       onUserUpdate={handleUserUpdate}
+      onChangePassword={handleChangePassword}
     />
   )
 }

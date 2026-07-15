@@ -1,10 +1,14 @@
 import {
+  IsInt,
   IsIn,
   IsOptional,
   IsString,
+  IsUUID,
   Matches,
   MaxLength,
+  Min,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { TeamStatus } from '../team.model';
 
@@ -36,7 +40,16 @@ export class CreateTeamDto {
   status?: TeamStatus;
 
   @IsOptional()
+  @IsInt()
+  @Min(0)
+  plannedHeadcount?: number;
+
+  @IsOptional()
   @IsString()
   @MaxLength(2000)
   notes?: string;
+
+  @ValidateIf((_, value) => value !== null && value !== undefined && value !== '')
+  @IsUUID()
+  linkedLeaderId?: string | null;
 }

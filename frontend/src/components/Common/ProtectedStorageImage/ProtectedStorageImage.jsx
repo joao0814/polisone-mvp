@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiRequestBlob } from "../../../services/api";
 
+const missingStoragePaths = new Set();
+
 function ProtectedStorageImage({ storagePath, alt, className, fallback = null }) {
   const [src, setSrc] = useState("");
 
@@ -8,7 +10,9 @@ function ProtectedStorageImage({ storagePath, alt, className, fallback = null })
     let isActive = true;
     let objectUrl = "";
 
-    if (!storagePath) {
+    setSrc("");
+
+    if (!storagePath || missingStoragePaths.has(storagePath)) {
       return undefined;
     }
 
@@ -18,7 +22,11 @@ function ProtectedStorageImage({ storagePath, alt, className, fallback = null })
         objectUrl = URL.createObjectURL(blob);
         setSrc(objectUrl);
       })
-      .catch(() => {
+      .catch((error) => {
+        if (error?.status === 404) {
+          missingStoragePaths.add(storagePath);
+        }
+
         if (isActive) setSrc("");
       });
 

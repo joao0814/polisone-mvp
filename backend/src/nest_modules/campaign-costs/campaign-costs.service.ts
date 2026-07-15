@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CampaignModel } from '../profile/campaign.model';
+import { TeamMemberModel } from '../teams/team-member.model';
+import { TeamModel } from '../teams/team.model';
 import { CampaignCostModel } from './campaign-cost.model';
 import { CreateCampaignCostDto } from './dto/create-campaign-cost.dto';
 import { UpdateCampaignCostDto } from './dto/update-campaign-cost.dto';
@@ -14,6 +16,8 @@ export class CampaignCostsService {
   constructor(
     @InjectModel(CampaignModel)
     private readonly campaignModel: typeof CampaignModel,
+    @InjectModel(TeamMemberModel)
+    private readonly teamMemberModel: typeof TeamMemberModel,
     @InjectModel(CampaignCostModel)
     private readonly campaignCostModel: typeof CampaignCostModel,
   ) {}
@@ -53,9 +57,11 @@ export class CampaignCostsService {
   }
 
   private async getCampaignForUser(userId: string) {
-    const campaign = await this.campaignModel.findOne({
-      where: { ownerUserId: userId },
-    });
+    const campaign =
+      (await this.campaignModel.findOne({
+        where: { ownerUserId: userId },
+      })) ??
+      (await this.resolveCampaignByTeamMember(userId));
 
     if (!campaign) {
       throw new BadRequestException(
@@ -64,6 +70,19 @@ export class CampaignCostsService {
     }
 
     return campaign;
+  }
+
+  private async resolveCampaignByTeamMember(userId: string) {
+    const member = await this.teamMemberModel.findOne({
+      where: { userId },
+      include: [TeamModel],
+    });
+
+    if (!member?.team?.campaignId) {
+      return null;
+    }
+
+    return this.campaignModel.findByPk(member.team.campaignId);
   }
 
   private async getOwnedCost(userId: string, costId: string) {

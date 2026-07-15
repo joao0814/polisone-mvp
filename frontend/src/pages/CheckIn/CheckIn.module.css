@@ -720,6 +720,261 @@
   background: #a90000;
 }
 
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(1, 9, 22, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.modalCard {
+  width: min(100%, 760px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(8, 21, 34, 0.99), rgba(3, 10, 18, 0.99));
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.38);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 26px 0;
+}
+
+.modalEyebrow {
+  display: block;
+  color: var(--yellow);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modalTitle {
+  margin: 8px 0 0;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.modalCloseButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 202, 24, 0.08);
+  color: var(--yellow);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modalBody {
+  padding: 22px 26px 0;
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.modalField,
+.modalTextareaField {
+  display: grid;
+  gap: 8px;
+}
+
+.modalFieldFull {
+  grid-column: 1 / -1;
+}
+
+.modalGridSpacingOnly {
+  margin-top: 16px;
+}
+
+.modalField span,
+.modalTextareaField span {
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modalField input,
+.modalField select,
+.modalTextareaField textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #03080f;
+  color: #ffffff;
+  font: inherit;
+}
+
+.modalField input,
+.modalField select {
+  min-height: 46px;
+  padding: 0 14px;
+}
+
+.modalTextareaField {
+  margin-top: 18px;
+}
+
+.modalTextareaField textarea {
+  min-height: 120px;
+  padding: 14px;
+  resize: vertical;
+}
+
+.modalSummaryBox {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 202, 24, 0.08);
+}
+
+.modalSummaryBox strong {
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.modalSummaryBox span {
+  color: #c3ccd8;
+  font-size: 14px;
+}
+
+.modalSummaryBox small {
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.accessInviteBox {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(0, 189, 105, 0.65);
+  border-radius: 14px;
+  background: rgba(0, 189, 105, 0.12);
+}
+
+.accessInviteBox strong {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.accessInviteBox span {
+  color: #dfffea;
+  font-size: 14px;
+}
+
+.accessInviteBox small {
+  color: #8bffbc;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.modalChoiceGroup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  padding: 6px;
+  border: 1px solid rgba(255, 202, 24, 0.4);
+  border-radius: 18px;
+  background: rgba(255, 202, 24, 0.06);
+}
+
+.modalChoiceButton {
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.modalChoiceButtonActive {
+  background: rgba(255, 202, 24, 0.2);
+  color: var(--yellow);
+  box-shadow: inset 0 0 0 1px rgba(255, 202, 24, 0.58);
+}
+
+.modalWarningText,
+.modalErrorMessage {
+  margin: 16px 0 0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.modalWarningText {
+  border: 1px solid rgba(255, 149, 24, 0.6);
+  background: rgba(255, 149, 24, 0.12);
+  color: #ffd7a1;
+}
+
+.modalErrorMessage {
+  border: 1px solid rgba(240, 17, 25, 0.7);
+  background: rgba(240, 17, 25, 0.14);
+  color: #ffb5b9;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 20px 26px 26px;
+  border-top: 1px solid rgba(255, 202, 24, 0.18);
+}
+
+.modalPrimaryButton,
+.modalSecondaryButton {
+  min-width: 180px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.modalPrimaryButton {
+  border: 0;
+  background: var(--yellow);
+  color: #07121f;
+}
+
+.modalSecondaryButton {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: #ffffff;
+}
+
 @media (max-width: 1280px) {
   .header,
   .activityGrid,
@@ -773,5 +1028,20 @@
 
   .pagination > button {
     justify-self: start;
+  }
+
+  .modalGrid,
+  .modalChoiceGroup,
+  .modalActions {
+    grid-template-columns: 1fr;
+  }
+
+  .modalActions {
+    display: grid;
+  }
+
+  .modalPrimaryButton,
+  .modalSecondaryButton {
+    width: 100%;
   }
 }

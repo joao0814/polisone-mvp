@@ -6,8 +6,12 @@ import {
   createTeamMember,
   getTeamMembers,
   getTeams,
+  removeTeam,
+  removeTeamMember,
   updateTeam,
+  updateTeamMember,
 } from "../../services/teams";
+import { getCampaignLeaders } from "../../services/campaignOperations";
 import styles from "./Equipes.module.css";
 
 const menuItems = [
@@ -22,12 +26,17 @@ const menuItems = [
   { label: "Territorio" },
 ];
 
-const states = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
+const states = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
+  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+];
+
 const teamStatuses = [
   { value: "ALL", label: "Todos os status" },
   { value: "ACTIVE", label: "Ativas" },
   { value: "INACTIVE", label: "Inativas" },
 ];
+
 const memberStatuses = [
   { value: "ACTIVE", label: "Ativo" },
   { value: "INACTIVE", label: "Inativo" },
@@ -39,6 +48,7 @@ const initialTeamForm = {
   cityIbgeCode: "",
   state: "SP",
   coordinatorName: "",
+  linkedLeaderId: "",
   status: "ACTIVE",
   notes: "",
 };
@@ -46,6 +56,7 @@ const initialTeamForm = {
 const initialMemberForm = {
   name: "",
   phone: "",
+  email: "",
   role: "",
   status: "ACTIVE",
   cityIbgeCode: "",
@@ -54,12 +65,14 @@ const initialMemberForm = {
 function Equipes({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato";
   const [teams, setTeams] = useState([]);
+  const [leaders, setLeaders] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingTeam, setSavingTeam] = useState(false);
   const [savingMember, setSavingMember] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [editingTeamId, setEditingTeamId] = useState(null);
+  const [editingMemberId, setEditingMemberId] = useState(null);
   const [teamForm, setTeamForm] = useState(initialTeamForm);
   const [memberForm, setMemberForm] = useState(initialMemberForm);
   const [teamMessage, setTeamMessage] = useState("");
@@ -70,7 +83,19 @@ function Equipes({ session, onLogout }) {
   const [statusFilter, setStatusFilter] = useState("ALL");
 
   useEffect(() => {
-    loadTeams();
+    let active = true;
+
+    Promise.allSettled([loadTeams(undefined, () => active), loadLeaders(() => active)]).finally(
+      () => {
+        if (active) {
+          setLoading(false);
+        }
+      },
+    );
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -101,7 +126,13 @@ function Equipes({ session, onLogout }) {
       const normalizedSearch = search.trim().toLowerCase();
       const matchesSearch =
         !normalizedSearch ||
-        [team.name, team.city_name, team.coordinator_name, team.city_ibge_code]
+        [
+          team.name,
+          team.city_name,
+          team.coordinator_name,
+          team.linked_leader_name,
+          team.city_ibge_code,
+        ]
           .filter(Boolean)
           .some((value) => value.toLowerCase().includes(normalizedSearch));
 
@@ -120,7 +151,7 @@ function Equipes({ session, onLogout }) {
   const summaryCards = useMemo(() => {
     const activeTeams = teams.filter((team) => team.status === "ACTIVE").length;
     const totalMembers = teams.reduce(
-      (accumulator, team) => accumulator + (team.members_count ?? 0),
+      (accumulator, team) => accumulator + (team.active_members_count ?? team.members_count ?? 0),
       0,
     );
     const cities = new Set(teams.map((team) => team.city_name)).size;
@@ -128,7 +159,7 @@ function Equipes({ session, onLogout }) {
     return [
       { tone: "blue", title: "Total de equipes", value: teams.length, note: "bases cadastradas" },
       { tone: "green", title: "Equipes ativas", value: activeTeams, note: "operando agora" },
-      { tone: "cyan", title: "Total de membros", value: totalMembers, note: "vinculados as equipes" },
+      { tone: "cyan", title: "Total de membros", value: totalMembers, note: "membros ativos nas equipes" },
       { tone: "orange", title: "Municipios cobertos", value: cities, note: "com equipe ativa ou reserva" },
       { tone: "red", title: "Equipes inativas", value: Math.max(teams.length - activeTeams, 0), note: "aguardando reativacao" },
     ];
@@ -139,12 +170,21 @@ function Equipes({ session, onLogout }) {
     [teams],
   );
 
-  async function loadTeams(preferredTeamId = selectedTeamId) {
-    setLoading(true);
-    setError("");
+  const availableLeaders = useMemo(() => {
+    if (!editingTeamId) {
+      return leaders;
+    }
 
+    return leaders.filter(
+      (leader) => !leader.team_id || leader.team_id === editingTeamId,
+    );
+  }, [editingTeamId, leaders]);
+
+  async function loadTeams(preferredTeamId = selectedTeamId, isActive = () => true) {
     try {
       const data = await getTeams();
+      if (!isActive()) return;
+
       const items = data.items ?? [];
       setTeams(items);
 
@@ -160,9 +200,21 @@ function Equipes({ session, onLogout }) {
 
       setSelectedTeamId(nextTeamId);
     } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setLoading(false);
+      if (isActive()) {
+        setError(requestError.message);
+      }
+    }
+  }
+
+  async function loadLeaders(isActive = () => true) {
+    try {
+      const data = await getCampaignLeaders();
+      if (!isActive()) return;
+      setLeaders(data.items ?? []);
+    } catch {
+      if (isActive()) {
+        setLeaders([]);
+      }
     }
   }
 
@@ -181,10 +233,33 @@ function Equipes({ session, onLogout }) {
       cityIbgeCode: team.city_ibge_code ?? "",
       state: team.state ?? "SP",
       coordinatorName: team.coordinator_name ?? "",
+      linkedLeaderId: team.linked_leader_id ?? "",
       status: team.status ?? "ACTIVE",
       notes: team.notes ?? "",
     });
     setTeamMessage("");
+    setError("");
+  }
+
+  function resetMemberForm(defaultCityIbgeCode = "") {
+    setEditingMemberId(null);
+    setMemberForm({
+      ...initialMemberForm,
+      cityIbgeCode: defaultCityIbgeCode,
+    });
+  }
+
+  function handleEditMember(member) {
+    setEditingMemberId(member.id);
+    setMemberForm({
+      name: member.name ?? "",
+      phone: member.phone ?? "",
+      email: member.email ?? "",
+      role: member.role ?? "",
+      status: member.status ?? "ACTIVE",
+      cityIbgeCode: member.city_ibge_code ?? selectedTeam?.city_ibge_code ?? "",
+    });
+    setMemberMessage("");
     setError("");
   }
 
@@ -198,13 +273,51 @@ function Equipes({ session, onLogout }) {
       if (editingTeamId) {
         await updateTeam(editingTeamId, normalizeTeamPayload(teamForm));
         setTeamMessage("Equipe atualizada com sucesso.");
-        await loadTeams(editingTeamId);
+        await Promise.all([loadTeams(editingTeamId), loadLeaders()]);
       } else {
         const created = await createTeam(normalizeTeamPayload(teamForm));
         setTeamMessage("Equipe criada com sucesso.");
         setEditingTeamId(created.id);
-        await loadTeams(created.id);
+        await Promise.all([loadTeams(created.id), loadLeaders()]);
       }
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSavingTeam(false);
+    }
+  }
+
+  async function handleInactivateTeam() {
+    if (!editingTeamId) return;
+
+    setSavingTeam(true);
+    setTeamMessage("");
+    setError("");
+
+    try {
+      await updateTeam(editingTeamId, { status: "INACTIVE" });
+      setTeamMessage("Equipe inativada com sucesso.");
+      await loadTeams(editingTeamId);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSavingTeam(false);
+    }
+  }
+
+  async function handleRemoveTeam() {
+    if (!editingTeamId) return;
+
+    setSavingTeam(true);
+    setTeamMessage("");
+    setError("");
+
+    try {
+      await removeTeam(editingTeamId);
+      setTeamMessage("Equipe removida com sucesso.");
+      handleNewTeam();
+      resetMemberForm(selectedTeam?.city_ibge_code ?? "");
+      await Promise.all([loadTeams(), loadLeaders()]);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -225,12 +338,27 @@ function Equipes({ session, onLogout }) {
     setError("");
 
     try {
-      await createTeamMember(selectedTeam.id, normalizeMemberPayload(memberForm));
-      setMemberForm({
-        ...initialMemberForm,
-        cityIbgeCode: selectedTeam.city_ibge_code ?? "",
-      });
-      setMemberMessage("Membro adicionado com sucesso.");
+      if (editingMemberId) {
+        await updateTeamMember(
+          selectedTeam.id,
+          editingMemberId,
+          normalizeMemberPayload(memberForm),
+        );
+        setMemberMessage("Membro atualizado com sucesso.");
+      } else {
+        const createdMember = await createTeamMember(
+          selectedTeam.id,
+          normalizeMemberPayload(memberForm),
+        );
+
+        setMemberMessage(
+          createdMember?.access_invite
+            ? `Membro adicionado com sucesso. Login: ${createdMember.access_invite.email} | Senha provisoria: ${createdMember.access_invite.temporary_password}`
+            : "Membro adicionado com sucesso.",
+        );
+      }
+
+      resetMemberForm(selectedTeam.city_ibge_code ?? "");
       await Promise.all([loadTeams(selectedTeam.id), refreshMembers(selectedTeam.id)]);
     } catch (requestError) {
       setError(requestError.message);
@@ -242,6 +370,50 @@ function Equipes({ session, onLogout }) {
   async function refreshMembers(teamId) {
     const data = await getTeamMembers(teamId);
     setMembers(data.items ?? []);
+  }
+
+  async function handleToggleMemberStatus(member) {
+    if (!selectedTeam) return;
+
+    setSavingMember(true);
+    setMemberMessage("");
+    setError("");
+
+    try {
+      const nextStatus = member.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      await updateTeamMember(selectedTeam.id, member.id, {
+        status: nextStatus,
+      });
+      setMemberMessage(
+        nextStatus === "ACTIVE"
+          ? "Membro reativado com sucesso."
+          : "Membro inativado com sucesso.",
+      );
+      await Promise.all([loadTeams(selectedTeam.id), refreshMembers(selectedTeam.id)]);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSavingMember(false);
+    }
+  }
+
+  async function handleRemoveMember(memberId) {
+    if (!selectedTeam) return;
+
+    setSavingMember(true);
+    setMemberMessage("");
+    setError("");
+
+    try {
+      await removeTeamMember(selectedTeam.id, memberId);
+      setMemberMessage("Membro removido com sucesso.");
+      resetMemberForm(selectedTeam.city_ibge_code ?? "");
+      await Promise.all([loadTeams(selectedTeam.id), refreshMembers(selectedTeam.id)]);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSavingMember(false);
+    }
   }
 
   if (loading) {
@@ -279,12 +451,7 @@ function Equipes({ session, onLogout }) {
             </button>
             <button
               type="button"
-              onClick={() =>
-                setMemberForm((current) => ({
-                  ...current,
-                  cityIbgeCode: selectedTeam?.city_ibge_code ?? current.cityIbgeCode,
-                }))
-              }
+              onClick={() => resetMemberForm(selectedTeam?.city_ibge_code ?? "")}
               disabled={!selectedTeam}
             >
               <span aria-hidden="true" />
@@ -295,7 +462,9 @@ function Equipes({ session, onLogout }) {
           <div className={styles.headerStatus}>
             <strong>{summaryCards[0].value}</strong>
             <small>Equipes mapeadas</small>
-            <span>{selectedTeam ? `${selectedTeam.name} selecionada` : "Nenhuma equipe selecionada"}</span>
+            <span>
+              {selectedTeam ? `${selectedTeam.name} selecionada` : "Nenhuma equipe selecionada"}
+            </span>
           </div>
         </header>
 
@@ -319,7 +488,7 @@ function Equipes({ session, onLogout }) {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Equipe, coordenador, municipio ou codigo IBGE"
+              placeholder="Equipe, coordenador, liderança, municipio ou codigo IBGE"
             />
           </label>
 
@@ -394,7 +563,11 @@ function Equipes({ session, onLogout }) {
                             <span className={styles.avatar}>{getInitials(team.name)}</span>
                             <div>
                               <strong>{team.name}</strong>
-                              <small>{team.notes || "Sem observacoes adicionais"}</small>
+                              <small>
+                                {team.linked_leader_name
+                                  ? `Liderança vinculada: ${team.linked_leader_name}`
+                                  : team.notes || "Sem observacoes adicionais"}
+                              </small>
                             </div>
                           </button>
                         </td>
@@ -411,7 +584,11 @@ function Equipes({ session, onLogout }) {
                             {team.status === "ACTIVE" ? "Ativa" : "Inativa"}
                           </span>
                         </td>
-                        <td>{formatNumber(team.members_count ?? 0)}</td>
+                        <td>
+                          <div className={styles.membersMetric}>
+                            <strong>{formatNumber(team.active_members_count ?? team.members_count ?? 0)}</strong>
+                          </div>
+                        </td>
                         <td>
                           <button
                             type="button"
@@ -448,7 +625,9 @@ function Equipes({ session, onLogout }) {
                 <Field label="Nome da equipe">
                   <input
                     value={teamForm.name}
-                    onChange={(event) => setTeamForm((current) => ({ ...current, name: event.target.value }))}
+                    onChange={(event) =>
+                      setTeamForm((current) => ({ ...current, name: event.target.value }))
+                    }
                     maxLength="140"
                     required
                   />
@@ -457,7 +636,9 @@ function Equipes({ session, onLogout }) {
                 <Field label="Municipio">
                   <input
                     value={teamForm.cityName}
-                    onChange={(event) => setTeamForm((current) => ({ ...current, cityName: event.target.value }))}
+                    onChange={(event) =>
+                      setTeamForm((current) => ({ ...current, cityName: event.target.value }))
+                    }
                     maxLength="120"
                     required
                   />
@@ -466,7 +647,9 @@ function Equipes({ session, onLogout }) {
                 <Field label="Codigo IBGE">
                   <input
                     value={teamForm.cityIbgeCode}
-                    onChange={(event) => setTeamForm((current) => ({ ...current, cityIbgeCode: event.target.value }))}
+                    onChange={(event) =>
+                      setTeamForm((current) => ({ ...current, cityIbgeCode: event.target.value }))
+                    }
                     inputMode="numeric"
                     pattern="\d{7}"
                     maxLength="7"
@@ -477,7 +660,9 @@ function Equipes({ session, onLogout }) {
                 <Field label="UF">
                   <select
                     value={teamForm.state}
-                    onChange={(event) => setTeamForm((current) => ({ ...current, state: event.target.value }))}
+                    onChange={(event) =>
+                      setTeamForm((current) => ({ ...current, state: event.target.value }))
+                    }
                   >
                     {states.map((state) => (
                       <option key={state} value={state}>
@@ -500,10 +685,31 @@ function Equipes({ session, onLogout }) {
                   />
                 </Field>
 
+                <Field label="Liderança vinculada">
+                  <select
+                    value={teamForm.linkedLeaderId}
+                    onChange={(event) =>
+                      setTeamForm((current) => ({
+                        ...current,
+                        linkedLeaderId: event.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Sem liderança vinculada</option>
+                    {availableLeaders.map((leader) => (
+                      <option key={leader.id} value={leader.id}>
+                        {leader.name} - {leader.city_name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+
                 <Field label="Status">
                   <select
                     value={teamForm.status}
-                    onChange={(event) => setTeamForm((current) => ({ ...current, status: event.target.value }))}
+                    onChange={(event) =>
+                      setTeamForm((current) => ({ ...current, status: event.target.value }))
+                    }
                   >
                     {memberStatuses.map((status) => (
                       <option key={status.value} value={status.value}>
@@ -516,7 +722,9 @@ function Equipes({ session, onLogout }) {
                 <Field label="Observacoes" wide>
                   <textarea
                     value={teamForm.notes}
-                    onChange={(event) => setTeamForm((current) => ({ ...current, notes: event.target.value }))}
+                    onChange={(event) =>
+                      setTeamForm((current) => ({ ...current, notes: event.target.value }))
+                    }
                     rows="4"
                     maxLength="2000"
                   />
@@ -526,6 +734,26 @@ function Equipes({ session, onLogout }) {
                   <button type="button" className={styles.secondaryButton} onClick={handleNewTeam}>
                     Limpar
                   </button>
+                  {editingTeamId ? (
+                    <>
+                      <button
+                        type="button"
+                        className={styles.secondaryDangerButton}
+                        onClick={handleInactivateTeam}
+                        disabled={savingTeam}
+                      >
+                        Inativar equipe
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.dangerButton}
+                        onClick={handleRemoveTeam}
+                        disabled={savingTeam}
+                      >
+                        Remover equipe
+                      </button>
+                    </>
+                  ) : null}
                   <button type="submit" disabled={savingTeam}>
                     {savingTeam ? "Salvando..." : editingTeamId ? "Atualizar equipe" : "Criar equipe"}
                   </button>
@@ -539,7 +767,11 @@ function Equipes({ session, onLogout }) {
                   <small>Membros da equipe</small>
                   <h2>{selectedTeam ? selectedTeam.name : "Selecione uma equipe"}</h2>
                 </div>
-                <span>{formatNumber(members.length)} membro(s)</span>
+                <span>
+                  {selectedTeam
+                    ? `${formatNumber(selectedTeam.active_members_count ?? members.length)} reais`
+                    : "0 real"}
+                </span>
               </div>
 
               {selectedTeam ? (
@@ -548,7 +780,9 @@ function Equipes({ session, onLogout }) {
                     <Field label="Nome">
                       <input
                         value={memberForm.name}
-                        onChange={(event) => setMemberForm((current) => ({ ...current, name: event.target.value }))}
+                        onChange={(event) =>
+                          setMemberForm((current) => ({ ...current, name: event.target.value }))
+                        }
                         maxLength="140"
                         required
                       />
@@ -557,15 +791,31 @@ function Equipes({ session, onLogout }) {
                     <Field label="Telefone">
                       <input
                         value={memberForm.phone}
-                        onChange={(event) => setMemberForm((current) => ({ ...current, phone: event.target.value }))}
+                        onChange={(event) =>
+                          setMemberForm((current) => ({ ...current, phone: event.target.value }))
+                        }
                         maxLength="20"
+                      />
+                    </Field>
+
+                    <Field label="E-mail">
+                      <input
+                        type="email"
+                        value={memberForm.email}
+                        onChange={(event) =>
+                          setMemberForm((current) => ({ ...current, email: event.target.value }))
+                        }
+                        maxLength="180"
+                        required
                       />
                     </Field>
 
                     <Field label="Funcao">
                       <input
                         value={memberForm.role}
-                        onChange={(event) => setMemberForm((current) => ({ ...current, role: event.target.value }))}
+                        onChange={(event) =>
+                          setMemberForm((current) => ({ ...current, role: event.target.value }))
+                        }
                         maxLength="80"
                         required
                       />
@@ -574,7 +824,9 @@ function Equipes({ session, onLogout }) {
                     <Field label="Status">
                       <select
                         value={memberForm.status}
-                        onChange={(event) => setMemberForm((current) => ({ ...current, status: event.target.value }))}
+                        onChange={(event) =>
+                          setMemberForm((current) => ({ ...current, status: event.target.value }))
+                        }
                       >
                         {memberStatuses.map((status) => (
                           <option key={status.value} value={status.value}>
@@ -602,17 +854,16 @@ function Equipes({ session, onLogout }) {
                       <button
                         type="button"
                         className={styles.secondaryButton}
-                        onClick={() =>
-                          setMemberForm({
-                            ...initialMemberForm,
-                            cityIbgeCode: selectedTeam.city_ibge_code ?? "",
-                          })
-                        }
+                        onClick={() => resetMemberForm(selectedTeam.city_ibge_code ?? "")}
                       >
                         Limpar
                       </button>
                       <button type="submit" disabled={savingMember}>
-                        {savingMember ? "Salvando..." : "Adicionar membro"}
+                        {savingMember
+                          ? "Salvando..."
+                          : editingMemberId
+                            ? "Atualizar membro"
+                            : "Adicionar membro"}
                       </button>
                     </div>
                   </form>
@@ -621,11 +872,49 @@ function Equipes({ session, onLogout }) {
                     {members.length ? (
                       members.map((member) => (
                         <article className={styles.memberCard} key={member.id}>
-                          <div>
-                            <strong>{member.name}</strong>
-                            <span>{member.role}</span>
+                          <div className={styles.memberCardTop}>
+                            <div>
+                              <strong>{member.name}</strong>
+                              <span>{member.role}</span>
+                            </div>
+                            <em
+                              className={`${styles.memberStatusBadge} ${
+                                member.status === "ACTIVE"
+                                  ? styles.statusActive
+                                  : styles.statusInactive
+                              }`}
+                            >
+                              {member.status === "ACTIVE" ? "Ativo" : "Inativo"}
+                            </em>
                           </div>
+                          <small>{member.email || "Sem e-mail informado"}</small>
                           <small>{member.phone || "Sem telefone informado"}</small>
+                          <div className={styles.memberActions}>
+                            <button
+                              type="button"
+                              className={styles.memberActionButton}
+                              onClick={() => handleEditMember(member)}
+                              disabled={savingMember}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.memberActionButton}
+                              onClick={() => handleToggleMemberStatus(member)}
+                              disabled={savingMember}
+                            >
+                              {member.status === "ACTIVE" ? "Inativar" : "Reativar"}
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.memberActionDangerButton}
+                              onClick={() => handleRemoveMember(member.id)}
+                              disabled={savingMember}
+                            >
+                              Remover
+                            </button>
+                          </div>
                         </article>
                       ))
                     ) : (
@@ -664,6 +953,7 @@ function normalizeTeamPayload(form) {
     cityIbgeCode: form.cityIbgeCode,
     state: form.state,
     coordinatorName: form.coordinatorName,
+    linkedLeaderId: form.linkedLeaderId || null,
     status: form.status,
     notes: form.notes,
   };
@@ -673,6 +963,7 @@ function normalizeMemberPayload(form) {
   return {
     name: form.name,
     phone: form.phone,
+    email: form.email,
     role: form.role,
     status: form.status,
     cityIbgeCode: form.cityIbgeCode,

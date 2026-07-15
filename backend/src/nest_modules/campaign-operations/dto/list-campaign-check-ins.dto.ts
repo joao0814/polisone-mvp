@@ -34,4 +34,9 @@ export class ListCampaignCheckInsDto {
   @IsOptional()
   @IsEnum(CampaignCheckInType)
   activityType?: CampaignCheckInType;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  search?: string;
 }

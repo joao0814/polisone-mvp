@@ -3,9 +3,14 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { CalendarEventStatus } from '../../core/calendar-events/domain/enums/calendar-event-status.enum';
 import { CalendarEventModel } from '../../core/calendar-events/infrastructure/database/sequelize/models/calendar-event.model';
+import {
+  CampaignCheckInModel,
+  CampaignCheckInStatus,
+} from '../campaign-operations/campaign-check-in.model';
 import { CampaignLeaderModel } from '../campaign-operations/campaign-leader.model';
 import { FieldActivityModel } from '../campaign-operations/field-activity.model';
 import { CampaignCostModel } from '../campaign-costs/campaign-cost.model';
+import { CampaignModel } from '../profile/campaign.model';
 import { TeamMemberModel } from '../teams/team-member.model';
 import { TeamModel } from '../teams/team.model';
 import { TeamsService } from '../teams/teams.service';
@@ -14,12 +19,16 @@ import { TeamsService } from '../teams/teams.service';
 export class DashboardService {
   constructor(
     private readonly teamsService: TeamsService,
+    @InjectModel(CampaignCheckInModel)
+    private readonly campaignCheckInModel: typeof CampaignCheckInModel,
     @InjectModel(FieldActivityModel)
     private readonly fieldActivityModel: typeof FieldActivityModel,
     @InjectModel(CampaignLeaderModel)
     private readonly campaignLeaderModel: typeof CampaignLeaderModel,
     @InjectModel(CampaignCostModel)
     private readonly campaignCostModel: typeof CampaignCostModel,
+    @InjectModel(CampaignModel)
+    private readonly campaignModel: typeof CampaignModel,
     @InjectModel(TeamMemberModel)
     private readonly teamMemberModel: typeof TeamMemberModel,
     @InjectModel(CalendarEventModel)
@@ -28,19 +37,69 @@ export class DashboardService {
     private readonly teamModel: typeof TeamModel,
   ) {}
 
+  async getOverviewMetrics(userId: string) {
+    const [teams, summary] = await Promise.all([
+      this.teamsService.list(userId),
+      this.teamsService.getSummary(userId),
+    ]);
+    const campaign = await this.campaignModel.findByPk(teams.campaign_id);
+    const voteGoal = campaign?.voteGoal ?? null;
+
+    return {
+      generated_at: new Date().toISOString(),
+      items: {
+        vote_goal: {
+          label: 'Meta de votos',
+          value: voteGoal,
+          source_module: 'campaign-profile',
+          source_status: voteGoal !== null ? 'ready' : 'empty',
+        },
+        votes_needed: {
+          label: 'Votos necessarios',
+          value: null,
+          source_module: 'vote-apuration',
+          source_status: 'pending_source',
+        },
+        total_votes: {
+          label: 'Total de votos',
+          value: null,
+          source_module: 'vote-apuration',
+          source_status: 'pending_source',
+        },
+        municipalities_active: {
+          label: 'Municipios ativos',
+          value: summary.metrics.municipalities_active,
+          source_module: 'teams',
+          source_status: 'ready',
+        },
+        leaders: {
+          label: 'Liderancas',
+          value: summary.metrics.leaders,
+          source_module: 'teams',
+          source_status: 'ready',
+        },
+        representatives: {
+          label: 'Representantes',
+          value: summary.metrics.representatives,
+          source_module: 'teams',
+          source_status: 'ready',
+        },
+      },
+    };
+  }
+
   async getDailySummary(userId: string) {
-    const teamsSummary = await this.teamsService.getSummary(userId);
     const teams = await this.teamsService.list(userId);
     const campaignId = teams.campaign_id;
     const { endOfDay, startOfDay } = getTodayRange();
 
     const todayKey = toDateKey(new Date());
 
-    const [activities, leaders, scheduledEvents] = await Promise.all([
-      this.fieldActivityModel.findAll({
+    const [todayCheckIns, leaders, scheduledEvents] = await Promise.all([
+      this.campaignCheckInModel.findAll({
         where: {
           campaignId,
-          createdAt: { [Op.between]: [startOfDay, endOfDay] },
+          checkedInAt: { [Op.between]: [startOfDay, endOfDay] },
         },
       }),
       this.campaignLeaderModel.count({
@@ -58,11 +117,18 @@ export class DashboardService {
       }),
     ]);
 
-    const registeredActivitiesCount =
-      activities.reduce(
-        (accumulator, activity) => accumulator + (activity.quantity ?? 1),
-        0,
-      ) + leaders;
+    const municipalitiesVisitedToday = new Set(
+      todayCheckIns
+        .map((item) => item.cityIbgeCode)
+        .filter((value): value is string => Boolean(value)),
+    ).size;
+    const fieldTeamsActiveNow = new Set(
+      todayCheckIns
+        .filter((item) => item.status === CampaignCheckInStatus.CHECKED_IN)
+        .map((item) => item.teamId)
+        .filter((value): value is string => Boolean(value)),
+    ).size;
+    const registeredActivitiesCount = todayCheckIns.length;
 
     return {
       generated_at: new Date().toISOString(),
@@ -79,33 +145,31 @@ export class DashboardService {
         },
         municipalities_visited_today: {
           label: 'Municipios visitados',
-          value: null,
+          value: municipalitiesVisitedToday,
           period: 'today',
           source_module: 'check-in',
-          source_status: 'deferred_checkin_scope',
+          source_status: 'ready',
           calculation_rule:
             'Contagem distinta de city_ibge_code nos check-ins do dia.',
         },
         field_teams_active_now: {
           label: 'Equipes em campo',
-          value: null,
+          value: fieldTeamsActiveNow,
           period: 'now',
-          source_module: 'leader-check-in',
-          source_status: 'deferred_checkin_scope',
+          source_module: 'check-in',
+          source_status: 'ready',
           calculation_rule:
-            'Quantidade de lideres com check-in na janela ativa definida pela campanha.',
-          fallback_value: teamsSummary.totals.active_teams,
-          fallback_source_module: 'teams',
+            'Quantidade distinta de team_id com check-in em aberto no momento atual.',
         },
         activities_registered_today: {
           label: 'Atividades registradas',
           value: registeredActivitiesCount,
           period: 'today',
-          source_module: 'field-activities',
-          source_status: 'partial_without_checkin',
+          source_module: 'check-in',
+          source_status: 'ready',
           calculation_rule:
-            'Soma de todos os registros operacionais criados no dia da campanha.',
-          data_sources: ['field-activities', 'leaders'],
+            'Quantidade de check-ins registrados no dia. Cada check-in representa uma atividade operacional com type definido.',
+          data_sources: ['check-in'],
         },
         new_leaders_today: {
           label: 'Novas liderancas',
@@ -118,15 +182,16 @@ export class DashboardService {
         },
       },
       readiness: {
-        deferred: [
+        deferred: [],
+        ready_for_aggregation: [],
+        ready: [
+          'events_scheduled',
           'municipalities_visited_today',
           'field_teams_active_now',
-        ],
-        ready_for_aggregation: [
           'activities_registered_today',
+          'new_leaders_today',
         ],
-        ready: ['events_scheduled', 'new_leaders_today'],
-        fallback_available: ['field_teams_active_now'],
+        fallback_available: [],
       },
     };
   }
@@ -225,13 +290,13 @@ export class DashboardService {
     const teams = await this.teamsService.list(userId);
     const campaignId = teams.campaign_id;
 
-    const [fieldActivities, leaders, recentTeams, recentMembers] =
+    const [checkIns, leaders, recentTeams, recentMembers] =
       await Promise.all([
-        this.fieldActivityModel.findAll({
+        this.campaignCheckInModel.findAll({
           where: { campaignId },
           include: [TeamModel, TeamMemberModel],
-          order: [['happenedAt', 'DESC']],
-          limit: 6,
+          order: [['updatedAt', 'DESC'], ['checkedInAt', 'DESC']],
+          limit: 10,
         }),
         this.campaignLeaderModel.findAll({
           where: { campaignId },
@@ -256,12 +321,12 @@ export class DashboardService {
       ]);
 
     const items = [
-      ...fieldActivities.map((item) => ({
-        description: `${item.member?.name || item.team?.name || 'Equipe'} registrou ${item.activityType.toLowerCase()} em ${item.cityName}`,
-        person: item.member?.name || item.team?.name || 'Equipe de campo',
-        tag: item.activityType,
-        time: formatTime(item.happenedAt ?? item.createdAt),
-        timestamp: item.happenedAt ?? item.createdAt,
+      ...checkIns.map((item) => ({
+        description: buildCheckInRealtimeDescription(item),
+        person: item.personName,
+        tag: formatCheckInTag(item),
+        time: formatTime(resolveCheckInTimestamp(item)),
+        timestamp: resolveCheckInTimestamp(item),
       })),
       ...leaders.map((item) => ({
         description: `${item.name} foi cadastrada como nova lideranca em ${item.cityName}`,
@@ -380,13 +445,119 @@ export class DashboardService {
       },
       realtime_activities: {
         endpoint: '/dashboard/realtime-activities',
-        source_modules: ['field-activities', 'leaders', 'teams', 'team-members'],
+        source_modules: ['check-in', 'leaders', 'teams', 'team-members'],
         source_status: 'ready',
         calculation_rule:
-          'Feed ordenado pelos registros mais recentes de atividades de campo, liderancas, equipes e membros da campanha.',
+          'Feed ordenado pelos registros mais recentes de check-in, check-out, cancelamento, liderancas, equipes e membros da campanha.',
+      },
+      field_teams_now: {
+        endpoint: '/dashboard/field-teams-now',
+        label: 'Equipes em campo agora',
+        source_module: 'check-in',
+        source_status: 'ready',
+        calculation_rule:
+          'Agrupamento por team_id dos check-ins em aberto para exibir equipes com pessoas ativas em campo no momento atual.',
       },
     };
   }
+
+  async getFieldTeamsNow(userId: string) {
+    const teams = await this.teamsService.list(userId);
+    const campaignId = teams.campaign_id;
+    const openCheckIns = await this.campaignCheckInModel.findAll({
+      where: {
+        campaignId,
+        status: CampaignCheckInStatus.CHECKED_IN,
+      },
+      include: [TeamModel, TeamMemberModel],
+      order: [['checkedInAt', 'DESC']],
+    });
+
+    const grouped = new Map<
+      string,
+      {
+        id: string;
+        name: string;
+        city: string;
+        activities: number;
+        people: string[];
+      }
+    >();
+
+    for (const item of openCheckIns) {
+      const teamId = item.teamId;
+      if (!teamId) continue;
+
+      const current = grouped.get(teamId) ?? {
+        id: teamId,
+        name: item.team?.name || 'Equipe de campo',
+        city: item.cityName,
+        activities: 0,
+        people: [],
+      };
+
+      current.activities += 1;
+      if (!current.people.includes(item.personName)) {
+        current.people.push(item.personName);
+      }
+
+      grouped.set(teamId, current);
+    }
+
+    return {
+      generated_at: new Date().toISOString(),
+      items: [...grouped.values()]
+        .sort(
+          (left, right) =>
+            right.activities - left.activities ||
+            left.name.localeCompare(right.name),
+        )
+        .map((item) => ({
+          ...item,
+          people: item.people.slice(0, 3),
+        })),
+    };
+  }
+}
+
+function resolveCheckInTimestamp(item: CampaignCheckInModel) {
+  if (item.status === CampaignCheckInStatus.CHECKED_OUT && item.checkedOutAt) {
+    return item.checkedOutAt;
+  }
+
+  if (item.status === CampaignCheckInStatus.CANCELED && item.updatedAt) {
+    return item.updatedAt;
+  }
+
+  return item.checkedInAt ?? item.updatedAt ?? item.createdAt;
+}
+
+function formatCheckInTag(item: CampaignCheckInModel) {
+  if (item.status === CampaignCheckInStatus.CHECKED_OUT) {
+    return 'Check-out';
+  }
+
+  if (item.status === CampaignCheckInStatus.CANCELED) {
+    return 'Cancelado';
+  }
+
+  if (item.activityType === 'PESQUISA_CAMPO') {
+    return 'Pesquisa';
+  }
+
+  return item.activityType;
+}
+
+function buildCheckInRealtimeDescription(item: CampaignCheckInModel) {
+  if (item.status === CampaignCheckInStatus.CHECKED_OUT) {
+    return `${item.personName} concluiu ${item.activityType.toLowerCase()} em ${item.cityName}`;
+  }
+
+  if (item.status === CampaignCheckInStatus.CANCELED) {
+    return `${item.personName} teve o check-in cancelado em ${item.cityName}`;
+  }
+
+  return `${item.personName} iniciou ${item.activityType.toLowerCase()} em ${item.cityName}`;
 }
 
 function getTodayRange() {

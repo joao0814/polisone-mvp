@@ -65,6 +65,40 @@ export function updateStoredUser(user) {
   return nextSession
 }
 
+export async function changePassword({ currentPassword, newPassword }) {
+  const session = getStoredSession()
+
+  if (!session?.accessToken) {
+    throw new Error('Sessão expirada. Faça login novamente.')
+  }
+
+  const response = await fetch(`${API_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+    body: JSON.stringify({
+      currentPassword,
+      newPassword,
+    }),
+  })
+
+  const data = await parseJson(response)
+
+  if (!response.ok) {
+    throw new Error(resolveApiError(data, 'Não foi possível alterar a senha.'))
+  }
+
+  const nextSession = {
+    ...session,
+    user: data,
+  }
+
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextSession))
+  return nextSession
+}
+
 async function authenticate(path, payload, fallbackMessage) {
   const response = await fetch(`${API_URL}${path}`, {
     method: 'POST',

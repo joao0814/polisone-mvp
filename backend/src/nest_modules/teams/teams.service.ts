@@ -4,6 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { UserModel } from '../../core/users/infrastructure/database/sequelize/models/user.model';
+import { UserRole } from '../../core/users/domain/enums/user-role.enum';
+import { PasswordHasher } from '../../shared/security/password-hasher';
+import { CampaignLeaderModel } from '../campaign-operations/campaign-leader.model';
 import { CampaignModel } from '../profile/campaign.model';
 import { campaignRegions, matchesRegion } from './campaign-regions';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -18,10 +22,15 @@ export class TeamsService {
   constructor(
     @InjectModel(CampaignModel)
     private readonly campaignModel: typeof CampaignModel,
+    @InjectModel(UserModel)
+    private readonly userModel: typeof UserModel,
+    @InjectModel(CampaignLeaderModel)
+    private readonly campaignLeaderModel: typeof CampaignLeaderModel,
     @InjectModel(TeamModel)
     private readonly teamModel: typeof TeamModel,
     @InjectModel(TeamMemberModel)
     private readonly teamMemberModel: typeof TeamMemberModel,
+    private readonly passwordHasher: PasswordHasher,
   ) {}
 
   async list(userId: string) {
@@ -34,10 +43,11 @@ export class TeamsService {
         ['name', 'ASC'],
       ],
     });
+    const leaderMap = await this.getLeaderMapForCampaign(campaign.id);
 
     return {
       campaign_id: campaign.id,
-      items: teams.map((team) => this.toHTTP(team)),
+      items: teams.map((team) => this.toHTTP(team, leaderMap.get(team.id) ?? null)),
     };
   }
 
@@ -47,19 +57,34 @@ export class TeamsService {
       campaignId: campaign.id,
       ...this.normalizeInput(dto),
     });
+    const leader = await this.syncTeamLeaderLink(
+      campaign.id,
+      team.id,
+      this.resolveLinkedLeaderId(dto),
+    );
 
-    return this.toHTTP(team);
+    return this.toHTTP(team, leader);
   }
 
   async getById(userId: string, teamId: string) {
     const team = await this.getOwnedTeam(userId, teamId, true);
-    return this.toHTTP(team);
+    const leader = await this.campaignLeaderModel.findOne({
+      where: { teamId: team.id },
+    });
+    return this.toHTTP(team, leader);
   }
 
   async update(userId: string, teamId: string, dto: UpdateTeamDto) {
+    const campaign = await this.getCampaignForUser(userId);
     const team = await this.getOwnedTeam(userId, teamId);
     await team.update(this.normalizeInput(dto));
-    return this.toHTTP(team);
+    const leader = await this.syncTeamLeaderLink(
+      campaign.id,
+      team.id,
+      this.resolveLinkedLeaderId(dto),
+      !this.hasLinkedLeaderInput(dto),
+    );
+    return this.toHTTP(team, leader);
   }
 
   async remove(userId: string, teamId: string) {
@@ -85,12 +110,41 @@ export class TeamsService {
 
   async createMember(userId: string, teamId: string, dto: CreateTeamMemberDto) {
     const team = await this.getOwnedTeam(userId, teamId);
+    const email = dto.email.toLowerCase().trim();
+    const existingUser = await this.userModel.findOne({ where: { email } });
+
+    if (existingUser) {
+      throw new BadRequestException(
+        'Ja existe um usuario cadastrado com este e-mail.',
+      );
+    }
+
+    const temporaryPassword = this.generateTemporaryPassword();
+    const passwordHash = await this.passwordHasher.hash(temporaryPassword);
+    const user = await this.userModel.create({
+      name: dto.name.trim(),
+      email,
+      passwordHash,
+      roles: [UserRole.USER],
+      isActive: true,
+      mustChangePassword: true,
+    });
+
     const member = await this.teamMemberModel.create({
       teamId: team.id,
       ...this.normalizeMemberInput(dto),
+      email,
+      userId: user.id,
     });
 
-    return this.memberToHTTP(member);
+    return {
+      ...this.memberToHTTP(member),
+      access_invite: {
+        email,
+        temporary_password: temporaryPassword,
+        must_change_password: true,
+      },
+    };
   }
 
   async updateMember(
@@ -100,16 +154,56 @@ export class TeamsService {
     dto: UpdateTeamMemberDto,
   ) {
     const member = await this.getOwnedMember(userId, teamId, memberId);
+    if (dto.email !== undefined) {
+      const email = dto.email.toLowerCase().trim();
+      const existingUser = await this.userModel.findOne({ where: { email } });
+
+      if (existingUser && existingUser.id !== member.userId) {
+        throw new BadRequestException(
+          'Ja existe um usuario cadastrado com este e-mail.',
+        );
+      }
+
+      if (member.userId) {
+        const user = await this.userModel.findByPk(member.userId);
+        if (user) {
+          await user.update({
+            email,
+            ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
+          });
+        }
+      }
+    }
+
+    if (member.userId && (dto.status !== undefined || dto.name !== undefined)) {
+      const user = await this.userModel.findByPk(member.userId);
+      if (user) {
+        await user.update({
+          ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
+          ...(dto.status !== undefined
+            ? { isActive: dto.status === TeamMemberStatus.ACTIVE }
+            : {}),
+        });
+      }
+    }
+
     await member.update(this.normalizeMemberInput(dto));
     return this.memberToHTTP(member);
   }
 
   async removeMember(userId: string, teamId: string, memberId: string) {
     const member = await this.getOwnedMember(userId, teamId, memberId);
+    if (member.userId) {
+      const user = await this.userModel.findByPk(member.userId);
+      if (user) {
+        await user.update({ isActive: false });
+      }
+    }
     await member.destroy();
   }
 
   async getSummary(userId: string) {
+    const campaign = await this.getCampaignForUser(userId);
     const teams = await this.getTeamsWithMembers(userId);
     const activeTeams = teams.filter((team) => team.status === TeamStatus.ACTIVE);
     const totalMembers = teams.reduce(
@@ -161,7 +255,9 @@ export class TeamsService {
       },
       metrics: {
         municipalities_active: cityMap.size,
-        leaders: teams.filter((team) => team.coordinatorName).length,
+        leaders: await this.campaignLeaderModel.count({
+          where: { campaignId: campaign.id },
+        }),
         representatives: totalMembers,
       },
       municipality_ranking: ranking,
@@ -204,9 +300,11 @@ export class TeamsService {
   }
 
   private async getCampaignForUser(userId: string) {
-    const campaign = await this.campaignModel.findOne({
-      where: { ownerUserId: userId },
-    });
+    const campaign =
+      (await this.campaignModel.findOne({
+        where: { ownerUserId: userId },
+      })) ??
+      (await this.resolveCampaignByTeamMember(userId));
 
     if (!campaign) {
       throw new BadRequestException(
@@ -215,6 +313,20 @@ export class TeamsService {
     }
 
     return campaign;
+  }
+
+  private async resolveCampaignByTeamMember(userId: string) {
+    const teamMember = await this.teamMemberModel.findOne({
+      where: { userId },
+      include: [TeamModel],
+    });
+
+    if (!teamMember?.teamId) {
+      return null;
+    }
+
+    const campaignId = teamMember.team?.campaignId;
+    return campaignId ? this.campaignModel.findByPk(campaignId) : null;
   }
 
   private async getOwnedTeam(userId: string, teamId: string, withMembers = false) {
@@ -311,6 +423,9 @@ export class TeamsService {
       ...(dto.coordinatorName !== undefined
         ? { coordinatorName: dto.coordinatorName.trim() || null }
         : {}),
+      ...(dto.plannedHeadcount !== undefined
+        ? { plannedHeadcount: Number(dto.plannedHeadcount) }
+        : {}),
       ...(dto.status !== undefined ? { status: dto.status } : {}),
       ...(dto.notes !== undefined ? { notes: dto.notes.trim() || null } : {}),
     };
@@ -320,6 +435,9 @@ export class TeamsService {
     return {
       ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
       ...(dto.phone !== undefined ? { phone: dto.phone.trim() || null } : {}),
+      ...(dto.email !== undefined
+        ? { email: dto.email.trim().toLowerCase() || null }
+        : {}),
       ...(dto.role !== undefined ? { role: dto.role.trim() } : {}),
       ...(dto.status !== undefined ? { status: dto.status } : {}),
       ...(dto.cityIbgeCode !== undefined
@@ -328,8 +446,84 @@ export class TeamsService {
     };
   }
 
-  private toHTTP(team: TeamModel) {
+  private async getLeaderMapForCampaign(campaignId: string) {
+    const leaders = await this.campaignLeaderModel.findAll({
+      where: { campaignId },
+      order: [['createdAt', 'DESC']],
+    });
+
+    return leaders.reduce<Map<string, CampaignLeaderModel>>((accumulator, leader) => {
+      if (leader.teamId && !accumulator.has(leader.teamId)) {
+        accumulator.set(leader.teamId, leader);
+      }
+
+      return accumulator;
+    }, new Map());
+  }
+
+  private async syncTeamLeaderLink(
+    campaignId: string,
+    teamId: string,
+    leaderId: string | null | undefined,
+    preserveCurrent = false,
+  ) {
+    if (preserveCurrent) {
+      return this.campaignLeaderModel.findOne({
+        where: { campaignId, teamId },
+      });
+    }
+
+    const currentLinks = await this.campaignLeaderModel.findAll({
+      where: { campaignId, teamId },
+    });
+
+    if (!leaderId) {
+      await Promise.all(
+        currentLinks.map((leader) => leader.update({ teamId: null })),
+      );
+      return null;
+    }
+
+    const leader = await this.campaignLeaderModel.findOne({
+      where: { campaignId, id: leaderId },
+    });
+
+    if (!leader) {
+      throw new BadRequestException(
+        'A lideranca vinculada nao pertence a campanha atual.',
+      );
+    }
+
+    await Promise.all(
+      currentLinks
+        .filter((item) => item.id !== leader.id)
+        .map((item) => item.update({ teamId: null })),
+    );
+
+    if (leader.teamId !== teamId) {
+      await leader.update({ teamId });
+    }
+
+    return leader;
+  }
+
+  private hasLinkedLeaderInput(dto: CreateTeamDto | UpdateTeamDto) {
+    return Object.prototype.hasOwnProperty.call(dto, 'linkedLeaderId');
+  }
+
+  private resolveLinkedLeaderId(dto: CreateTeamDto | UpdateTeamDto) {
+    if (!this.hasLinkedLeaderInput(dto)) {
+      return undefined;
+    }
+
+    return dto.linkedLeaderId || null;
+  }
+
+  private toHTTP(team: TeamModel, leader: CampaignLeaderModel | null) {
     const members = team.members ?? [];
+    const activeMembersCount = members.filter(
+      (member) => member.status === TeamMemberStatus.ACTIVE,
+    ).length;
 
     return {
       id: team.id,
@@ -339,9 +533,13 @@ export class TeamsService {
       city_name: team.cityName,
       state: team.state,
       coordinator_name: team.coordinatorName,
+      linked_leader_id: leader?.id ?? null,
+      linked_leader_name: leader?.name ?? null,
+      planned_headcount: team.plannedHeadcount,
       status: team.status ?? TeamStatus.ACTIVE,
       notes: team.notes,
       members_count: members.length,
+      active_members_count: activeMembersCount,
       members: members.length ? members.map((member) => this.memberToHTTP(member)) : undefined,
       created_at: team.createdAt,
       updated_at: team.updatedAt,
@@ -354,11 +552,18 @@ export class TeamsService {
       team_id: member.teamId,
       name: member.name,
       phone: member.phone,
+      email: member.email,
       role: member.role,
       status: member.status ?? TeamMemberStatus.ACTIVE,
       city_ibge_code: member.cityIbgeCode,
+      user_id: member.userId,
       created_at: member.createdAt,
       updated_at: member.updatedAt,
     };
+  }
+
+  private generateTemporaryPassword() {
+    const random = Math.random().toString(36).slice(-6).toUpperCase();
+    return `Polis@${random}`;
   }
 }

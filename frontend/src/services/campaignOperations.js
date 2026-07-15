@@ -20,3 +20,31 @@ export function getCampaignActivities() {
 export function getCampaignLeaders() {
   return apiRequest('/campaign-operations/leaders')
 }
+
+export function createCampaignLeader(payload) {
+  return apiRequest('/campaign-operations/leaders', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function createCampaignCheckIn(payload) {
+  return apiRequest('/campaign-operations/check-ins', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function checkoutCampaignCheckIn(checkInId, payload = {}) {
+  return apiRequest(`/campaign-operations/check-ins/${checkInId}/checkout`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function cancelCampaignCheckIn(checkInId) {
+  return apiRequest(`/campaign-operations/check-ins/${checkInId}/cancel`, {
+    method: 'PATCH',
+    body: JSON.stringify({}),
+  })
+}

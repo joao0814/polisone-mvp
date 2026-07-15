@@ -19,9 +19,7 @@
 }
 .workspace {
   min-width: 0;
-  width: min(100%, 1460px);
-  margin: 0 auto;
-  padding: 22px 20px 64px 26px;
+  padding: 28px 28px 72px 26px;
 }
 .header {
   display: grid;
@@ -30,7 +28,7 @@
   align-items: start;
 }
 .kicker {
-  margin: 4px 0 8px;
+  margin: 6px 0 18px;
   color: #fff;
   font-size: 15px;
   font-weight: 500;
@@ -135,7 +133,7 @@
   display: grid;
   grid-template-columns: repeat(5, minmax(150px, 1fr));
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 14px;
 }
 .summaryCard {
   min-height: 88px;
@@ -211,7 +209,7 @@
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 12px;
   padding: 18px;
 }
 .filterField,
@@ -293,7 +291,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.9fr);
   gap: 16px;
-  margin-top: 16px;
+  margin-top: 12px;
   align-items: start;
 }
 .tablePanel {
@@ -342,8 +340,9 @@
 }
 .teamsTable {
   width: 100%;
-  min-width: 980px;
+  min-width: 1120px;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 .teamsTable th {
   padding: 0 0 14px;
@@ -359,6 +358,54 @@
   color: #fff;
   font-size: 13px;
   vertical-align: middle;
+}
+.teamsTable th:nth-child(1),
+.teamsTable td:nth-child(1) {
+  width: 36%;
+  padding-right: 18px;
+}
+
+.teamsTable th:nth-child(2),
+.teamsTable td:nth-child(2) {
+  width: 13%;
+  padding-right: 16px;
+}
+
+.teamsTable th:nth-child(3),
+.teamsTable td:nth-child(3) {
+  width: 10%;
+  padding-right: 16px;
+}
+
+.teamsTable th:nth-child(4),
+.teamsTable td:nth-child(4) {
+  width: 11%;
+  padding-right: 16px;
+}
+
+.teamsTable th:nth-child(5),
+.teamsTable td:nth-child(5) {
+  width: 18%;
+  padding-right: 16px;
+}
+
+.teamsTable th:nth-child(6),
+.teamsTable td:nth-child(6) {
+  width: 9%;
+  padding-right: 12px;
+}
+
+.teamsTable th:nth-child(7),
+.teamsTable td:nth-child(7) {
+  width: 6%;
+  padding-right: 12px;
+  text-align: center;
+}
+
+.teamsTable th:nth-child(8),
+.teamsTable td:nth-child(8) {
+  width: 9%;
+  text-align: right;
 }
 .rowActive td {
   background: rgba(255, 202, 24, 0.05);
@@ -417,6 +464,16 @@
   background: rgba(240, 17, 25, 0.16);
   color: #ff8d93;
 }
+.membersMetric {
+  display: inline-flex;
+  align-items: center;
+}
+.membersMetric strong {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
 .inlineAction {
   min-height: 34px;
   padding: 0 14px;
@@ -453,6 +510,16 @@
   background: transparent !important;
   color: var(--yellow) !important;
 }
+.secondaryDangerButton {
+  border-color: rgba(255, 149, 24, 0.42) !important;
+  background: transparent !important;
+  color: #ff9518 !important;
+}
+.dangerButton {
+  border-color: rgba(240, 17, 25, 0.45) !important;
+  background: rgba(240, 17, 25, 0.15) !important;
+  color: #ff9d9d !important;
+}
 .membersList {
   display: grid;
   gap: 10px;
@@ -465,6 +532,12 @@
   border: 1px solid rgba(255, 202, 24, 0.18);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.03);
+}
+.memberCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 .memberCard strong {
   color: #fff;
@@ -482,6 +555,38 @@
   color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
+}
+.memberStatusBadge {
+  display: inline-flex;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.memberActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.memberActionButton,
+.memberActionDangerButton {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 202, 24, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--yellow);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.memberActionDangerButton {
+  border-color: rgba(240, 17, 25, 0.4);
+  color: #ff9d9d;
 }
 .loading {
   min-height: 100svh;
@@ -507,7 +612,6 @@
     grid-template-columns: 82px minmax(0, 1fr);
   }
   .workspace {
-    width: 100%;
     padding: 24px 18px 64px;
   }
   .filtersPanel,
@@ -523,7 +627,9 @@
     flex-direction: column;
   }
   .formActions button,
-  .inlineAction {
+  .inlineAction,
+  .memberActionButton,
+  .memberActionDangerButton {
     width: 100%;
   }
 }

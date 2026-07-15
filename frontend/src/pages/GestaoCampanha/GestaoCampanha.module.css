@@ -894,6 +894,13 @@
   gap: 13px;
 }
 
+.emptyPanelState {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .rankingItem {
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr) 34px;
@@ -1043,11 +1050,26 @@
   display: grid;
   gap: 11px;
   margin-top: 16px;
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
+}
+
+.activitiesList::-webkit-scrollbar,
+.fieldTeamsList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.activitiesList::-webkit-scrollbar-thumb,
+.fieldTeamsList::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 202, 24, 0.45);
 }
 
 .activityItem {
   display: grid;
-  grid-template-columns: 36px 58px minmax(0, 1fr) 74px;
+  grid-template-columns: 36px 58px minmax(0, 1fr) minmax(74px, 110px);
   align-items: center;
   gap: 10px;
 }
@@ -1085,20 +1107,29 @@
 
 .activityItem strong {
   min-height: 32px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 0 8px;
   border: 1px solid #ffca18;
   border-radius: 5px;
   color: #ffca18;
   font-size: 8px;
   font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .fieldTeamsList {
   display: grid;
   gap: 14px;
   margin-top: 15px;
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
 }
 
 .fieldTeamItem {
@@ -1123,9 +1154,9 @@
 .teamInfo strong {
   overflow: hidden;
   color: #fff;
-  font-size: 20px;
+  font-size: 12px;
   font-weight: 900;
-  line-height: 1.05;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1134,9 +1165,17 @@
   overflow: hidden;
   color: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.fieldTeamItem small {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: right;
 }
 
 .avatarStack {

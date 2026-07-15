@@ -17,6 +17,7 @@ export class AuthPresenter {
       email: user.email,
       roles: user.roles,
       is_active: user.isActive,
+      must_change_password: user.mustChangePassword,
       profile_image_path: user.profileImagePath,
       created_at: user.createdAt,
       updated_at: user.updatedAt,

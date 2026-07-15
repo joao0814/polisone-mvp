@@ -33,4 +33,15 @@ export class UserSequelizeRepository implements UserRepositoryContract {
 
     return UserModelMapper.toEntity(storedUser);
   }
+
+  async update(user: UserEntity): Promise<UserEntity> {
+    const current = await this.userModel.findByPk(user.id);
+
+    if (!current) {
+      throw new Error('User not found');
+    }
+
+    await current.update(UserModelMapper.toModel(user));
+    return UserModelMapper.toEntity(current);
+  }
 }

@@ -136,6 +136,13 @@
   line-height: 1.25;
 }
 
+.helperText {
+  margin: 0 0 14px;
+  color: #fff4c5;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 @media (max-width: 900px) {
   .page {
     min-height: 100svh;

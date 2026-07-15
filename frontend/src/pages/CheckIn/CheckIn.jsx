@@ -7,56 +7,99 @@ import {
   photoCards,
 } from "./data/checkInData";
 import {
+  cancelCampaignCheckIn,
+  checkoutCampaignCheckIn,
+  createCampaignCheckIn,
+  createCampaignLeader,
   getCampaignActivities,
   getCampaignCheckIns,
   getCampaignLeaders,
 } from "../../services/campaignOperations";
-import { getTeams } from "../../services/teams";
+import { createTeamMember, getTeams } from "../../services/teams";
 import styles from "./CheckIn.module.css";
+
+const ACTIVITY_TYPE_OPTIONS = [
+  { value: "PANFLETAGEM", label: "Panfletagem" },
+  { value: "ADESIVAGEM", label: "Adesivagem" },
+  { value: "VISITA", label: "Visita" },
+  { value: "REUNIAO", label: "Reuniao" },
+  { value: "EVENTO", label: "Evento" },
+  { value: "PESQUISA_CAMPO", label: "Pesquisa de campo" },
+  { value: "OUTRO", label: "Outro" },
+];
 
 function CheckIn({ session, onLogout }) {
   const userName = session?.user?.name || "Deputado Alan Leal";
   const [search, setSearch] = useState("");
+  const [tableSearch, setTableSearch] = useState("");
+  const [submittedSearch, setSubmittedSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [checkIns, setCheckIns] = useState([]);
   const [leaders, setLeaders] = useState([]);
   const [activities, setActivities] = useState([]);
   const [teamsResponse, setTeamsResponse] = useState(null);
+  const [isMutating, setIsMutating] = useState(false);
+  const [modalState, setModalState] = useState(null);
+  const [formError, setFormError] = useState("");
+  const [accessInvite, setAccessInvite] = useState(null);
+  const [createForm, setCreateForm] = useState({
+    personType: "LEADER",
+    mode: "existing",
+    selectedPersonId: "",
+    teamId: "",
+    activityType: "VISITA",
+    notes: "",
+    name: "",
+    email: "",
+    phone: "",
+    role: "Representante de campo",
+  });
+  const [statusForm, setStatusForm] = useState({
+    action: "checkout",
+    notes: "",
+  });
+  const pageSize = 10;
 
   useEffect(() => {
     let active = true;
-
-    Promise.allSettled([
-      getCampaignCheckIns(),
-      getCampaignLeaders(),
-      getCampaignActivities(),
-      getTeams(),
-    ]).then(([checkInsResult, leadersResult, activitiesResult, teamsResult]) => {
-      if (!active) return;
-
-      setCheckIns(
-        checkInsResult.status === "fulfilled"
-          ? checkInsResult.value?.items ?? []
-          : [],
-      );
-      setLeaders(
-        leadersResult.status === "fulfilled"
-          ? leadersResult.value?.items ?? []
-          : [],
-      );
-      setActivities(
-        activitiesResult.status === "fulfilled"
-          ? activitiesResult.value?.items ?? []
-          : [],
-      );
-      setTeamsResponse(
-        teamsResult.status === "fulfilled" ? teamsResult.value : null,
-      );
-    });
+    loadData({ isActive: () => active, searchTerm: submittedSearch });
 
     return () => {
       active = false;
     };
-  }, []);
+  }, [submittedSearch]);
+
+  async function loadData({
+    isActive = () => true,
+    searchTerm = submittedSearch,
+  } = {}) {
+    const [checkInsResult, leadersResult, activitiesResult, teamsResult] =
+      await Promise.allSettled([
+        getCampaignCheckIns({ search: searchTerm }),
+        getCampaignLeaders(),
+        getCampaignActivities(),
+        getTeams(),
+      ]);
+
+    if (!isActive()) return;
+
+    setCheckIns(
+      checkInsResult.status === "fulfilled"
+        ? checkInsResult.value?.items ?? []
+        : [],
+    );
+    setLeaders(
+      leadersResult.status === "fulfilled"
+        ? leadersResult.value?.items ?? []
+        : [],
+    );
+    setActivities(
+      activitiesResult.status === "fulfilled"
+        ? activitiesResult.value?.items ?? []
+        : [],
+    );
+    setTeamsResponse(teamsResult.status === "fulfilled" ? teamsResult.value : null);
+  }
 
   const todayKey = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const allRepresentatives = useMemo(
@@ -75,19 +118,20 @@ function CheckIn({ session, onLogout }) {
       checkIns.filter((item) => String(item.checked_in_at).slice(0, 10) === todayKey),
     [checkIns, todayKey],
   );
-  const searchTerm = normalizeText(search);
+  const tableSearchTerm = normalizeText(tableSearch);
   const activeTeamRows = useMemo(() => {
     return todayCheckIns
       .filter((item) => item.status === "CHECKED_IN")
       .filter((item) => {
-        if (!searchTerm) return true;
+        if (!tableSearchTerm) return true;
 
         return normalizeText(
           `${item.person_name} ${item.city_name} ${item.activity_type}`,
-        ).includes(searchTerm);
+        ).includes(tableSearchTerm);
       })
       .map((item) => ({
         id: item.id,
+        raw: item,
         name: item.person_name,
         city: item.city_name,
         badge: formatActivityType(item.activity_type),
@@ -97,7 +141,51 @@ function CheckIn({ session, onLogout }) {
         checkin: formatTime(item.checked_in_at),
         checkout: item.checked_out_at ? formatTime(item.checked_out_at) : "--",
       }));
-  }, [searchTerm, todayCheckIns]);
+  }, [tableSearchTerm, todayCheckIns]);
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(activeTeamRows.length / pageSize)),
+    [activeTeamRows.length],
+  );
+  const paginatedActiveTeamRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return activeTeamRows.slice(startIndex, startIndex + pageSize);
+  }, [activeTeamRows, currentPage]);
+  const paginationRange = useMemo(() => {
+    if (!activeTeamRows.length) {
+      return { start: 0, end: 0, total: 0 };
+    }
+
+    const start = (currentPage - 1) * pageSize + 1;
+    const end = Math.min(currentPage * pageSize, activeTeamRows.length);
+    return {
+      start,
+      end,
+      total: activeTeamRows.length,
+    };
+  }, [activeTeamRows.length, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [submittedSearch, tableSearch]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+  
+  function handleSearchSubmit(event) {
+    event.preventDefault();
+    setSubmittedSearch(search.trim());
+  }
+
+  function handleSearchClear(nextValue) {
+    setSearch(nextValue);
+
+    if (!nextValue.trim() && submittedSearch) {
+      setSubmittedSearch("");
+    }
+  }
 
   const summaryCards = useMemo(() => {
     const leadersToday = todayCheckIns.filter(
@@ -186,6 +274,366 @@ function CheckIn({ session, onLogout }) {
     ]);
   }, [allRepresentatives.length, leaders.length, todayCheckIns]);
 
+  const resolvedPhotoCards = useMemo(() => {
+    const latestCheckIn = todayCheckIns.find(
+      (item) => item.status === "CHECKED_IN",
+    );
+    const latestActivity = [...activities]
+      .sort(
+        (left, right) =>
+          new Date(right.happened_at || right.created_at).getTime() -
+          new Date(left.happened_at || left.created_at).getTime(),
+      )[0];
+    const latestCheckout = [...todayCheckIns]
+      .filter((item) => item.status === "CHECKED_OUT")
+      .sort(
+        (left, right) =>
+          new Date(right.checked_out_at || right.updated_at).getTime() -
+          new Date(left.checked_out_at || left.updated_at).getTime(),
+      )[0];
+
+    return photoCards.map((card) => {
+      if (card.title === "Foto de Check-in" && latestCheckIn) {
+        return {
+          ...card,
+          person: latestCheckIn.person_name,
+          time: formatTime(latestCheckIn.checked_in_at),
+          date: formatShortDate(latestCheckIn.checked_in_at),
+          location: `${latestCheckIn.city_name} - ${latestCheckIn.state}`,
+          role:
+            latestCheckIn.person_type === "LEADER"
+              ? "Lideranca"
+              : "Representante",
+          leader:
+            latestCheckIn.person_type === "LEADER"
+              ? latestCheckIn.person_name
+              : findLeaderForCity(latestCheckIn.city_ibge_code)?.name || "--",
+        };
+      }
+
+      if (card.title === "Fotos das atividades" && latestActivity) {
+        return {
+          ...card,
+          action: formatActivityType(latestActivity.activity_type),
+          person: findPersonName(latestActivity) || card.person,
+          time: formatTime(latestActivity.happened_at || latestActivity.created_at),
+          date: formatShortDate(latestActivity.happened_at || latestActivity.created_at),
+          location: `${latestActivity.city_name} - ${latestActivity.state}`,
+          role: "Operacao",
+          leader:
+            findLeaderForCity(latestActivity.city_ibge_code)?.name || "--",
+        };
+      }
+
+      if (card.title === "Foto de Check-out" && latestCheckout) {
+        return {
+          ...card,
+          person: latestCheckout.person_name,
+          time: formatTime(latestCheckout.checked_out_at),
+          date: formatShortDate(latestCheckout.checked_out_at),
+          location: `${latestCheckout.city_name} - ${latestCheckout.state}`,
+          role:
+            latestCheckout.person_type === "LEADER"
+              ? "Lideranca"
+              : "Representante",
+          leader:
+            latestCheckout.person_type === "LEADER"
+              ? latestCheckout.person_name
+              : findLeaderForCity(latestCheckout.city_ibge_code)?.name || "--",
+        };
+      }
+
+      return card;
+    });
+  }, [activities, leaders, todayCheckIns]);
+
+  async function submitCreateCheckIn() {
+    let selected = null;
+    let team = null;
+    let invite = null;
+
+    if (!isValidActivityType(createForm.activityType)) {
+      setFormError("Selecione um tipo de atividade valido.");
+      return;
+    }
+
+    setIsMutating(true);
+    setFormError("");
+    setAccessInvite(null);
+
+    try {
+      if (createForm.mode === "existing") {
+        selected =
+          createOptions.find((item) => item.id === createForm.selectedPersonId) || null;
+
+        if (!selected) {
+          setFormError("Selecione uma pessoa para registrar o check-in.");
+          setIsMutating(false);
+          return;
+        }
+
+        const teamId =
+          selected.team_id ??
+          findTeamForCity(selected.city_ibge_code, selected.city_name)?.id;
+
+        if (!teamId) {
+          setFormError("Nao foi encontrada equipe vinculada para registrar esse check-in.");
+          setIsMutating(false);
+          return;
+        }
+
+        team = findTeamById(teamId);
+      } else if (createForm.personType === "LEADER") {
+        team = findTeamById(createForm.teamId);
+
+        if (!team) {
+          setFormError("Selecione uma equipe para vincular a lideranca.");
+          setIsMutating(false);
+          return;
+        }
+
+        if (!createForm.name.trim()) {
+          setFormError("Informe o nome da lideranca.");
+          setIsMutating(false);
+          return;
+        }
+
+        const createdLeader = await createCampaignLeader({
+          name: createForm.name.trim(),
+          phone: createForm.phone.trim() || undefined,
+          teamId: team.id,
+          cityIbgeCode: team.city_ibge_code,
+          cityName: team.city_name,
+          state: team.state,
+          source: "check-in",
+          notes: createForm.notes.trim() || undefined,
+        });
+
+        selected = {
+          id: createdLeader.id,
+          name: createdLeader.name,
+          city_name: createdLeader.city_name,
+          city_ibge_code: createdLeader.city_ibge_code,
+          state: createdLeader.state,
+          team_id: createdLeader.team_id ?? team.id,
+        };
+      } else {
+        team = findTeamById(createForm.teamId);
+
+        if (!team) {
+          setFormError("Selecione uma equipe para cadastrar o representante.");
+          setIsMutating(false);
+          return;
+        }
+
+        if (!createForm.name.trim() || !createForm.email.trim()) {
+          setFormError("Informe nome e e-mail do representante.");
+          setIsMutating(false);
+          return;
+        }
+
+        const createdMember = await createTeamMember(team.id, {
+          name: createForm.name.trim(),
+          email: createForm.email.trim(),
+          phone: createForm.phone.trim() || undefined,
+          role: createForm.role.trim() || "Representante de campo",
+          cityIbgeCode: team.city_ibge_code,
+          status: "ACTIVE",
+        });
+
+        selected = {
+          id: createdMember.id,
+          name: createdMember.name,
+          city_name: team.city_name,
+          city_ibge_code: team.city_ibge_code,
+          state: team.state,
+          team_id: team.id,
+          member_id: createdMember.id,
+        };
+        invite = createdMember.access_invite ?? null;
+      }
+
+      await createCampaignCheckIn({
+        teamId: team.id,
+        personId: selected.id,
+        personName: selected.name,
+        personType: createForm.personType,
+        memberId:
+          createForm.personType === "REPRESENTATIVE"
+            ? selected.member_id ?? selected.id
+            : undefined,
+        cityIbgeCode: selected.city_ibge_code ?? team?.city_ibge_code,
+        cityName: selected.city_name ?? team?.city_name,
+        state: selected.state ?? team?.state ?? "SP",
+        activityType: createForm.activityType,
+        notes: createForm.notes.trim() || undefined,
+      });
+
+      await loadData();
+      setAccessInvite(invite);
+      if (!invite) {
+        closeModal();
+      }
+    } catch (error) {
+      setFormError(error.message || "Nao foi possivel registrar o check-in.");
+    } finally {
+      setIsMutating(false);
+    }
+  }
+
+  async function submitStatusAction() {
+    if (!modalState?.item) return;
+    setIsMutating(true);
+    setFormError("");
+    try {
+      if (statusForm.action === "checkout") {
+        await checkoutCampaignCheckIn(modalState.item.id, {
+          notes: statusForm.notes.trim() || undefined,
+        });
+      } else {
+        await cancelCampaignCheckIn(modalState.item.id);
+      }
+
+      await loadData();
+      closeModal();
+    } catch (error) {
+      setFormError(error.message || "Nao foi possivel atualizar o check-in.");
+    } finally {
+      setIsMutating(false);
+    }
+  }
+
+  function handleCreateCheckIn(personType) {
+    const nextOptions = getCreateOptions(personType);
+    const defaultTeamId =
+      personType === "REPRESENTATIVE"
+        ? teamsResponse?.items?.[0]?.id ?? ""
+        : "";
+    setCreateForm({
+      personType,
+      mode: "existing",
+      selectedPersonId: nextOptions[0]?.id ?? "",
+      teamId: defaultTeamId,
+      activityType: "VISITA",
+      notes: "",
+      name: "",
+      email: "",
+      phone: "",
+      role: "Representante de campo",
+    });
+    setFormError("");
+    setAccessInvite(null);
+    setModalState({ type: "create" });
+  }
+
+  function handleStatusAction(item) {
+    setStatusForm({
+      action: "checkout",
+      notes: "",
+    });
+    setFormError("");
+    setAccessInvite(null);
+    setModalState({ type: "status", item });
+  }
+
+  function closeModal() {
+    setModalState(null);
+    setFormError("");
+    setAccessInvite(null);
+    setCreateForm({
+      personType: "LEADER",
+      mode: "existing",
+      selectedPersonId: "",
+      teamId: "",
+      activityType: "VISITA",
+      notes: "",
+      name: "",
+      email: "",
+      phone: "",
+      role: "Representante de campo",
+    });
+    setStatusForm({
+      action: "checkout",
+      notes: "",
+    });
+  }
+
+  function findTeamForCity(cityIbgeCode, cityName) {
+    return (teamsResponse?.items ?? []).find(
+      (team) =>
+        team.city_ibge_code === cityIbgeCode ||
+        normalizeText(team.city_name) === normalizeText(cityName),
+    );
+  }
+
+  function findTeamById(teamId) {
+    return (teamsResponse?.items ?? []).find((team) => team.id === teamId);
+  }
+
+  function findLeaderForCity(cityIbgeCode) {
+    return leaders.find((leader) => leader.city_ibge_code === cityIbgeCode);
+  }
+
+  function findPersonName(activity) {
+    const representative = allRepresentatives.find(
+      (item) => item.id === activity.member_id,
+    );
+
+    if (representative) return representative.name;
+
+    const team = findTeamById(activity.team_id);
+    return team?.coordinator_name || team?.name || null;
+  }
+
+  function handleStatusKeyDown(event, item) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleStatusAction(item);
+    }
+  }
+
+  function getCreateOptions(personType) {
+    return personType === "LEADER"
+      ? leaders
+      : allRepresentatives.map((item) => ({
+          id: item.id,
+          name: item.name,
+          city_name: item.city_name,
+          team_id: item.team_id,
+          city_ibge_code: item.city_ibge_code,
+          state: findTeamById(item.team_id)?.state ?? "SP",
+          member_id: item.id,
+        }));
+  }
+
+  const createOptions = useMemo(
+    () => getCreateOptions(createForm.personType),
+    [allRepresentatives, createForm.personType, leaders, teamsResponse],
+  );
+  const selectedCreatePerson = useMemo(
+    () =>
+      createOptions.find((item) => item.id === createForm.selectedPersonId) ||
+      createOptions[0] ||
+      null,
+    [createForm.selectedPersonId, createOptions],
+  );
+  const selectedCreateTeam = useMemo(() => {
+    if (createForm.mode === "new") {
+      return createForm.teamId ? findTeamById(createForm.teamId) : null;
+    }
+
+    if (!selectedCreatePerson) return null;
+
+    const teamId =
+      selectedCreatePerson.team_id ??
+      findTeamForCity(
+        selectedCreatePerson.city_ibge_code,
+        selectedCreatePerson.city_name,
+      )?.id;
+
+    return teamId ? findTeamById(teamId) : null;
+  }, [createForm.mode, createForm.teamId, selectedCreatePerson, teamsResponse]);
+
   return (
     <main className={styles.page}>
       <Sidebar
@@ -207,11 +655,19 @@ function CheckIn({ session, onLogout }) {
           </div>
 
           <div className={styles.headerActions}>
-            <button type="button">
+            <button
+              type="button"
+              disabled={isMutating}
+              onClick={() => handleCreateCheckIn("LEADER")}
+            >
               <span aria-hidden="true" />
               Cadastrar nova lideranca
             </button>
-            <button type="button">
+            <button
+              type="button"
+              disabled={isMutating}
+              onClick={() => handleCreateCheckIn("REPRESENTATIVE")}
+            >
               <span aria-hidden="true" />
               Cadastrar representante
             </button>
@@ -240,14 +696,18 @@ function CheckIn({ session, onLogout }) {
           </div>
         </header>
 
-        <form className={styles.mainSearch} aria-label="Buscar lideranca ou representante">
+        <form
+          className={styles.mainSearch}
+          aria-label="Buscar lideranca ou representante"
+          onSubmit={handleSearchSubmit}
+        >
           <input
             placeholder="Buscar por lideranca/representante"
             type="search"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => handleSearchClear(event.target.value)}
           />
-          <button type="button">
+          <button type="submit">
             <span aria-hidden="true" />
             Buscar
           </button>
@@ -272,7 +732,13 @@ function CheckIn({ session, onLogout }) {
           <article className={styles.tablePanel}>
             <div className={styles.tableToolbar}>
               <label className={styles.searchBox}>
-                <input aria-label="Busca em equipes em atividade" placeholder="Busca" type="search" />
+                <input
+                  aria-label="Busca em equipes em atividade"
+                  placeholder="Busca"
+                  type="search"
+                  value={tableSearch}
+                  onChange={(event) => setTableSearch(event.target.value)}
+                />
                 <button type="button" aria-label="Buscar na lista">
                   <span aria-hidden="true" />
                 </button>
@@ -290,7 +756,7 @@ function CheckIn({ session, onLogout }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {activeTeamRows.map((team) => (
+                  {paginatedActiveTeamRows.map((team) => (
                     <tr key={team.id}>
                       <td>
                         <div className={styles.personCell}>
@@ -303,7 +769,15 @@ function CheckIn({ session, onLogout }) {
                         </div>
                       </td>
                       <td>
-                        <span className={styles.statusBadge}>{team.status}</span>
+                        <span
+                          className={styles.statusBadge}
+                          onClick={() => handleStatusAction(team.raw)}
+                          onKeyDown={(event) => handleStatusKeyDown(event, team.raw)}
+                          role="button"
+                          tabIndex={0}
+                        >
+                          {team.status}
+                        </span>
                       </td>
                       <td>{team.checkin}</td>
                       <td>{team.checkout}</td>
@@ -314,19 +788,22 @@ function CheckIn({ session, onLogout }) {
             </div>
 
             <footer className={styles.pagination}>
-              <span>Mostrando 1 a {activeTeamRows.length} de {activeTeamRows.length}</span>
+              <span>
+                Mostrando {paginationRange.start} a {paginationRange.end} de {paginationRange.total}
+              </span>
               <nav aria-label="Paginacao de check-in">
-                {Array.from({ length: 10 }).map((_, index) => (
+                {Array.from({ length: totalPages }).map((_, index) => (
                   <button
-                    className={index === 0 ? styles.pageActive : ""}
+                    className={currentPage === index + 1 ? styles.pageActive : ""}
                     key={`page-${index + 1}`}
                     type="button"
+                    onClick={() => setCurrentPage(index + 1)}
                   >
                     {index + 1}
                   </button>
                 ))}
               </nav>
-              <button type="button">10 por pagina</button>
+              <button type="button">{pageSize} por pagina</button>
             </footer>
           </article>
 
@@ -341,21 +818,523 @@ function CheckIn({ session, onLogout }) {
         </section>
 
         <section className={styles.photosPanel} aria-label="Fotos de check-in e atividades">
-          {photoCards.map((card) => (
+          {resolvedPhotoCards.map((card) => (
             <PhotoCard card={card} key={card.title} />
           ))}
         </section>
       </section>
+
+      {modalState ? (
+        <CheckInModal
+          accessInvite={accessInvite}
+          createForm={createForm}
+          createOptions={createOptions}
+          errorMessage={formError}
+          isMutating={isMutating}
+          modalState={modalState}
+          onClose={closeModal}
+          onCreateChange={setCreateForm}
+          onStatusChange={setStatusForm}
+          onSubmitCreate={submitCreateCheckIn}
+          onSubmitStatus={submitStatusAction}
+          selectedCreatePerson={selectedCreatePerson}
+          selectedCreateTeam={selectedCreateTeam}
+          statusForm={statusForm}
+          teams={teamsResponse?.items ?? []}
+        />
+      ) : null}
     </main>
   );
 }
 
+function CheckInModal({
+  accessInvite,
+  createForm,
+  createOptions,
+  errorMessage,
+  isMutating,
+  modalState,
+  onClose,
+  onCreateChange,
+  onStatusChange,
+  onSubmitCreate,
+  onSubmitStatus,
+  selectedCreatePerson,
+  selectedCreateTeam,
+  statusForm,
+  teams,
+}) {
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === "Escape" && !isMutating) {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMutating, onClose]);
+
+  if (modalState.type === "create") {
+    return (
+      <div className={styles.modalOverlay} onMouseDown={onClose}>
+        <div
+          className={styles.modalCard}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="checkin-modal-title"
+          onMouseDown={(event) => event.stopPropagation()}
+        >
+          <div className={styles.modalHeader}>
+            <div>
+              <span className={styles.modalEyebrow}>Operacao territorial</span>
+              <h2 className={styles.modalTitle} id="checkin-modal-title">
+                {createForm.personType === "LEADER"
+                  ? "Novo check-in de lideranca"
+                  : "Novo check-in de representante"}
+              </h2>
+            </div>
+            <button
+              className={styles.modalCloseButton}
+              type="button"
+              onClick={onClose}
+              disabled={isMutating}
+              aria-label="Fechar modal"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className={styles.modalBody}>
+            {accessInvite ? (
+              <div className={styles.accessInviteBox}>
+                <strong>Acesso inicial criado</strong>
+                <span>E-mail: {accessInvite.email}</span>
+                <span>Senha provisoria: {accessInvite.temporary_password}</span>
+                <small>No primeiro login, a pessoa precisara trocar a senha.</small>
+              </div>
+            ) : null}
+
+            <div className={styles.modalChoiceGroup}>
+              <button
+                type="button"
+                className={`${styles.modalChoiceButton} ${
+                  createForm.mode === "existing" ? styles.modalChoiceButtonActive : ""
+                }`}
+                onClick={() =>
+                  onCreateChange((current) => ({
+                    ...current,
+                    mode: "existing",
+                    selectedPersonId: createOptions[0]?.id ?? "",
+                  }))
+                }
+                disabled={isMutating}
+              >
+                Selecionar existente
+              </button>
+              <button
+                type="button"
+                className={`${styles.modalChoiceButton} ${
+                  createForm.mode === "new" ? styles.modalChoiceButtonActive : ""
+                }`}
+                onClick={() =>
+                  onCreateChange((current) => ({
+                    ...current,
+                    mode: "new",
+                  }))
+                }
+                disabled={isMutating}
+              >
+                Cadastrar novo
+              </button>
+            </div>
+
+            <div className={styles.modalGrid}>
+              {createForm.mode === "existing" ? (
+                <>
+                  <label className={styles.modalField}>
+                    <span>Pessoa</span>
+                    <select
+                      value={createForm.selectedPersonId}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          selectedPersonId: event.target.value,
+                        }))
+                      }
+                      disabled={isMutating || !createOptions.length}
+                    >
+                      {createOptions.length ? (
+                        createOptions.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name} - {item.city_name || "Sem cidade"}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="">Nenhuma opcao disponivel</option>
+                      )}
+                    </select>
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Tipo de atividade</span>
+                    <select
+                      value={createForm.activityType}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          activityType: event.target.value,
+                        }))
+                      }
+                      disabled={isMutating}
+                    >
+                      {ACTIVITY_TYPE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Municipio</span>
+                    <input
+                      type="text"
+                      value={selectedCreatePerson?.city_name || "--"}
+                      readOnly
+                    />
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Equipe</span>
+                    <input
+                      type="text"
+                      value={selectedCreateTeam?.name || "--"}
+                      readOnly
+                    />
+                  </label>
+                </>
+              ) : (
+                <>
+                  <label className={styles.modalField}>
+                    <span>Nome</span>
+                    <input
+                      type="text"
+                      value={createForm.name}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          name: event.target.value,
+                        }))
+                      }
+                      disabled={isMutating}
+                    />
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Equipe</span>
+                    <select
+                      value={createForm.teamId}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          teamId: event.target.value,
+                        }))
+                      }
+                      disabled={isMutating}
+                    >
+                      <option value="">Selecione</option>
+                      {teams.map((team) => (
+                        <option key={team.id} value={team.id}>
+                          {team.name} - {team.city_name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Tipo de atividade</span>
+                    <select
+                      value={createForm.activityType}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          activityType: event.target.value,
+                        }))
+                      }
+                      disabled={isMutating}
+                    >
+                      {ACTIVITY_TYPE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Municipio</span>
+                    <input
+                      type="text"
+                      value={selectedCreateTeam?.city_name || "--"}
+                      readOnly
+                    />
+                  </label>
+                </>
+              )}
+            </div>
+
+            {createForm.mode === "new" ? (
+              createForm.personType === "REPRESENTATIVE" ? (
+                <div className={styles.modalGrid}>
+                  <label className={styles.modalField}>
+                    <span>E-mail</span>
+                    <input
+                      type="email"
+                      value={createForm.email}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          email: event.target.value,
+                        }))
+                      }
+                      disabled={isMutating}
+                    />
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Funcao</span>
+                    <input
+                      type="text"
+                      value={createForm.role}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          role: event.target.value,
+                        }))
+                      }
+                      disabled={isMutating}
+                    />
+                  </label>
+
+                  <label className={styles.modalField}>
+                    <span>Telefone</span>
+                    <input
+                      type="text"
+                      value={createForm.phone}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          phone: formatPhoneInput(event.target.value),
+                        }))
+                      }
+                      disabled={isMutating}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div className={`${styles.modalGrid} ${styles.modalGridSpacingOnly}`}>
+                  <label className={styles.modalField}>
+                    <span>Telefone</span>
+                    <input
+                      type="text"
+                      value={createForm.phone}
+                      onChange={(event) =>
+                        onCreateChange((current) => ({
+                          ...current,
+                          phone: formatPhoneInput(event.target.value),
+                        }))
+                      }
+                      disabled={isMutating}
+                    />
+                  </label>
+                  <div aria-hidden="true" />
+                </div>
+              )
+            ) : null}
+
+            <label className={styles.modalTextareaField}>
+              <span>Observacao</span>
+              <textarea
+                rows={4}
+                maxLength={400}
+                value={createForm.notes}
+                onChange={(event) =>
+                  onCreateChange((current) => ({
+                    ...current,
+                    notes: event.target.value,
+                  }))
+                }
+                placeholder="Adicione algum contexto da atividade"
+                disabled={isMutating}
+              />
+            </label>
+
+            {errorMessage ? (
+              <p className={styles.modalErrorMessage}>{errorMessage}</p>
+            ) : null}
+          </div>
+
+          <div className={styles.modalActions}>
+            <button
+              className={styles.modalSecondaryButton}
+              type="button"
+              onClick={onClose}
+              disabled={isMutating}
+            >
+              Cancelar
+            </button>
+            <button
+              className={styles.modalPrimaryButton}
+              type="button"
+              onClick={accessInvite ? onClose : onSubmitCreate}
+              disabled={
+                isMutating ||
+                (createForm.mode === "existing" ? !createOptions.length : false)
+              }
+            >
+              {isMutating
+                ? "Salvando..."
+                : accessInvite
+                  ? "Fechar"
+                  : createForm.mode === "new"
+                  ? "Cadastrar e registrar"
+                  : "Registrar check-in"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.modalOverlay} onMouseDown={onClose}>
+      <div
+        className={styles.modalCard}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="checkin-status-modal-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className={styles.modalHeader}>
+          <div>
+            <span className={styles.modalEyebrow}>Operacao territorial</span>
+            <h2 className={styles.modalTitle} id="checkin-status-modal-title">
+              Atualizar check-in
+            </h2>
+          </div>
+          <button
+            className={styles.modalCloseButton}
+            type="button"
+            onClick={onClose}
+            disabled={isMutating}
+            aria-label="Fechar modal"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className={styles.modalBody}>
+          <div className={styles.modalSummaryBox}>
+            <strong>{modalState.item.person_name}</strong>
+            <span>{modalState.item.city_name}</span>
+            <small>{formatActivityType(modalState.item.activity_type)}</small>
+          </div>
+
+          <div className={styles.modalChoiceGroup}>
+            <button
+              type="button"
+              className={`${styles.modalChoiceButton} ${
+                statusForm.action === "checkout" ? styles.modalChoiceButtonActive : ""
+              }`}
+              onClick={() =>
+                onStatusChange((current) => ({ ...current, action: "checkout" }))
+              }
+              disabled={isMutating}
+            >
+              Fazer check-out
+            </button>
+            <button
+              type="button"
+              className={`${styles.modalChoiceButton} ${
+                statusForm.action === "cancel" ? styles.modalChoiceButtonActive : ""
+              }`}
+              onClick={() =>
+                onStatusChange((current) => ({ ...current, action: "cancel" }))
+              }
+              disabled={isMutating}
+            >
+              Cancelar check-in
+            </button>
+          </div>
+
+          {statusForm.action === "checkout" ? (
+            <label className={styles.modalTextareaField}>
+              <span>Observacao do check-out</span>
+              <textarea
+                rows={4}
+                maxLength={400}
+                value={statusForm.notes}
+                onChange={(event) =>
+                  onStatusChange((current) => ({
+                    ...current,
+                    notes: event.target.value,
+                  }))
+                }
+                placeholder="Adicione o encerramento da atividade"
+                disabled={isMutating}
+              />
+            </label>
+          ) : (
+            <p className={styles.modalWarningText}>
+              O cancelamento encerra esse registro imediatamente.
+            </p>
+          )}
+
+          {errorMessage ? (
+            <p className={styles.modalErrorMessage}>{errorMessage}</p>
+          ) : null}
+        </div>
+
+        <div className={styles.modalActions}>
+          <button
+            className={styles.modalSecondaryButton}
+            type="button"
+            onClick={onClose}
+            disabled={isMutating}
+          >
+            Voltar
+          </button>
+          <button
+            className={styles.modalPrimaryButton}
+            type="button"
+            onClick={onSubmitStatus}
+            disabled={isMutating}
+          >
+            {isMutating
+              ? "Salvando..."
+              : statusForm.action === "checkout"
+                ? "Confirmar check-out"
+                : "Confirmar cancelamento"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DonutPanel({ center, items, title }) {
+  const donutBackground = useMemo(() => buildDonutBackground(items), [items]);
+
   return (
     <article className={styles.donutPanel}>
       <h2>{title}</h2>
       <div className={styles.donutWrap}>
-        <div className={styles.donut} aria-hidden="true">
+        <div
+          className={styles.donut}
+          aria-hidden="true"
+          style={{ background: donutBackground }}
+        >
           {center ? (
             <>
               <strong>{center}</strong>
@@ -367,7 +1346,7 @@ function DonutPanel({ center, items, title }) {
           {items.map((item) => (
             <li key={item.label}>
               <i style={{ "--color": item.color }} />
-              <span>{item.label}</span>
+              <span>{item.label}{item.value ? ` - ${item.value}` : ""}</span>
             </li>
           ))}
         </ul>
@@ -409,8 +1388,31 @@ function buildPercentLegend(items) {
     .map((item, index) => ({
       label: item.label,
       value: formatPercentValue(item.total, total),
+      percent: total ? (item.total / total) * 100 : 0,
       color: item.color ?? palette[index % palette.length],
     }));
+}
+
+function buildDonutBackground(items) {
+  if (!items.length) {
+    return "radial-gradient(circle, #081522 0 45%, transparent 46%), conic-gradient(#223247 0 100%)";
+  }
+
+  let current = 0;
+  const slices = items.map((item) => {
+    const start = current;
+    const percent = Math.max(0, Number(item.percent) || 0);
+    current += percent;
+    return `${item.color} ${start}% ${Math.min(current, 100)}%`;
+  });
+
+  if (current < 100) {
+    slices.push(`#223247 ${current}% 100%`);
+  }
+
+  return `radial-gradient(circle, #081522 0 45%, transparent 46%), conic-gradient(${slices.join(
+    ", ",
+  )})`;
 }
 
 function groupByActivityType(items) {
@@ -454,6 +1456,15 @@ function formatTime(value) {
   }).format(new Date(value));
 }
 
+function formatShortDate(value) {
+  if (!value) return "--";
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+  }).format(new Date(value));
+}
+
 function getInitials(name) {
   const [firstName = "", lastName = ""] = String(name || "").split(" ");
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || "CF";
@@ -487,6 +1498,31 @@ function resolveBadgeTone(activityType) {
     default:
       return "cyan";
   }
+}
+
+function isValidActivityType(value) {
+  return [
+    "PANFLETAGEM",
+    "ADESIVAGEM",
+    "VISITA",
+    "REUNIAO",
+    "EVENTO",
+    "PESQUISA_CAMPO",
+    "OUTRO",
+  ].includes(String(value || "").toUpperCase());
+}
+
+function formatPhoneInput(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+
+  if (!digits) return "";
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
 export default CheckIn;

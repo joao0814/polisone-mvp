@@ -12,6 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 import { CampaignModel } from '../profile/campaign.model';
+import { TeamModel } from '../teams/team.model';
 
 export enum CampaignLeaderStatus {
   ACTIVE = 'ACTIVE',
@@ -63,8 +64,16 @@ export class CampaignLeaderModel extends Model {
   @Column(DataType.TEXT)
   declare notes: string | null;
 
+  @ForeignKey(() => TeamModel)
+  @AllowNull(true)
+  @Column(DataType.UUID)
+  declare teamId: string | null;
+
   @BelongsTo(() => CampaignModel, 'campaignId')
   declare campaign?: CampaignModel;
+
+  @BelongsTo(() => TeamModel, 'teamId')
+  declare team?: TeamModel;
 
   @CreatedAt
   declare createdAt: Date;

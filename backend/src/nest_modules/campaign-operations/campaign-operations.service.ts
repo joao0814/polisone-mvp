@@ -18,6 +18,7 @@ import { CreateFieldActivityDto } from './dto/create-field-activity.dto';
 import { ListCampaignCheckInsDto } from './dto/list-campaign-check-ins.dto';
 import { UpdateCampaignCheckInDto } from './dto/update-campaign-check-in.dto';
 import { FieldActivityModel } from './field-activity.model';
+import { TeamMemberModel } from '../teams/team-member.model';
 import { TeamModel } from '../teams/team.model';
 
 @Injectable()
@@ -31,12 +32,15 @@ export class CampaignOperationsService {
     private readonly fieldActivityModel: typeof FieldActivityModel,
     @InjectModel(CampaignLeaderModel)
     private readonly campaignLeaderModel: typeof CampaignLeaderModel,
+    @InjectModel(TeamMemberModel)
+    private readonly teamMemberModel: typeof TeamMemberModel,
     @InjectModel(TeamModel)
     private readonly teamModel: typeof TeamModel,
   ) {}
 
   async listCheckIns(userId: string, query: ListCampaignCheckInsDto) {
     const campaign = await this.getCampaignForUser(userId);
+    const normalizedSearch = query.search?.trim();
     const where = {
       campaignId: campaign.id,
       ...(query.status ? { status: query.status } : {}),
@@ -50,6 +54,16 @@ export class CampaignOperationsService {
               ...(query.dateFrom ? { [Op.gte]: new Date(`${query.dateFrom}T00:00:00`) } : {}),
               ...(query.dateTo ? { [Op.lte]: new Date(`${query.dateTo}T23:59:59.999`) } : {}),
             },
+          }
+        : {}),
+      ...(normalizedSearch
+        ? {
+            [Op.or]: [
+              { personName: { [Op.iLike]: `%${normalizedSearch}%` } },
+              { cityName: { [Op.iLike]: `%${normalizedSearch}%` } },
+              { state: { [Op.iLike]: `%${normalizedSearch}%` } },
+              { activityType: { [Op.iLike]: `%${normalizedSearch}%` } },
+            ],
           }
         : {}),
     };
@@ -180,6 +194,10 @@ export class CampaignOperationsService {
 
   async createLeader(userId: string, dto: CreateCampaignLeaderDto) {
     const campaign = await this.getCampaignForUser(userId);
+    if (dto.teamId) {
+      await this.ensureOwnedTeam(campaign.id, dto.teamId);
+    }
+
     const item = await this.campaignLeaderModel.create({
       campaignId: campaign.id,
       ...this.normalizeLeaderInput(dto),
@@ -189,9 +207,11 @@ export class CampaignOperationsService {
   }
 
   private async getCampaignForUser(userId: string) {
-    const campaign = await this.campaignModel.findOne({
-      where: { ownerUserId: userId },
-    });
+    const campaign =
+      (await this.campaignModel.findOne({
+        where: { ownerUserId: userId },
+      })) ??
+      (await this.resolveCampaignByTeamMember(userId));
 
     if (!campaign) {
       throw new BadRequestException(
@@ -200,6 +220,19 @@ export class CampaignOperationsService {
     }
 
     return campaign;
+  }
+
+  private async resolveCampaignByTeamMember(userId: string) {
+    const member = await this.teamMemberModel.findOne({
+      where: { userId },
+      include: [TeamModel],
+    });
+
+    if (!member?.team?.campaignId) {
+      return null;
+    }
+
+    return this.campaignModel.findByPk(member.team.campaignId);
   }
 
   private async getOwnedCheckIn(userId: string, checkInId: string) {
@@ -313,6 +346,7 @@ export class CampaignOperationsService {
       source: dto.source?.trim() || null,
       status: dto.status,
       notes: dto.notes?.trim() || null,
+      teamId: dto.teamId || null,
     };
   }
 
@@ -360,6 +394,7 @@ export class CampaignOperationsService {
     return {
       id: item.id,
       campaign_id: item.campaignId,
+      team_id: item.teamId,
       name: item.name,
       phone: item.phone,
       city_ibge_code: item.cityIbgeCode,

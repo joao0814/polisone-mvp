@@ -7,6 +7,7 @@ export type UserOutput = {
   email: string;
   roles: UserRole[];
   isActive: boolean;
+  mustChangePassword: boolean;
   profileImagePath: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +21,7 @@ export class UserOutputMapper {
       email: user.email,
       roles: user.roles,
       isActive: user.isActive,
+      mustChangePassword: user.mustChangePassword,
       profileImagePath: user.profileImagePath,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

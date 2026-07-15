@@ -11,6 +11,7 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { UserModel } from '../../core/users/infrastructure/database/sequelize/models/user.model';
 import { TeamModel } from './team.model';
 
 export enum TeamMemberStatus {
@@ -38,6 +39,10 @@ export class TeamMemberModel extends Model {
   @Column(DataType.STRING(20))
   declare phone: string | null;
 
+  @AllowNull(true)
+  @Column(DataType.STRING(180))
+  declare email: string | null;
+
   @AllowNull(false)
   @Column(DataType.STRING(80))
   declare role: string;
@@ -51,8 +56,16 @@ export class TeamMemberModel extends Model {
   @Column(DataType.STRING(7))
   declare cityIbgeCode: string | null;
 
+  @ForeignKey(() => UserModel)
+  @AllowNull(true)
+  @Column(DataType.UUID)
+  declare userId: string | null;
+
   @BelongsTo(() => TeamModel, 'teamId')
   declare team?: TeamModel;
+
+  @BelongsTo(() => UserModel, 'userId')
+  declare user?: UserModel;
 
   @CreatedAt
   declare createdAt: Date;

@@ -10,6 +10,7 @@ export class UserModelMapper {
       passwordHash: model.passwordHash,
       roles: model.roles,
       isActive: model.isActive,
+      mustChangePassword: model.mustChangePassword,
       profileImagePath: model.profileImagePath,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
@@ -24,6 +25,7 @@ export class UserModelMapper {
       passwordHash: user.passwordHash,
       roles: user.roles,
       isActive: user.isActive,
+      mustChangePassword: user.mustChangePassword,
       profileImagePath: user.profileImagePath,
     };
   }

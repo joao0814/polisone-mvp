@@ -10,13 +10,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UserSequelizeRepository } from '../../core/users/infrastructure/database/sequelize/repositories/user.repository';
+import { USER_REPOSITORY } from '../../core/users/domain/contracts/user-repository.interface';
 import { UserRole } from '../../core/users/domain/enums/user-role.enum';
 import { GetUserByIdUseCase } from '../../core/users/application/use_case/get-user-by-id.use-case';
 import { RegisterUserUseCase } from '../../core/users/application/use_case/register-user.use-case';
 import { ValidateUserCredentialsUseCase } from '../../core/users/application/use_case/validate-user-credentials.use-case';
 import { UserOutput } from '../../core/users/application/shared/user.output';
+import { PasswordHasher } from '../../shared/security/password-hasher';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Roles } from './decorators/roles.decorator';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -39,6 +43,9 @@ export class AuthController {
     @Inject(GET_USER_BY_ID_USE_CASE)
     private readonly getUserByIdUseCase: GetUserByIdUseCase,
     private readonly jwtService: JwtService,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserSequelizeRepository,
+    private readonly passwordHasher: PasswordHasher,
   ) {}
 
   @Post('register')
@@ -107,6 +114,42 @@ export class AuthController {
       user_id: currentUser.sub,
       required_role: UserRole.ADMIN,
     };
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @CurrentUser() currentUser: AuthenticatedUser,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    const user = await this.userRepository.findById(currentUser.sub);
+
+    if (!user || !user.isActive) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.mustChangePassword) {
+      if (!dto.currentPassword) {
+        throw new UnauthorizedException('Current password is required');
+      }
+
+      const passwordMatches = await this.passwordHasher.compare(
+        dto.currentPassword,
+        user.passwordHash,
+      );
+
+      if (!passwordMatches) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+    }
+
+    user.updatePassword(
+      await this.passwordHasher.hash(dto.newPassword),
+      false,
+    );
+
+    const updatedUser = await this.userRepository.update(user);
+    return AuthPresenter.userToHTTP(updatedUser);
   }
 
   private signAccessToken(user: UserOutput): Promise<string> {

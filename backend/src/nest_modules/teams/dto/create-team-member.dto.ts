@@ -1,4 +1,5 @@
 import {
+  IsEmail,
   IsIn,
   IsOptional,
   IsString,
@@ -17,6 +18,10 @@ export class CreateTeamMemberDto {
   @IsOptional()
   @Matches(/^\+?[\d\s\-()]{8,20}$/)
   phone?: string;
+
+  @IsEmail()
+  @MaxLength(180)
+  email!: string;
 
   @IsString()
   @MinLength(2)

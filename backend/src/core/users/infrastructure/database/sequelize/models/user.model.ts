@@ -48,6 +48,11 @@ export class UserModel extends Model {
   @Column(DataType.BOOLEAN)
   declare isActive: boolean;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  declare mustChangePassword: boolean;
+
   @AllowNull(true)
   @Column(DataType.STRING(500))
   declare profileImagePath: string | null;

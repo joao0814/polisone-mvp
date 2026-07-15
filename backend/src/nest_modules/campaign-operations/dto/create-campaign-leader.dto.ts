@@ -1,4 +1,11 @@
-import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  ValidateIf,
+} from 'class-validator';
 import { CampaignLeaderStatus } from '../campaign-leader.model';
 
 export class CreateCampaignLeaderDto {
@@ -35,4 +42,8 @@ export class CreateCampaignLeaderDto {
   @IsOptional()
   @IsString()
   notes?: string | null;
+
+  @ValidateIf((_, value) => value !== null && value !== undefined && value !== '')
+  @IsUUID()
+  teamId?: string | null;
 }

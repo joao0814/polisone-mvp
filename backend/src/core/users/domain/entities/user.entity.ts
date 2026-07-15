@@ -8,6 +8,7 @@ export type UserProps = {
   passwordHash: string;
   roles?: UserRole[];
   isActive?: boolean;
+  mustChangePassword?: boolean;
   profileImagePath?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
@@ -24,6 +25,7 @@ export class UserEntity {
       passwordHash: props.passwordHash,
       roles: props.roles?.length ? props.roles : [UserRole.USER],
       isActive: props.isActive ?? true,
+      mustChangePassword: props.mustChangePassword ?? false,
       profileImagePath: props.profileImagePath ?? null,
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? new Date(),
@@ -61,6 +63,10 @@ export class UserEntity {
     return this.props.profileImagePath;
   }
 
+  get mustChangePassword(): boolean {
+    return this.props.mustChangePassword;
+  }
+
   get createdAt(): Date {
     return this.props.createdAt;
   }
@@ -75,6 +81,12 @@ export class UserEntity {
 
   deactivate(): void {
     this.props.isActive = false;
+    this.touch();
+  }
+
+  updatePassword(passwordHash: string, mustChangePassword = false): void {
+    this.props.passwordHash = passwordHash;
+    this.props.mustChangePassword = mustChangePassword;
     this.touch();
   }
 

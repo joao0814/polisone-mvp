@@ -16,6 +16,9 @@ import { createFieldActivitiesTableMigration } from './014-create-field-activiti
 import { createCampaignLeadersTableMigration } from './015-create-campaign-leaders-table';
 import { createCampaignCostsTableMigration } from './016-create-campaign-costs-table';
 import { extendCampaignCheckInsTableMigration } from './017-extend-campaign-check-ins-table';
+import { addTeamMemberAccessAndForcePasswordChangeMigration } from './018-add-team-member-access-and-force-password-change';
+import { addPlannedHeadcountToTeamsMigration } from './019-add-planned-headcount-to-teams';
+import { addTeamLinkToCampaignLeadersMigration } from './020-add-team-link-to-campaign-leaders';
 
 export const migrations: Migration[] = [
   createUsersTableMigration,
@@ -35,4 +38,7 @@ export const migrations: Migration[] = [
   createCampaignLeadersTableMigration,
   createCampaignCostsTableMigration,
   extendCampaignCheckInsTableMigration,
+  addTeamMemberAccessAndForcePasswordChangeMigration,
+  addPlannedHeadcountToTeamsMigration,
+  addTeamLinkToCampaignLeadersMigration,
 ];

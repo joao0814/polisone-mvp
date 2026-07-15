@@ -8,6 +8,10 @@ export function getDailySummary() {
   return apiRequest('/dashboard/daily-summary')
 }
 
+export function getOverviewMetrics() {
+  return apiRequest('/dashboard/overview-metrics')
+}
+
 export function getMunicipalityRanking() {
   return apiRequest('/dashboard/municipality-ranking')
 }
@@ -18,4 +22,8 @@ export function getCostRanking(groupBy = 'region') {
 
 export function getRealtimeActivities() {
   return apiRequest('/dashboard/realtime-activities')
+}
+
+export function getFieldTeamsNow() {
+  return apiRequest('/dashboard/field-teams-now')
 }

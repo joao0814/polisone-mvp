@@ -22,6 +22,11 @@ export class DashboardController {
     return this.dashboardService.getDailySummary(currentUser.sub);
   }
 
+  @Get('overview-metrics')
+  overviewMetrics(@CurrentUser() currentUser: AuthenticatedUser) {
+    return this.dashboardService.getOverviewMetrics(currentUser.sub);
+  }
+
   @Get('municipality-ranking')
   municipalityRanking(@CurrentUser() currentUser: AuthenticatedUser) {
     return this.dashboardService.getMunicipalityRanking(currentUser.sub);
@@ -41,5 +46,10 @@ export class DashboardController {
   @Get('realtime-activities')
   realtimeActivities(@CurrentUser() currentUser: AuthenticatedUser) {
     return this.dashboardService.getRealtimeActivities(currentUser.sub);
+  }
+
+  @Get('field-teams-now')
+  fieldTeamsNow(@CurrentUser() currentUser: AuthenticatedUser) {
+    return this.dashboardService.getFieldTeamsNow(currentUser.sub);
   }
 }

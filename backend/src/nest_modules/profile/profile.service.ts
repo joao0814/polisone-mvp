@@ -7,6 +7,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { UserModel } from '../../core/users/infrastructure/database/sequelize/models/user.model';
 import { CampaignModel, CampaignStatus } from './campaign.model';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { TeamMemberModel } from '../teams/team-member.model';
+import { TeamModel } from '../teams/team.model';
 
 type UpdateProfileInput = UpdateProfileDto & { profileImagePath?: string };
 
@@ -16,15 +18,15 @@ export class ProfileService {
     @InjectModel(UserModel) private readonly userModel: typeof UserModel,
     @InjectModel(CampaignModel)
     private readonly campaignModel: typeof CampaignModel,
+    @InjectModel(TeamMemberModel)
+    private readonly teamMemberModel: typeof TeamMemberModel,
   ) {}
 
   async get(userId: string) {
     const user = await this.userModel.findByPk(userId);
     if (!user) throw new NotFoundException('User not found');
 
-    const campaign = await this.campaignModel.findOne({
-      where: { ownerUserId: userId },
-    });
+    const campaign = await this.getCampaignForUser(userId);
 
     return this.toHTTP(user, campaign);
   }
@@ -48,11 +50,15 @@ export class ProfileService {
       input.intendedOffice,
     ].some((value) => value !== undefined);
 
-    let campaign = await this.campaignModel.findOne({
-      where: { ownerUserId: userId },
-    });
+    let campaign = await this.getCampaignForUser(userId);
 
     if (hasCampaignInput) {
+      if (campaign && campaign.ownerUserId !== userId) {
+        throw new BadRequestException(
+          'Apenas o responsavel principal pode editar os dados da campanha.',
+        );
+      }
+
       const campaignValues = this.buildCampaignValues(input, campaign);
       if (campaign) {
         await campaign.update(campaignValues);
@@ -65,6 +71,27 @@ export class ProfileService {
     }
 
     return this.toHTTP(user, campaign);
+  }
+
+  private async getCampaignForUser(userId: string) {
+    const directCampaign = await this.campaignModel.findOne({
+      where: { ownerUserId: userId },
+    });
+
+    if (directCampaign) {
+      return directCampaign;
+    }
+
+    const member = await this.teamMemberModel.findOne({
+      where: { userId },
+      include: [TeamModel],
+    });
+
+    if (!member?.team?.campaignId) {
+      return null;
+    }
+
+    return this.campaignModel.findByPk(member.team.campaignId);
   }
 
   private buildCampaignValues(
@@ -123,6 +150,7 @@ export class ProfileService {
         email: user.email,
         roles: user.roles,
         is_active: user.isActive,
+        must_change_password: user.mustChangePassword,
         profile_image_path: user.profileImagePath ?? null,
       },
       campaign: campaign

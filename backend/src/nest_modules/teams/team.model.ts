@@ -52,6 +52,10 @@ export class TeamModel extends Model {
   @Column(DataType.STRING(140))
   declare coordinatorName: string | null;
 
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  declare plannedHeadcount: number | null;
+
   @AllowNull(false)
   @Default(TeamStatus.ACTIVE)
   @Column(DataType.STRING(20))
