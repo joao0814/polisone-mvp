@@ -18,7 +18,7 @@
 
 .header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 214px 404px;
+  grid-template-columns: minmax(0, 1fr) 404px;
   gap: 18px;
   align-items: start;
 }
@@ -101,8 +101,8 @@
 
 .headerRight {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 64px;
-  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 70px;
+  gap: 10px;
   align-items: stretch;
 }
 
@@ -120,7 +120,7 @@
 
 .countdownCard {
   min-height: 52px;
-  padding: 5px 8px;
+  padding: 5px 10px;
 }
 
 .countdownTitle {
@@ -133,7 +133,7 @@
 
 .countdownBody {
   display: grid;
-  grid-template-columns: auto 82px minmax(86px, 1fr);
+  grid-template-columns: auto minmax(82px, 96px) minmax(96px, 1fr);
   align-items: center;
   gap: 7px;
 }
@@ -354,7 +354,9 @@
 }
 
 .tablePanel {
-  min-height: 536px;
+  height: 668px;
+  display: flex;
+  flex-direction: column;
   padding: 16px 19px 28px;
   border-radius: 24px;
 }
@@ -396,6 +398,22 @@
 
 .tableScroll {
   overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+  overscroll-behavior: contain;
+  contain: layout paint;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+
+.tableScroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.tableScroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 202, 24, 0.42);
 }
 
 .activityTable {
@@ -422,6 +440,13 @@
   vertical-align: middle;
 }
 
+.activityTable th:nth-child(3),
+.activityTable td:nth-child(3),
+.activityTable th:nth-child(4),
+.activityTable td:nth-child(4) {
+  text-align: center;
+}
+
 .activityTable th:nth-child(1),
 .activityTable td:nth-child(1) {
   width: 40%;
@@ -429,20 +454,25 @@
 
 .activityTable th:nth-child(2),
 .activityTable td:nth-child(2) {
-  width: 22%;
+  width: 18%;
 }
 
 .activityTable th:nth-child(3),
-.activityTable td:nth-child(3),
+.activityTable td:nth-child(3) {
+  width: 16%;
+}
+
 .activityTable th:nth-child(4),
-.activityTable td:nth-child(4) {
-  width: 19%;
+.activityTable td:nth-child(4),
+.activityTable th:nth-child(5),
+.activityTable td:nth-child(5) {
+  width: 13%;
   text-align: center;
 }
 
 .personCell {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-columns: 40px minmax(0, 1fr);
   gap: 9px;
   align-items: center;
 }
@@ -473,23 +503,26 @@
   font-size: 11px;
 }
 
-.personCell em {
-  min-width: 64px;
-  min-height: 14px;
+.activityBadge {
+  min-width: 116px;
+  min-height: 28px;
   display: inline-grid;
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 999px;
-  font-size: 5px;
+  padding: 0 12px;
+  font-size: 9px;
   font-style: normal;
   font-weight: 900;
+  text-transform: uppercase;
 }
 
 .statusBadge {
   display: inline-grid;
   place-items: center;
   min-width: 92px;
-  min-height: 24px;
+  min-height: 28px;
+  padding: 0 12px;
   border: 1px solid var(--yellow);
   border-radius: 6px;
   background: rgba(255, 202, 24, 0.16);
@@ -502,7 +535,8 @@
   grid-template-columns: 1fr auto 1fr;
   gap: 18px;
   align-items: center;
-  margin-top: 46px;
+  margin-top: auto;
+  padding-top: 46px;
   color: #ffffff;
   font-size: 11px;
 }
@@ -574,11 +608,13 @@
 }
 
 .donut strong {
+  color: #ffffff;
   font-size: 34px;
   line-height: 1;
 }
 
 .donut small {
+  color: var(--yellow);
   color: var(--yellow);
   font-size: 10px;
   font-weight: 900;

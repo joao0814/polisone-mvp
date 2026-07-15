@@ -10,12 +10,11 @@ import {
   cancelCampaignCheckIn,
   checkoutCampaignCheckIn,
   createCampaignCheckIn,
-  createCampaignLeader,
   getCampaignActivities,
   getCampaignCheckIns,
   getCampaignLeaders,
 } from "../../services/campaignOperations";
-import { createTeamMember, getTeams } from "../../services/teams";
+import { getTeams } from "../../services/teams";
 import styles from "./CheckIn.module.css";
 
 const ACTIVITY_TYPE_OPTIONS = [
@@ -41,18 +40,11 @@ function CheckIn({ session, onLogout }) {
   const [isMutating, setIsMutating] = useState(false);
   const [modalState, setModalState] = useState(null);
   const [formError, setFormError] = useState("");
-  const [accessInvite, setAccessInvite] = useState(null);
   const [createForm, setCreateForm] = useState({
     personType: "LEADER",
-    mode: "existing",
     selectedPersonId: "",
-    teamId: "",
     activityType: "VISITA",
     notes: "",
-    name: "",
-    email: "",
-    phone: "",
-    role: "Representante de campo",
   });
   const [statusForm, setStatusForm] = useState({
     action: "checkout",
@@ -350,7 +342,6 @@ function CheckIn({ session, onLogout }) {
   async function submitCreateCheckIn() {
     let selected = null;
     let team = null;
-    let invite = null;
 
     if (!isValidActivityType(createForm.activityType)) {
       setFormError("Selecione um tipo de atividade valido.");
@@ -362,96 +353,26 @@ function CheckIn({ session, onLogout }) {
     setAccessInvite(null);
 
     try {
-      if (createForm.mode === "existing") {
-        selected =
-          createOptions.find((item) => item.id === createForm.selectedPersonId) || null;
+      selected =
+        createOptions.find((item) => item.id === createForm.selectedPersonId) || null;
 
-        if (!selected) {
-          setFormError("Selecione uma pessoa para registrar o check-in.");
-          setIsMutating(false);
-          return;
-        }
-
-        const teamId =
-          selected.team_id ??
-          findTeamForCity(selected.city_ibge_code, selected.city_name)?.id;
-
-        if (!teamId) {
-          setFormError("Nao foi encontrada equipe vinculada para registrar esse check-in.");
-          setIsMutating(false);
-          return;
-        }
-
-        team = findTeamById(teamId);
-      } else if (createForm.personType === "LEADER") {
-        team = findTeamById(createForm.teamId);
-
-        if (!team) {
-          setFormError("Selecione uma equipe para vincular a lideranca.");
-          setIsMutating(false);
-          return;
-        }
-
-        if (!createForm.name.trim()) {
-          setFormError("Informe o nome da lideranca.");
-          setIsMutating(false);
-          return;
-        }
-
-        const createdLeader = await createCampaignLeader({
-          name: createForm.name.trim(),
-          phone: createForm.phone.trim() || undefined,
-          teamId: team.id,
-          cityIbgeCode: team.city_ibge_code,
-          cityName: team.city_name,
-          state: team.state,
-          source: "check-in",
-          notes: createForm.notes.trim() || undefined,
-        });
-
-        selected = {
-          id: createdLeader.id,
-          name: createdLeader.name,
-          city_name: createdLeader.city_name,
-          city_ibge_code: createdLeader.city_ibge_code,
-          state: createdLeader.state,
-          team_id: createdLeader.team_id ?? team.id,
-        };
-      } else {
-        team = findTeamById(createForm.teamId);
-
-        if (!team) {
-          setFormError("Selecione uma equipe para cadastrar o representante.");
-          setIsMutating(false);
-          return;
-        }
-
-        if (!createForm.name.trim() || !createForm.email.trim()) {
-          setFormError("Informe nome e e-mail do representante.");
-          setIsMutating(false);
-          return;
-        }
-
-        const createdMember = await createTeamMember(team.id, {
-          name: createForm.name.trim(),
-          email: createForm.email.trim(),
-          phone: createForm.phone.trim() || undefined,
-          role: createForm.role.trim() || "Representante de campo",
-          cityIbgeCode: team.city_ibge_code,
-          status: "ACTIVE",
-        });
-
-        selected = {
-          id: createdMember.id,
-          name: createdMember.name,
-          city_name: team.city_name,
-          city_ibge_code: team.city_ibge_code,
-          state: team.state,
-          team_id: team.id,
-          member_id: createdMember.id,
-        };
-        invite = createdMember.access_invite ?? null;
+      if (!selected) {
+        setFormError("Selecione uma pessoa para registrar o check-in.");
+        setIsMutating(false);
+        return;
       }
+
+      const teamId =
+        selected.team_id ??
+        findTeamForCity(selected.city_ibge_code, selected.city_name)?.id;
+
+      if (!teamId) {
+        setFormError("Nao foi encontrada equipe vinculada para registrar esse check-in.");
+        setIsMutating(false);
+        return;
+      }
+
+      team = findTeamById(teamId);
 
       await createCampaignCheckIn({
         teamId: team.id,
@@ -470,10 +391,7 @@ function CheckIn({ session, onLogout }) {
       });
 
       await loadData();
-      setAccessInvite(invite);
-      if (!invite) {
-        closeModal();
-      }
+      closeModal();
     } catch (error) {
       setFormError(error.message || "Nao foi possivel registrar o check-in.");
     } finally {
@@ -505,24 +423,13 @@ function CheckIn({ session, onLogout }) {
 
   function handleCreateCheckIn(personType) {
     const nextOptions = getCreateOptions(personType);
-    const defaultTeamId =
-      personType === "REPRESENTATIVE"
-        ? teamsResponse?.items?.[0]?.id ?? ""
-        : "";
     setCreateForm({
       personType,
-      mode: "existing",
       selectedPersonId: nextOptions[0]?.id ?? "",
-      teamId: defaultTeamId,
       activityType: "VISITA",
       notes: "",
-      name: "",
-      email: "",
-      phone: "",
-      role: "Representante de campo",
     });
     setFormError("");
-    setAccessInvite(null);
     setModalState({ type: "create" });
   }
 
@@ -532,25 +439,17 @@ function CheckIn({ session, onLogout }) {
       notes: "",
     });
     setFormError("");
-    setAccessInvite(null);
     setModalState({ type: "status", item });
   }
 
   function closeModal() {
     setModalState(null);
     setFormError("");
-    setAccessInvite(null);
     setCreateForm({
       personType: "LEADER",
-      mode: "existing",
       selectedPersonId: "",
-      teamId: "",
       activityType: "VISITA",
       notes: "",
-      name: "",
-      email: "",
-      phone: "",
-      role: "Representante de campo",
     });
     setStatusForm({
       action: "checkout",
@@ -618,10 +517,6 @@ function CheckIn({ session, onLogout }) {
     [createForm.selectedPersonId, createOptions],
   );
   const selectedCreateTeam = useMemo(() => {
-    if (createForm.mode === "new") {
-      return createForm.teamId ? findTeamById(createForm.teamId) : null;
-    }
-
     if (!selectedCreatePerson) return null;
 
     const teamId =
@@ -632,7 +527,7 @@ function CheckIn({ session, onLogout }) {
       )?.id;
 
     return teamId ? findTeamById(teamId) : null;
-  }, [createForm.mode, createForm.teamId, selectedCreatePerson, teamsResponse]);
+  }, [selectedCreatePerson, teamsResponse]);
 
   return (
     <main className={styles.page}>
@@ -652,25 +547,6 @@ function CheckIn({ session, onLogout }) {
           <div>
             <p className={styles.kicker}>Visao Geral da Campanha</p>
             <h1>Check-in</h1>
-          </div>
-
-          <div className={styles.headerActions}>
-            <button
-              type="button"
-              disabled={isMutating}
-              onClick={() => handleCreateCheckIn("LEADER")}
-            >
-              <span aria-hidden="true" />
-              Cadastrar nova lideranca
-            </button>
-            <button
-              type="button"
-              disabled={isMutating}
-              onClick={() => handleCreateCheckIn("REPRESENTATIVE")}
-            >
-              <span aria-hidden="true" />
-              Cadastrar representante
-            </button>
           </div>
 
           <div className={styles.headerRight}>
@@ -750,6 +626,7 @@ function CheckIn({ session, onLogout }) {
                 <thead>
                   <tr>
                     <th>Nome</th>
+                    <th>Atividade</th>
                     <th>Status</th>
                     <th>Check-in</th>
                     <th>Check-out</th>
@@ -765,8 +642,12 @@ function CheckIn({ session, onLogout }) {
                             <strong>{team.name}</strong>
                             <small>{team.city}</small>
                           </div>
-                          <em className={styles[team.badgeTone]}>{team.badge}</em>
                         </div>
+                      </td>
+                      <td>
+                        <em className={`${styles.activityBadge} ${styles[team.badgeTone]}`}>
+                          {team.badge}
+                        </em>
                       </td>
                       <td>
                         <span
@@ -808,7 +689,11 @@ function CheckIn({ session, onLogout }) {
           </article>
 
           <aside className={styles.sidePanels}>
-            <DonutPanel items={activityTypes} title="Atividades por tipo" />
+            <DonutPanel
+              center={formatInteger(todayCheckIns.length)}
+              items={activityTypes}
+              title="Atividades por tipo"
+            />
             <DonutPanel
               center={formatInteger(todayCheckIns.length)}
               items={checkPerformance}
@@ -826,7 +711,6 @@ function CheckIn({ session, onLogout }) {
 
       {modalState ? (
         <CheckInModal
-          accessInvite={accessInvite}
           createForm={createForm}
           createOptions={createOptions}
           errorMessage={formError}
@@ -840,7 +724,6 @@ function CheckIn({ session, onLogout }) {
           selectedCreatePerson={selectedCreatePerson}
           selectedCreateTeam={selectedCreateTeam}
           statusForm={statusForm}
-          teams={teamsResponse?.items ?? []}
         />
       ) : null}
     </main>
@@ -848,7 +731,6 @@ function CheckIn({ session, onLogout }) {
 }
 
 function CheckInModal({
-  accessInvite,
   createForm,
   createOptions,
   errorMessage,
@@ -862,7 +744,6 @@ function CheckInModal({
   selectedCreatePerson,
   selectedCreateTeam,
   statusForm,
-  teams,
 }) {
   useEffect(() => {
     function handleKeyDown(event) {
@@ -906,252 +787,69 @@ function CheckInModal({
           </div>
 
           <div className={styles.modalBody}>
-            {accessInvite ? (
-              <div className={styles.accessInviteBox}>
-                <strong>Acesso inicial criado</strong>
-                <span>E-mail: {accessInvite.email}</span>
-                <span>Senha provisoria: {accessInvite.temporary_password}</span>
-                <small>No primeiro login, a pessoa precisara trocar a senha.</small>
-              </div>
-            ) : null}
-
-            <div className={styles.modalChoiceGroup}>
-              <button
-                type="button"
-                className={`${styles.modalChoiceButton} ${
-                  createForm.mode === "existing" ? styles.modalChoiceButtonActive : ""
-                }`}
-                onClick={() =>
-                  onCreateChange((current) => ({
-                    ...current,
-                    mode: "existing",
-                    selectedPersonId: createOptions[0]?.id ?? "",
-                  }))
-                }
-                disabled={isMutating}
-              >
-                Selecionar existente
-              </button>
-              <button
-                type="button"
-                className={`${styles.modalChoiceButton} ${
-                  createForm.mode === "new" ? styles.modalChoiceButtonActive : ""
-                }`}
-                onClick={() =>
-                  onCreateChange((current) => ({
-                    ...current,
-                    mode: "new",
-                  }))
-                }
-                disabled={isMutating}
-              >
-                Cadastrar novo
-              </button>
-            </div>
-
             <div className={styles.modalGrid}>
-              {createForm.mode === "existing" ? (
-                <>
-                  <label className={styles.modalField}>
-                    <span>Pessoa</span>
-                    <select
-                      value={createForm.selectedPersonId}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          selectedPersonId: event.target.value,
-                        }))
-                      }
-                      disabled={isMutating || !createOptions.length}
-                    >
-                      {createOptions.length ? (
-                        createOptions.map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.name} - {item.city_name || "Sem cidade"}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="">Nenhuma opcao disponivel</option>
-                      )}
-                    </select>
-                  </label>
+              <label className={styles.modalField}>
+                <span>Pessoa</span>
+                <select
+                  value={createForm.selectedPersonId}
+                  onChange={(event) =>
+                    onCreateChange((current) => ({
+                      ...current,
+                      selectedPersonId: event.target.value,
+                    }))
+                  }
+                  disabled={isMutating || !createOptions.length}
+                >
+                  {createOptions.length ? (
+                    createOptions.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name} - {item.city_name || "Sem cidade"}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Nenhuma opcao disponivel</option>
+                  )}
+                </select>
+              </label>
 
-                  <label className={styles.modalField}>
-                    <span>Tipo de atividade</span>
-                    <select
-                      value={createForm.activityType}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          activityType: event.target.value,
-                        }))
-                      }
-                      disabled={isMutating}
-                    >
-                      {ACTIVITY_TYPE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+              <label className={styles.modalField}>
+                <span>Tipo de atividade</span>
+                <select
+                  value={createForm.activityType}
+                  onChange={(event) =>
+                    onCreateChange((current) => ({
+                      ...current,
+                      activityType: event.target.value,
+                    }))
+                  }
+                  disabled={isMutating}
+                >
+                  {ACTIVITY_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-                  <label className={styles.modalField}>
-                    <span>Municipio</span>
-                    <input
-                      type="text"
-                      value={selectedCreatePerson?.city_name || "--"}
-                      readOnly
-                    />
-                  </label>
+              <label className={styles.modalField}>
+                <span>Municipio</span>
+                <input
+                  type="text"
+                  value={selectedCreatePerson?.city_name || "--"}
+                  readOnly
+                />
+              </label>
 
-                  <label className={styles.modalField}>
-                    <span>Equipe</span>
-                    <input
-                      type="text"
-                      value={selectedCreateTeam?.name || "--"}
-                      readOnly
-                    />
-                  </label>
-                </>
-              ) : (
-                <>
-                  <label className={styles.modalField}>
-                    <span>Nome</span>
-                    <input
-                      type="text"
-                      value={createForm.name}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          name: event.target.value,
-                        }))
-                      }
-                      disabled={isMutating}
-                    />
-                  </label>
-
-                  <label className={styles.modalField}>
-                    <span>Equipe</span>
-                    <select
-                      value={createForm.teamId}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          teamId: event.target.value,
-                        }))
-                      }
-                      disabled={isMutating}
-                    >
-                      <option value="">Selecione</option>
-                      {teams.map((team) => (
-                        <option key={team.id} value={team.id}>
-                          {team.name} - {team.city_name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className={styles.modalField}>
-                    <span>Tipo de atividade</span>
-                    <select
-                      value={createForm.activityType}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          activityType: event.target.value,
-                        }))
-                      }
-                      disabled={isMutating}
-                    >
-                      {ACTIVITY_TYPE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className={styles.modalField}>
-                    <span>Municipio</span>
-                    <input
-                      type="text"
-                      value={selectedCreateTeam?.city_name || "--"}
-                      readOnly
-                    />
-                  </label>
-                </>
-              )}
+              <label className={styles.modalField}>
+                <span>Equipe</span>
+                <input
+                  type="text"
+                  value={selectedCreateTeam?.name || "--"}
+                  readOnly
+                />
+              </label>
             </div>
-
-            {createForm.mode === "new" ? (
-              createForm.personType === "REPRESENTATIVE" ? (
-                <div className={styles.modalGrid}>
-                  <label className={styles.modalField}>
-                    <span>E-mail</span>
-                    <input
-                      type="email"
-                      value={createForm.email}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          email: event.target.value,
-                        }))
-                      }
-                      disabled={isMutating}
-                    />
-                  </label>
-
-                  <label className={styles.modalField}>
-                    <span>Funcao</span>
-                    <input
-                      type="text"
-                      value={createForm.role}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          role: event.target.value,
-                        }))
-                      }
-                      disabled={isMutating}
-                    />
-                  </label>
-
-                  <label className={styles.modalField}>
-                    <span>Telefone</span>
-                    <input
-                      type="text"
-                      value={createForm.phone}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          phone: formatPhoneInput(event.target.value),
-                        }))
-                      }
-                      disabled={isMutating}
-                    />
-                  </label>
-                </div>
-              ) : (
-                <div className={`${styles.modalGrid} ${styles.modalGridSpacingOnly}`}>
-                  <label className={styles.modalField}>
-                    <span>Telefone</span>
-                    <input
-                      type="text"
-                      value={createForm.phone}
-                      onChange={(event) =>
-                        onCreateChange((current) => ({
-                          ...current,
-                          phone: formatPhoneInput(event.target.value),
-                        }))
-                      }
-                      disabled={isMutating}
-                    />
-                  </label>
-                  <div aria-hidden="true" />
-                </div>
-              )
-            ) : null}
 
             <label className={styles.modalTextareaField}>
               <span>Observacao</span>
@@ -1187,19 +885,10 @@ function CheckInModal({
             <button
               className={styles.modalPrimaryButton}
               type="button"
-              onClick={accessInvite ? onClose : onSubmitCreate}
-              disabled={
-                isMutating ||
-                (createForm.mode === "existing" ? !createOptions.length : false)
-              }
+              onClick={onSubmitCreate}
+              disabled={isMutating || !createOptions.length}
             >
-              {isMutating
-                ? "Salvando..."
-                : accessInvite
-                  ? "Fechar"
-                  : createForm.mode === "new"
-                  ? "Cadastrar e registrar"
-                  : "Registrar check-in"}
+              {isMutating ? "Salvando..." : "Registrar check-in"}
             </button>
           </div>
         </div>
@@ -1510,19 +1199,6 @@ function isValidActivityType(value) {
     "PESQUISA_CAMPO",
     "OUTRO",
   ].includes(String(value || "").toUpperCase());
-}
-
-function formatPhoneInput(value) {
-  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
-
-  if (!digits) return "";
-  if (digits.length <= 2) return `(${digits}`;
-  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  if (digits.length <= 10) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-  }
-
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
 export default CheckIn;

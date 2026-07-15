@@ -11,7 +11,10 @@ import {
   updateTeam,
   updateTeamMember,
 } from "../../services/teams";
-import { getCampaignLeaders } from "../../services/campaignOperations";
+import {
+  createCampaignLeader,
+  getCampaignLeaders,
+} from "../../services/campaignOperations";
 import styles from "./Equipes.module.css";
 
 const menuItems = [
@@ -42,7 +45,7 @@ const memberStatuses = [
   { value: "INACTIVE", label: "Inativo" },
 ];
 
-const initialTeamForm = {
+const initialTeamModalForm = {
   name: "",
   cityName: "",
   cityIbgeCode: "",
@@ -53,13 +56,29 @@ const initialTeamForm = {
   notes: "",
 };
 
-const initialMemberForm = {
+const initialMemberModalForm = {
+  teamId: "",
   name: "",
   phone: "",
   email: "",
   role: "",
   status: "ACTIVE",
   cityIbgeCode: "",
+};
+
+const initialLeaderModalForm = {
+  name: "",
+  phone: "",
+  teamId: "",
+  notes: "",
+};
+
+const initialRepresentativeModalForm = {
+  name: "",
+  email: "",
+  phone: "",
+  role: "Representante de campo",
+  teamId: "",
 };
 
 function Equipes({ session, onLogout }) {
@@ -73,8 +92,14 @@ function Equipes({ session, onLogout }) {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [editingTeamId, setEditingTeamId] = useState(null);
   const [editingMemberId, setEditingMemberId] = useState(null);
-  const [teamForm, setTeamForm] = useState(initialTeamForm);
-  const [memberForm, setMemberForm] = useState(initialMemberForm);
+  const [modalType, setModalType] = useState(null);
+  const [modalError, setModalError] = useState("");
+  const [teamModalForm, setTeamModalForm] = useState(initialTeamModalForm);
+  const [memberModalForm, setMemberModalForm] = useState(initialMemberModalForm);
+  const [leaderModalForm, setLeaderModalForm] = useState(initialLeaderModalForm);
+  const [representativeModalForm, setRepresentativeModalForm] = useState(
+    initialRepresentativeModalForm,
+  );
   const [teamMessage, setTeamMessage] = useState("");
   const [memberMessage, setMemberMessage] = useState("");
   const [error, setError] = useState("");
@@ -121,6 +146,11 @@ function Equipes({ session, onLogout }) {
     };
   }, [selectedTeamId]);
 
+  const selectedTeam = useMemo(
+    () => teams.find((team) => team.id === selectedTeamId) ?? null,
+    [selectedTeamId, teams],
+  );
+
   const filteredTeams = useMemo(() => {
     return teams.filter((team) => {
       const normalizedSearch = search.trim().toLowerCase();
@@ -143,9 +173,9 @@ function Equipes({ session, onLogout }) {
     });
   }, [cityFilter, search, statusFilter, teams]);
 
-  const selectedTeam = useMemo(
-    () => teams.find((team) => team.id === selectedTeamId) ?? null,
-    [selectedTeamId, teams],
+  const cities = useMemo(
+    () => ["ALL", ...new Set(teams.map((team) => team.city_name).filter(Boolean))],
+    [teams],
   );
 
   const summaryCards = useMemo(() => {
@@ -154,31 +184,16 @@ function Equipes({ session, onLogout }) {
       (accumulator, team) => accumulator + (team.active_members_count ?? team.members_count ?? 0),
       0,
     );
-    const cities = new Set(teams.map((team) => team.city_name)).size;
+    const citiesCovered = new Set(teams.map((team) => team.city_name)).size;
 
     return [
       { tone: "blue", title: "Total de equipes", value: teams.length, note: "bases cadastradas" },
       { tone: "green", title: "Equipes ativas", value: activeTeams, note: "operando agora" },
       { tone: "cyan", title: "Total de membros", value: totalMembers, note: "membros ativos nas equipes" },
-      { tone: "orange", title: "Municipios cobertos", value: cities, note: "com equipe ativa ou reserva" },
+      { tone: "orange", title: "Municipios cobertos", value: citiesCovered, note: "com equipe ativa ou reserva" },
       { tone: "red", title: "Equipes inativas", value: Math.max(teams.length - activeTeams, 0), note: "aguardando reativacao" },
     ];
   }, [teams]);
-
-  const cities = useMemo(
-    () => ["ALL", ...new Set(teams.map((team) => team.city_name).filter(Boolean))],
-    [teams],
-  );
-
-  const availableLeaders = useMemo(() => {
-    if (!editingTeamId) {
-      return leaders;
-    }
-
-    return leaders.filter(
-      (leader) => !leader.team_id || leader.team_id === editingTeamId,
-    );
-  }, [editingTeamId, leaders]);
 
   async function loadTeams(preferredTeamId = selectedTeamId, isActive = () => true) {
     try {
@@ -218,16 +233,30 @@ function Equipes({ session, onLogout }) {
     }
   }
 
-  function handleNewTeam() {
+  function closeManagementModal() {
+    if (savingMember || savingTeam) return;
+    setModalType(null);
+    setModalError("");
     setEditingTeamId(null);
-    setTeamForm(initialTeamForm);
-    setTeamMessage("");
-    setError("");
+    setEditingMemberId(null);
+    setTeamModalForm(initialTeamModalForm);
+    setMemberModalForm(initialMemberModalForm);
+    setLeaderModalForm(initialLeaderModalForm);
+    setRepresentativeModalForm(initialRepresentativeModalForm);
   }
 
-  function handleEditTeam(team) {
+  function openTeamModal() {
+    setModalType("team");
+    setModalError("");
+    setEditingTeamId(null);
+    setTeamModalForm(initialTeamModalForm);
+  }
+
+  function openEditTeamModal(team) {
+    setModalType("team");
+    setModalError("");
     setEditingTeamId(team.id);
-    setTeamForm({
+    setTeamModalForm({
       name: team.name ?? "",
       cityName: team.city_name ?? "",
       cityIbgeCode: team.city_ibge_code ?? "",
@@ -237,51 +266,79 @@ function Equipes({ session, onLogout }) {
       status: team.status ?? "ACTIVE",
       notes: team.notes ?? "",
     });
-    setTeamMessage("");
-    setError("");
   }
 
-  function resetMemberForm(defaultCityIbgeCode = "") {
+  function openMemberModal() {
+    const defaultTeam = selectedTeam ?? teams[0] ?? null;
+
+    setModalType("member");
+    setModalError("");
     setEditingMemberId(null);
-    setMemberForm({
-      ...initialMemberForm,
-      cityIbgeCode: defaultCityIbgeCode,
+    setMemberModalForm({
+      ...initialMemberModalForm,
+      teamId: defaultTeam?.id ?? "",
+      cityIbgeCode: defaultTeam?.city_ibge_code ?? "",
     });
   }
 
-  function handleEditMember(member) {
+  function openEditMemberModal(member) {
+    if (!selectedTeam) return;
+
+    setModalType("member");
+    setModalError("");
     setEditingMemberId(member.id);
-    setMemberForm({
+    setMemberModalForm({
+      teamId: selectedTeam.id,
       name: member.name ?? "",
       phone: member.phone ?? "",
       email: member.email ?? "",
       role: member.role ?? "",
       status: member.status ?? "ACTIVE",
-      cityIbgeCode: member.city_ibge_code ?? selectedTeam?.city_ibge_code ?? "",
+      cityIbgeCode: member.city_ibge_code ?? selectedTeam.city_ibge_code ?? "",
     });
-    setMemberMessage("");
-    setError("");
   }
 
-  async function submitTeam(event) {
-    event.preventDefault();
+  function openLeaderModal() {
+    setModalType("leader");
+    setModalError("");
+    setLeaderModalForm({
+      ...initialLeaderModalForm,
+      teamId: selectedTeam?.id ?? teams[0]?.id ?? "",
+    });
+  }
+
+  function openRepresentativeModal() {
+    setModalType("representative");
+    setModalError("");
+    setRepresentativeModalForm({
+      ...initialRepresentativeModalForm,
+      teamId: selectedTeam?.id ?? teams[0]?.id ?? "",
+    });
+  }
+
+  async function refreshMembers(teamId) {
+    const data = await getTeamMembers(teamId);
+    setMembers(data.items ?? []);
+  }
+
+  async function submitTeamModal() {
     setSavingTeam(true);
-    setTeamMessage("");
-    setError("");
+    setModalError("");
 
     try {
       if (editingTeamId) {
-        await updateTeam(editingTeamId, normalizeTeamPayload(teamForm));
+        await updateTeam(editingTeamId, normalizeTeamPayload(teamModalForm));
         setTeamMessage("Equipe atualizada com sucesso.");
         await Promise.all([loadTeams(editingTeamId), loadLeaders()]);
       } else {
-        const created = await createTeam(normalizeTeamPayload(teamForm));
+        const created = await createTeam(normalizeTeamPayload(teamModalForm));
         setTeamMessage("Equipe criada com sucesso.");
-        setEditingTeamId(created.id);
         await Promise.all([loadTeams(created.id), loadLeaders()]);
       }
+
+      closeManagementModal();
     } catch (requestError) {
-      setError(requestError.message);
+      setModalError(requestError.message);
     } finally {
       setSavingTeam(false);
     }
@@ -291,15 +348,15 @@ function Equipes({ session, onLogout }) {
     if (!editingTeamId) return;
 
     setSavingTeam(true);
-    setTeamMessage("");
-    setError("");
+    setModalError("");
 
     try {
       await updateTeam(editingTeamId, { status: "INACTIVE" });
       setTeamMessage("Equipe inativada com sucesso.");
       await loadTeams(editingTeamId);
+      closeManagementModal();
     } catch (requestError) {
-      setError(requestError.message);
+      setModalError(requestError.message);
     } finally {
       setSavingTeam(false);
     }
@@ -309,67 +366,63 @@ function Equipes({ session, onLogout }) {
     if (!editingTeamId) return;
 
     setSavingTeam(true);
-    setTeamMessage("");
-    setError("");
+    setModalError("");
 
     try {
       await removeTeam(editingTeamId);
       setTeamMessage("Equipe removida com sucesso.");
-      handleNewTeam();
-      resetMemberForm(selectedTeam?.city_ibge_code ?? "");
       await Promise.all([loadTeams(), loadLeaders()]);
+      closeManagementModal();
     } catch (requestError) {
-      setError(requestError.message);
+      setModalError(requestError.message);
     } finally {
       setSavingTeam(false);
     }
   }
 
-  async function submitMember(event) {
-    event.preventDefault();
+  async function submitMemberModal() {
+    const team = teams.find((item) => item.id === memberModalForm.teamId);
 
-    if (!selectedTeam) {
-      setError("Selecione uma equipe antes de cadastrar membros.");
+    if (!team) {
+      setModalError("Selecione a equipe do membro.");
+      return;
+    }
+
+    if (!memberModalForm.name.trim() || !memberModalForm.email.trim()) {
+      setModalError("Informe nome e e-mail do membro.");
       return;
     }
 
     setSavingMember(true);
-    setMemberMessage("");
-    setError("");
+    setModalError("");
 
     try {
       if (editingMemberId) {
-        await updateTeamMember(
-          selectedTeam.id,
-          editingMemberId,
-          normalizeMemberPayload(memberForm),
-        );
+        await updateTeamMember(team.id, editingMemberId, normalizeMemberPayload(memberModalForm));
         setMemberMessage("Membro atualizado com sucesso.");
       } else {
-        const createdMember = await createTeamMember(
-          selectedTeam.id,
-          normalizeMemberPayload(memberForm),
-        );
+        const createdMember = await createTeamMember(team.id, {
+          ...normalizeMemberPayload(memberModalForm),
+          role: memberModalForm.role.trim() || "Membro de equipe",
+          cityIbgeCode: memberModalForm.cityIbgeCode || team.city_ibge_code,
+          status: memberModalForm.status,
+        });
 
         setMemberMessage(
           createdMember?.access_invite
-            ? `Membro adicionado com sucesso. Login: ${createdMember.access_invite.email} | Senha provisoria: ${createdMember.access_invite.temporary_password}`
-            : "Membro adicionado com sucesso.",
+            ? `Membro cadastrado com sucesso. Login: ${createdMember.access_invite.email} | Senha provisoria: ${createdMember.access_invite.temporary_password}`
+            : "Membro cadastrado com sucesso.",
         );
       }
 
-      resetMemberForm(selectedTeam.city_ibge_code ?? "");
-      await Promise.all([loadTeams(selectedTeam.id), refreshMembers(selectedTeam.id)]);
+      setSelectedTeamId(team.id);
+      await Promise.all([loadTeams(team.id), refreshMembers(team.id)]);
+      closeManagementModal();
     } catch (requestError) {
-      setError(requestError.message);
+      setModalError(requestError.message);
     } finally {
       setSavingMember(false);
     }
-  }
-
-  async function refreshMembers(teamId) {
-    const data = await getTeamMembers(teamId);
-    setMembers(data.items ?? []);
   }
 
   async function handleToggleMemberStatus(member) {
@@ -381,14 +434,8 @@ function Equipes({ session, onLogout }) {
 
     try {
       const nextStatus = member.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-      await updateTeamMember(selectedTeam.id, member.id, {
-        status: nextStatus,
-      });
-      setMemberMessage(
-        nextStatus === "ACTIVE"
-          ? "Membro reativado com sucesso."
-          : "Membro inativado com sucesso.",
-      );
+      await updateTeamMember(selectedTeam.id, member.id, { status: nextStatus });
+      setMemberMessage(nextStatus === "ACTIVE" ? "Membro reativado com sucesso." : "Membro inativado com sucesso.");
       await Promise.all([loadTeams(selectedTeam.id), refreshMembers(selectedTeam.id)]);
     } catch (requestError) {
       setError(requestError.message);
@@ -407,10 +454,88 @@ function Equipes({ session, onLogout }) {
     try {
       await removeTeamMember(selectedTeam.id, memberId);
       setMemberMessage("Membro removido com sucesso.");
-      resetMemberForm(selectedTeam.city_ibge_code ?? "");
       await Promise.all([loadTeams(selectedTeam.id), refreshMembers(selectedTeam.id)]);
     } catch (requestError) {
       setError(requestError.message);
+    } finally {
+      setSavingMember(false);
+    }
+  }
+
+  async function submitLeaderModal() {
+    const team = teams.find((item) => item.id === leaderModalForm.teamId);
+
+    if (!team) {
+      setModalError("Selecione uma equipe para vincular a liderança.");
+      return;
+    }
+
+    if (!leaderModalForm.name.trim()) {
+      setModalError("Informe o nome da liderança.");
+      return;
+    }
+
+    setSavingMember(true);
+    setModalError("");
+
+    try {
+      await createCampaignLeader({
+        name: leaderModalForm.name.trim(),
+        phone: leaderModalForm.phone.trim() || undefined,
+        teamId: team.id,
+        cityIbgeCode: team.city_ibge_code,
+        cityName: team.city_name,
+        state: team.state,
+        source: "teams",
+        notes: leaderModalForm.notes.trim() || undefined,
+      });
+
+      setTeamMessage("Liderança cadastrada com sucesso.");
+      await Promise.all([loadTeams(team.id), loadLeaders()]);
+      closeManagementModal();
+    } catch (requestError) {
+      setModalError(requestError.message);
+    } finally {
+      setSavingMember(false);
+    }
+  }
+
+  async function submitRepresentativeModal() {
+    const team = teams.find((item) => item.id === representativeModalForm.teamId);
+
+    if (!team) {
+      setModalError("Selecione a equipe do representante.");
+      return;
+    }
+
+    if (!representativeModalForm.name.trim() || !representativeModalForm.email.trim()) {
+      setModalError("Informe nome e e-mail do representante.");
+      return;
+    }
+
+    setSavingMember(true);
+    setModalError("");
+
+    try {
+      const createdMember = await createTeamMember(team.id, {
+        name: representativeModalForm.name.trim(),
+        email: representativeModalForm.email.trim(),
+        phone: representativeModalForm.phone.trim() || undefined,
+        role: representativeModalForm.role.trim() || "Representante de campo",
+        cityIbgeCode: team.city_ibge_code,
+        status: "ACTIVE",
+      });
+
+      setMemberMessage(
+        createdMember?.access_invite
+          ? `Representante cadastrado com sucesso. Login: ${createdMember.access_invite.email} | Senha provisoria: ${createdMember.access_invite.temporary_password}`
+          : "Representante cadastrado com sucesso.",
+      );
+      setSelectedTeamId(team.id);
+      await Promise.all([loadTeams(team.id), refreshMembers(team.id)]);
+      closeManagementModal();
+    } catch (requestError) {
+      setModalError(requestError.message);
     } finally {
       setSavingMember(false);
     }
@@ -445,17 +570,21 @@ function Equipes({ session, onLogout }) {
           </div>
 
           <div className={styles.headerActions}>
-            <button type="button" onClick={handleNewTeam}>
+            <button type="button" onClick={openTeamModal}>
               <span aria-hidden="true" />
               Nova equipe
             </button>
-            <button
-              type="button"
-              onClick={() => resetMemberForm(selectedTeam?.city_ibge_code ?? "")}
-              disabled={!selectedTeam}
-            >
+            <button type="button" onClick={openLeaderModal} disabled={!teams.length}>
+              <span aria-hidden="true" />
+              Cadastrar liderança
+            </button>
+            <button type="button" onClick={openMemberModal} disabled={!teams.length}>
               <span aria-hidden="true" />
               Novo membro
+            </button>
+            <button type="button" onClick={openRepresentativeModal} disabled={!teams.length}>
+              <span aria-hidden="true" />
+              Cadastrar representante
             </button>
           </div>
 
@@ -593,7 +722,7 @@ function Equipes({ session, onLogout }) {
                           <button
                             type="button"
                             className={styles.inlineAction}
-                            onClick={() => handleEditTeam(team)}
+                            onClick={() => openEditTeamModal(team)}
                           >
                             Editar
                           </button>
@@ -612,337 +741,39 @@ function Equipes({ session, onLogout }) {
             </div>
           </article>
 
-          <aside className={styles.formsColumn}>
-            <section className={styles.formCard}>
-              <div className={styles.panelHeading}>
-                <div>
-                  <small>{editingTeamId ? "Edicao" : "Cadastro"}</small>
-                  <h2>{editingTeamId ? "Atualizar equipe" : "Nova equipe"}</h2>
-                </div>
-              </div>
-
-              <form className={styles.formGrid} onSubmit={submitTeam}>
-                <Field label="Nome da equipe">
-                  <input
-                    value={teamForm.name}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({ ...current, name: event.target.value }))
-                    }
-                    maxLength="140"
-                    required
-                  />
-                </Field>
-
-                <Field label="Municipio">
-                  <input
-                    value={teamForm.cityName}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({ ...current, cityName: event.target.value }))
-                    }
-                    maxLength="120"
-                    required
-                  />
-                </Field>
-
-                <Field label="Codigo IBGE">
-                  <input
-                    value={teamForm.cityIbgeCode}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({ ...current, cityIbgeCode: event.target.value }))
-                    }
-                    inputMode="numeric"
-                    pattern="\d{7}"
-                    maxLength="7"
-                    required
-                  />
-                </Field>
-
-                <Field label="UF">
-                  <select
-                    value={teamForm.state}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({ ...current, state: event.target.value }))
-                    }
-                  >
-                    {states.map((state) => (
-                      <option key={state} value={state}>
-                        {state}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-
-                <Field label="Coordenador">
-                  <input
-                    value={teamForm.coordinatorName}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({
-                        ...current,
-                        coordinatorName: event.target.value,
-                      }))
-                    }
-                    maxLength="140"
-                  />
-                </Field>
-
-                <Field label="Liderança vinculada">
-                  <select
-                    value={teamForm.linkedLeaderId}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({
-                        ...current,
-                        linkedLeaderId: event.target.value,
-                      }))
-                    }
-                  >
-                    <option value="">Sem liderança vinculada</option>
-                    {availableLeaders.map((leader) => (
-                      <option key={leader.id} value={leader.id}>
-                        {leader.name} - {leader.city_name}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-
-                <Field label="Status">
-                  <select
-                    value={teamForm.status}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({ ...current, status: event.target.value }))
-                    }
-                  >
-                    {memberStatuses.map((status) => (
-                      <option key={status.value} value={status.value}>
-                        {status.label}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-
-                <Field label="Observacoes" wide>
-                  <textarea
-                    value={teamForm.notes}
-                    onChange={(event) =>
-                      setTeamForm((current) => ({ ...current, notes: event.target.value }))
-                    }
-                    rows="4"
-                    maxLength="2000"
-                  />
-                </Field>
-
-                <div className={styles.formActions}>
-                  <button type="button" className={styles.secondaryButton} onClick={handleNewTeam}>
-                    Limpar
-                  </button>
-                  {editingTeamId ? (
-                    <>
-                      <button
-                        type="button"
-                        className={styles.secondaryDangerButton}
-                        onClick={handleInactivateTeam}
-                        disabled={savingTeam}
-                      >
-                        Inativar equipe
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.dangerButton}
-                        onClick={handleRemoveTeam}
-                        disabled={savingTeam}
-                      >
-                        Remover equipe
-                      </button>
-                    </>
-                  ) : null}
-                  <button type="submit" disabled={savingTeam}>
-                    {savingTeam ? "Salvando..." : editingTeamId ? "Atualizar equipe" : "Criar equipe"}
-                  </button>
-                </div>
-              </form>
-            </section>
-
-            <section className={styles.formCard}>
-              <div className={styles.panelHeading}>
-                <div>
-                  <small>Membros da equipe</small>
-                  <h2>{selectedTeam ? selectedTeam.name : "Selecione uma equipe"}</h2>
-                </div>
-                <span>
-                  {selectedTeam
-                    ? `${formatNumber(selectedTeam.active_members_count ?? members.length)} reais`
-                    : "0 real"}
-                </span>
-              </div>
-
-              {selectedTeam ? (
-                <>
-                  <form className={styles.formGrid} onSubmit={submitMember}>
-                    <Field label="Nome">
-                      <input
-                        value={memberForm.name}
-                        onChange={(event) =>
-                          setMemberForm((current) => ({ ...current, name: event.target.value }))
-                        }
-                        maxLength="140"
-                        required
-                      />
-                    </Field>
-
-                    <Field label="Telefone">
-                      <input
-                        value={memberForm.phone}
-                        onChange={(event) =>
-                          setMemberForm((current) => ({ ...current, phone: event.target.value }))
-                        }
-                        maxLength="20"
-                      />
-                    </Field>
-
-                    <Field label="E-mail">
-                      <input
-                        type="email"
-                        value={memberForm.email}
-                        onChange={(event) =>
-                          setMemberForm((current) => ({ ...current, email: event.target.value }))
-                        }
-                        maxLength="180"
-                        required
-                      />
-                    </Field>
-
-                    <Field label="Funcao">
-                      <input
-                        value={memberForm.role}
-                        onChange={(event) =>
-                          setMemberForm((current) => ({ ...current, role: event.target.value }))
-                        }
-                        maxLength="80"
-                        required
-                      />
-                    </Field>
-
-                    <Field label="Status">
-                      <select
-                        value={memberForm.status}
-                        onChange={(event) =>
-                          setMemberForm((current) => ({ ...current, status: event.target.value }))
-                        }
-                      >
-                        {memberStatuses.map((status) => (
-                          <option key={status.value} value={status.value}>
-                            {status.label}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-
-                    <Field label="Codigo IBGE" wide>
-                      <input
-                        value={memberForm.cityIbgeCode}
-                        onChange={(event) =>
-                          setMemberForm((current) => ({
-                            ...current,
-                            cityIbgeCode: event.target.value,
-                          }))
-                        }
-                        placeholder={selectedTeam.city_ibge_code}
-                        maxLength="7"
-                      />
-                    </Field>
-
-                    <div className={styles.formActions}>
-                      <button
-                        type="button"
-                        className={styles.secondaryButton}
-                        onClick={() => resetMemberForm(selectedTeam.city_ibge_code ?? "")}
-                      >
-                        Limpar
-                      </button>
-                      <button type="submit" disabled={savingMember}>
-                        {savingMember
-                          ? "Salvando..."
-                          : editingMemberId
-                            ? "Atualizar membro"
-                            : "Adicionar membro"}
-                      </button>
-                    </div>
-                  </form>
-
-                  <div className={styles.membersList}>
-                    {members.length ? (
-                      members.map((member) => (
-                        <article className={styles.memberCard} key={member.id}>
-                          <div className={styles.memberCardTop}>
-                            <div>
-                              <strong>{member.name}</strong>
-                              <span>{member.role}</span>
-                            </div>
-                            <em
-                              className={`${styles.memberStatusBadge} ${
-                                member.status === "ACTIVE"
-                                  ? styles.statusActive
-                                  : styles.statusInactive
-                              }`}
-                            >
-                              {member.status === "ACTIVE" ? "Ativo" : "Inativo"}
-                            </em>
-                          </div>
-                          <small>{member.email || "Sem e-mail informado"}</small>
-                          <small>{member.phone || "Sem telefone informado"}</small>
-                          <div className={styles.memberActions}>
-                            <button
-                              type="button"
-                              className={styles.memberActionButton}
-                              onClick={() => handleEditMember(member)}
-                              disabled={savingMember}
-                            >
-                              Editar
-                            </button>
-                            <button
-                              type="button"
-                              className={styles.memberActionButton}
-                              onClick={() => handleToggleMemberStatus(member)}
-                              disabled={savingMember}
-                            >
-                              {member.status === "ACTIVE" ? "Inativar" : "Reativar"}
-                            </button>
-                            <button
-                              type="button"
-                              className={styles.memberActionDangerButton}
-                              onClick={() => handleRemoveMember(member.id)}
-                              disabled={savingMember}
-                            >
-                              Remover
-                            </button>
-                          </div>
-                        </article>
-                      ))
-                    ) : (
-                      <p className={styles.emptyMembers}>
-                        Ainda nao existem membros cadastrados para esta equipe.
-                      </p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <p className={styles.emptyMembers}>
-                  Selecione uma equipe na lista para cadastrar e visualizar membros.
-                </p>
-              )}
-            </section>
-          </aside>
         </section>
       </section>
-    </main>
-  );
-}
 
-function Field({ label, wide = false, children }) {
-  return (
-    <label className={wide ? styles.wideField : styles.field}>
-      <span>{label}</span>
-      {children}
-    </label>
+      {modalType ? (
+        <EntityManagementModal
+          editingMemberId={editingMemberId}
+          editingTeamId={editingTeamId}
+          leaderForm={leaderModalForm}
+          leaderTeam={teams.find((team) => team.id === leaderModalForm.teamId) ?? null}
+          memberForm={memberModalForm}
+          memberTeam={teams.find((team) => team.id === memberModalForm.teamId) ?? null}
+          modalError={modalError}
+          modalType={modalType}
+          onClose={closeManagementModal}
+          onInactivateTeam={handleInactivateTeam}
+          onLeaderChange={setLeaderModalForm}
+          onMemberChange={setMemberModalForm}
+          onRemoveTeam={handleRemoveTeam}
+          onRepresentativeChange={setRepresentativeModalForm}
+          onSubmitLeader={submitLeaderModal}
+          onSubmitMember={submitMemberModal}
+          onSubmitRepresentative={submitRepresentativeModal}
+          onSubmitTeam={submitTeamModal}
+          onTeamChange={setTeamModalForm}
+          representativeForm={representativeModalForm}
+          representativeTeam={teams.find((team) => team.id === representativeModalForm.teamId) ?? null}
+          saving={savingMember}
+          savingTeam={savingTeam}
+          teamForm={teamModalForm}
+          teams={teams}
+        />
+      ) : null}
+    </main>
   );
 }
 
@@ -977,6 +808,276 @@ function getInitials(name = "") {
 
 function formatNumber(value) {
   return new Intl.NumberFormat("pt-BR").format(Number(value) || 0);
+}
+
+function formatPhoneInput(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+  if (!digits) return "";
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function EntityManagementModal({
+  editingMemberId,
+  editingTeamId,
+  leaderForm,
+  leaderTeam,
+  memberForm,
+  memberTeam,
+  modalError,
+  modalType,
+  onClose,
+  onInactivateTeam,
+  onLeaderChange,
+  onMemberChange,
+  onRemoveTeam,
+  onRepresentativeChange,
+  onSubmitLeader,
+  onSubmitMember,
+  onSubmitRepresentative,
+  onSubmitTeam,
+  onTeamChange,
+  representativeForm,
+  representativeTeam,
+  saving,
+  savingTeam,
+  teamForm,
+  teams,
+}) {
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === "Escape" && !saving && !savingTeam) {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, saving, savingTeam]);
+
+  const isTeam = modalType === "team";
+  const isMember = modalType === "member";
+  const isLeader = modalType === "leader";
+  const title = isTeam
+    ? editingTeamId
+      ? "Atualizar equipe"
+      : "Cadastrar equipe"
+    : isMember
+      ? editingMemberId
+        ? "Atualizar membro"
+        : "Cadastrar membro"
+      : isLeader
+        ? "Cadastrar liderança"
+        : "Cadastrar representante";
+
+  return (
+    <div className={styles.modalOverlay} onMouseDown={onClose}>
+      <div
+        className={styles.modalCard}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="equipes-entity-modal-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className={styles.modalHeader}>
+          <div>
+            <span className={styles.modalEyebrow}>Operacao territorial</span>
+            <h2 className={styles.modalTitle} id="equipes-entity-modal-title">
+              {title}
+            </h2>
+          </div>
+          <button
+            className={styles.modalCloseButton}
+            type="button"
+            onClick={onClose}
+            disabled={saving || savingTeam}
+            aria-label="Fechar modal"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className={styles.modalBody}>
+          {isTeam ? (
+            <div className={styles.modalGrid}>
+              <label className={styles.modalField}>
+                <span>Nome da equipe</span>
+                <input type="text" value={teamForm.name} onChange={(event) => onTeamChange((current) => ({ ...current, name: event.target.value }))} disabled={savingTeam} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Municipio</span>
+                <input type="text" value={teamForm.cityName} onChange={(event) => onTeamChange((current) => ({ ...current, cityName: event.target.value }))} disabled={savingTeam} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Codigo IBGE</span>
+                <input type="text" value={teamForm.cityIbgeCode} onChange={(event) => onTeamChange((current) => ({ ...current, cityIbgeCode: event.target.value }))} disabled={savingTeam} />
+              </label>
+              <label className={styles.modalField}>
+                <span>UF</span>
+                <select value={teamForm.state} onChange={(event) => onTeamChange((current) => ({ ...current, state: event.target.value }))} disabled={savingTeam}>
+                  {states.map((state) => <option key={state} value={state}>{state}</option>)}
+                </select>
+              </label>
+              <label className={styles.modalField}>
+                <span>Coordenador</span>
+                <input type="text" value={teamForm.coordinatorName} onChange={(event) => onTeamChange((current) => ({ ...current, coordinatorName: event.target.value }))} disabled={savingTeam} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Status</span>
+                <select value={teamForm.status} onChange={(event) => onTeamChange((current) => ({ ...current, status: event.target.value }))} disabled={savingTeam}>
+                  {memberStatuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
+                </select>
+              </label>
+              <label className={styles.modalField}>
+                <span>Observacoes</span>
+                <input type="text" value={teamForm.notes} onChange={(event) => onTeamChange((current) => ({ ...current, notes: event.target.value }))} disabled={savingTeam} />
+              </label>
+            </div>
+          ) : isMember ? (
+            <div className={styles.modalGrid}>
+              <label className={styles.modalField}>
+                <span>Equipe</span>
+                <select
+                  value={memberForm.teamId}
+                  onChange={(event) => {
+                    const nextTeamId = event.target.value;
+                    const nextTeam = teams.find((team) => team.id === nextTeamId) ?? null;
+                    onMemberChange((current) => ({
+                      ...current,
+                      teamId: nextTeamId,
+                      cityIbgeCode: nextTeam?.city_ibge_code ?? current.cityIbgeCode,
+                    }));
+                  }}
+                  disabled={saving}
+                >
+                  <option value="">Selecione</option>
+                  {teams.map((team) => <option key={team.id} value={team.id}>{team.name} - {team.city_name}</option>)}
+                </select>
+              </label>
+              <label className={styles.modalField}>
+                <span>Nome</span>
+                <input type="text" value={memberForm.name} onChange={(event) => onMemberChange((current) => ({ ...current, name: event.target.value }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>E-mail</span>
+                <input type="email" value={memberForm.email} onChange={(event) => onMemberChange((current) => ({ ...current, email: event.target.value }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Telefone</span>
+                <input type="text" value={memberForm.phone} onChange={(event) => onMemberChange((current) => ({ ...current, phone: formatPhoneInput(event.target.value) }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Funcao</span>
+                <input type="text" value={memberForm.role} onChange={(event) => onMemberChange((current) => ({ ...current, role: event.target.value }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Municipio</span>
+                <input type="text" value={memberTeam?.city_name || "--"} readOnly />
+              </label>
+            </div>
+          ) : isLeader ? (
+            <>
+              <div className={styles.modalGrid}>
+                <label className={styles.modalField}>
+                  <span>Nome</span>
+                  <input type="text" value={leaderForm.name} onChange={(event) => onLeaderChange((current) => ({ ...current, name: event.target.value }))} disabled={saving} />
+                </label>
+                <label className={styles.modalField}>
+                  <span>Equipe</span>
+                  <select value={leaderForm.teamId} onChange={(event) => onLeaderChange((current) => ({ ...current, teamId: event.target.value }))} disabled={saving}>
+                    <option value="">Selecione</option>
+                    {teams.map((team) => <option key={team.id} value={team.id}>{team.name} - {team.city_name}</option>)}
+                  </select>
+                </label>
+                <label className={styles.modalField}>
+                  <span>Telefone</span>
+                  <input type="text" value={leaderForm.phone} onChange={(event) => onLeaderChange((current) => ({ ...current, phone: formatPhoneInput(event.target.value) }))} disabled={saving} />
+                </label>
+                <label className={styles.modalField}>
+                  <span>Municipio</span>
+                  <input type="text" value={leaderTeam?.city_name || "--"} readOnly />
+                </label>
+              </div>
+              <label className={styles.modalTextareaField}>
+                <span>Observacoes</span>
+                <textarea rows={4} maxLength={400} value={leaderForm.notes} onChange={(event) => onLeaderChange((current) => ({ ...current, notes: event.target.value }))} disabled={saving} />
+              </label>
+            </>
+          ) : (
+            <div className={styles.modalGrid}>
+              <label className={styles.modalField}>
+                <span>Nome</span>
+                <input type="text" value={representativeForm.name} onChange={(event) => onRepresentativeChange((current) => ({ ...current, name: event.target.value }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Equipe</span>
+                <select value={representativeForm.teamId} onChange={(event) => onRepresentativeChange((current) => ({ ...current, teamId: event.target.value }))} disabled={saving}>
+                  <option value="">Selecione</option>
+                  {teams.map((team) => <option key={team.id} value={team.id}>{team.name} - {team.city_name}</option>)}
+                </select>
+              </label>
+              <label className={styles.modalField}>
+                <span>E-mail</span>
+                <input type="email" value={representativeForm.email} onChange={(event) => onRepresentativeChange((current) => ({ ...current, email: event.target.value }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Funcao</span>
+                <input type="text" value={representativeForm.role} onChange={(event) => onRepresentativeChange((current) => ({ ...current, role: event.target.value }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Telefone</span>
+                <input type="text" value={representativeForm.phone} onChange={(event) => onRepresentativeChange((current) => ({ ...current, phone: formatPhoneInput(event.target.value) }))} disabled={saving} />
+              </label>
+              <label className={styles.modalField}>
+                <span>Municipio</span>
+                <input type="text" value={representativeTeam?.city_name || "--"} readOnly />
+              </label>
+            </div>
+          )}
+
+          {modalError ? <p className={styles.modalErrorMessage}>{modalError}</p> : null}
+        </div>
+
+        <div className={styles.modalActions}>
+          <button className={styles.modalSecondaryButton} type="button" onClick={onClose} disabled={saving || savingTeam}>
+            Cancelar
+          </button>
+
+          {isTeam && editingTeamId ? (
+            <>
+              <button className={styles.modalSecondaryButton} type="button" onClick={onInactivateTeam} disabled={savingTeam}>
+                Inativar equipe
+              </button>
+              <button className={styles.modalPrimaryButton} type="button" onClick={onRemoveTeam} disabled={savingTeam}>
+                Remover equipe
+              </button>
+            </>
+          ) : null}
+
+          <button
+            className={styles.modalPrimaryButton}
+            type="button"
+            onClick={
+              isTeam
+                ? onSubmitTeam
+                : isMember
+                  ? onSubmitMember
+                  : isLeader
+                    ? onSubmitLeader
+                    : onSubmitRepresentative
+            }
+            disabled={saving || savingTeam}
+          >
+            {saving || savingTeam ? "Salvando..." : title}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Equipes;

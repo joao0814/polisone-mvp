@@ -435,6 +435,23 @@
   display: none;
 }
 
+.childItem .itemDescription {
+  position: relative;
+  padding-left: 12px;
+}
+
+.childItem .itemDescription::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateY(-50%);
+}
+
 .childItem:hover .sideLink,
 .childItem:hover .sideButton,
 .childItem.active .sideLink,

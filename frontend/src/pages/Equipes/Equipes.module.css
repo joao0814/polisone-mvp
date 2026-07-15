@@ -289,8 +289,8 @@
 }
 .contentGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.9fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   margin-top: 12px;
   align-items: start;
 }
@@ -330,9 +330,13 @@
 }
 .tableScroll {
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 760px;
+  padding-right: 4px;
 }
 .tableScroll::-webkit-scrollbar {
   height: 8px;
+  width: 8px;
 }
 .tableScroll::-webkit-scrollbar-thumb {
   border-radius: 999px;
@@ -490,6 +494,14 @@
 }
 .formCard {
   padding: 18px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.formCardActive {
+  border-color: rgba(255, 202, 24, 0.78);
+  box-shadow: 0 0 0 2px rgba(255, 202, 24, 0.12);
 }
 .formGrid {
   display: grid;
@@ -588,6 +600,30 @@
   border-color: rgba(240, 17, 25, 0.4);
   color: #ff9d9d;
 }
+.detailStack {
+  display: grid;
+  gap: 12px;
+}
+.detailRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 202, 24, 0.14);
+}
+.detailRow strong {
+  color: var(--yellow);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.detailRow span {
+  color: #fff;
+  font-size: 13px;
+  text-align: right;
+}
 .loading {
   min-height: 100svh;
   display: grid;
@@ -597,6 +633,158 @@
   font:
     800 16px "Segoe UI",
     sans-serif;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(1, 9, 22, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.modalCard {
+  width: min(100%, 760px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(8, 21, 34, 0.99), rgba(3, 10, 18, 0.99));
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.38);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 26px 0;
+}
+
+.modalEyebrow {
+  display: block;
+  color: var(--yellow);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modalTitle {
+  margin: 8px 0 0;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.modalCloseButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 202, 24, 0.08);
+  color: var(--yellow);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modalBody {
+  padding: 22px 26px 0;
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.modalField,
+.modalTextareaField {
+  display: grid;
+  gap: 8px;
+}
+
+.modalField span,
+.modalTextareaField span {
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modalField input,
+.modalField select,
+.modalTextareaField textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #03080f;
+  color: #ffffff;
+  font: inherit;
+}
+
+.modalField input,
+.modalField select {
+  min-height: 46px;
+  padding: 0 14px;
+}
+
+.modalTextareaField {
+  margin-top: 18px;
+}
+
+.modalTextareaField textarea {
+  min-height: 120px;
+  padding: 14px;
+  resize: vertical;
+}
+
+.modalErrorMessage {
+  margin: 16px 0 0;
+  border: 1px solid rgba(240, 17, 25, 0.7);
+  border-radius: 12px;
+  background: rgba(240, 17, 25, 0.14);
+  color: #ffb5b9;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 20px 26px 26px;
+  border-top: 1px solid rgba(255, 202, 24, 0.18);
+}
+
+.modalPrimaryButton,
+.modalSecondaryButton {
+  min-width: 180px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.modalPrimaryButton {
+  border: 0;
+  background: var(--yellow);
+  color: #07121f;
+}
+
+.modalSecondaryButton {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: #ffffff;
 }
 @media (max-width: 1280px) {
   .header,
@@ -630,6 +818,20 @@
   .inlineAction,
   .memberActionButton,
   .memberActionDangerButton {
+    width: 100%;
+  }
+
+  .modalGrid,
+  .modalActions {
+    grid-template-columns: 1fr;
+  }
+
+  .modalActions {
+    display: grid;
+  }
+
+  .modalPrimaryButton,
+  .modalSecondaryButton {
     width: 100%;
   }
 }
