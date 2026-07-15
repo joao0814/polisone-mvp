@@ -1,9 +1,5 @@
+import CampaignStatusPanel from "../../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import styles from "../GestaoCampanha.module.css";
-
-const countdowns = [
-  { value: "38", label: "Dias para o inicio da campanha", progress: 68 },
-  { value: "72", label: "Dias para o dia da eleicao", progress: 24 },
-];
 
 function CampaignHeader({ userName }) {
   return (
@@ -14,22 +10,7 @@ function CampaignHeader({ userName }) {
         <p>Aqui esta o panorama completo da sua campanha no momento atual.</p>
       </div>
 
-      <div className={styles.headerRight}>
-        <div className={styles.countdownStack} aria-label="Contagem regressiva">
-          {countdowns.map((item) => (
-            <article className={styles.countdownCard} key={item.label}>
-              <strong>{item.value}</strong>
-              <span>{item.label}</span>
-              <i style={{ "--value": `${item.progress}%` }} />
-            </article>
-          ))}
-        </div>
-        <time className={styles.dateBox} dateTime="2026-10-04">
-          <strong>04/10</strong>
-          <span />
-          <small>10:06</small>
-        </time>
-      </div>
+      <CampaignStatusPanel className={styles.headerRight} mode="dashboard" />
     </header>
   );
 }

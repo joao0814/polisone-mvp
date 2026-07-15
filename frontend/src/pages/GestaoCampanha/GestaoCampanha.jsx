@@ -57,7 +57,7 @@ const performanceRegions = campaignRegions.filter(
 );
 
 function GestaoCampanha({ session, onLogout }) {
-  const userName = session?.user?.name || "Candidato Alan Leal";
+  const userName = session?.user?.name || "Candidato";
   const [selectedRegionId, setSelectedRegionId] = useState(null);
   const [overviewMetricsData, setOverviewMetricsData] = useState(null);
   const [mapData, setMapData] = useState(null);

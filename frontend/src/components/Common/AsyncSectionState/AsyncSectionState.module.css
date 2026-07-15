@@ -1,0 +1,45 @@
+.state {
+  min-height: 140px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 22px 18px;
+  border: 1px dashed rgba(255, 202, 24, 0.36);
+  border-radius: 18px;
+  background: rgba(8, 21, 34, 0.62);
+  text-align: center;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.state strong {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.state p {
+  max-width: 420px;
+  margin: 0;
+  color: #9aa8ba;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.loading {
+  color: #ffca18;
+}
+
+.error {
+  color: #ff7b7b;
+}
+
+.empty {
+  color: #7aa8ff;
+}

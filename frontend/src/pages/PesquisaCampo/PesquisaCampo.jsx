@@ -1,9 +1,10 @@
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
+import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
+import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import {
   cityDistribution,
   cityProblems,
-  countdowns,
   electorateProfile,
   filterOptions,
   footerMetrics,
@@ -18,7 +19,14 @@ import {
 import styles from "./PesquisaCampo.module.css";
 
 function PesquisaCampo({ session, onLogout }) {
-  const userName = session?.user?.name || "Deputado Alan Leal";
+  const userName = session?.user?.name || "Candidato";
+  const hasResearchData =
+    cityDistribution.length &&
+    cityProblems.length &&
+    priorityRanking.length &&
+    spontaneousVotes.length &&
+    growingCandidates.length &&
+    perceptionPanels.length;
 
   return (
     <main className={styles.page}>
@@ -40,29 +48,17 @@ function PesquisaCampo({ session, onLogout }) {
             <h1>Pesquisa de Campo</h1>
           </div>
 
-          <div className={styles.headerRight}>
-            <div className={styles.countdowns} aria-label="Contagem regressiva">
-              {countdowns.map((countdown) => (
-                <article className={styles.countdownCard} key={countdown.label}>
-                  <span className={styles.countdownTitle}>Contagem regressiva</span>
-                  <div className={styles.countdownBody}>
-                    <strong>{countdown.value}</strong>
-                    <p>{countdown.label}</p>
-                    <i style={{ "--value": `${countdown.progress}%` }} />
-                  </div>
-                  <small>{countdown.footer}</small>
-                </article>
-              ))}
-            </div>
-
-            <time className={styles.dateBox} dateTime="2026-10-04T10:06">
-              <strong>04/10</strong>
-              <span />
-              <small>10:06</small>
-            </time>
-          </div>
+          <CampaignStatusPanel className={styles.headerRight} />
         </header>
 
+        {!hasResearchData ? (
+          <AsyncSectionState
+            description="A estrutura da pesquisa esta pronta e passara a exibir os resultados assim que a coleta estiver conectada."
+            state="empty"
+            title="Nenhum resultado de pesquisa disponivel"
+          />
+        ) : (
+          <>
         <section className={styles.filtersRow} aria-label="Filtros de pesquisa">
           <form className={styles.filtersPanel}>
             <label>
@@ -120,7 +116,7 @@ function PesquisaCampo({ session, onLogout }) {
           </form>
 
           <button className={styles.addButton} type="button">
-            Cadastrar nova emenda
+            Cadastrar nova pesquisa
           </button>
         </section>
 
@@ -176,6 +172,8 @@ function PesquisaCampo({ session, onLogout }) {
             <PerceptionPanel key={`${panel.title}-${index}`} panel={panel} />
           ))}
         </section>
+          </>
+        )}
       </section>
     </main>
   );

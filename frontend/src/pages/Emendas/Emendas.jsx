@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
+import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
+import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import campaignRegions from "../GestaoCampanha/data/campaignRegions";
 import {
   createCampaignCost,
@@ -9,7 +11,6 @@ import {
   updateCampaignCost,
 } from "../../services/campaignCosts";
 import {
-  countdowns,
   menuItems,
 } from "./data/emendasData";
 import styles from "./Emendas.module.css";
@@ -19,8 +20,9 @@ const campaignSubregions = campaignRegions.filter(
 );
 
 function Emendas({ session, onLogout }) {
-  const userName = session?.user?.name || "Deputado Alan Leal";
+  const userName = session?.user?.name || "Candidato";
   const [costsResponse, setCostsResponse] = useState(null);
+  const [loadError, setLoadError] = useState("");
   const [regionFilter, setRegionFilter] = useState("TODAS");
   const [cityFilter, setCityFilter] = useState("TODOS");
   const [search, setSearch] = useState("");
@@ -40,8 +42,14 @@ function Emendas({ session, onLogout }) {
   }, []);
 
   async function loadCosts() {
-    const response = await getCampaignCosts();
-    setCostsResponse(response);
+    try {
+      setLoadError("");
+      const response = await getCampaignCosts();
+      setCostsResponse(response);
+    } catch (error) {
+      setLoadError(error.message || "Nao foi possivel carregar os custos.");
+      setCostsResponse({ items: [] });
+    }
   }
 
   const allCosts = costsResponse?.items ?? [];
@@ -159,28 +167,23 @@ function Emendas({ session, onLogout }) {
             <h1>Custos</h1>
           </div>
 
-          <div className={styles.headerRight}>
-            <div className={styles.countdowns} aria-label="Contagem regressiva">
-              {countdowns.map((countdown) => (
-                <article className={styles.countdownCard} key={countdown.label}>
-                  <span className={styles.countdownTitle}>Contagem regressiva</span>
-                  <div className={styles.countdownBody}>
-                    <strong>{countdown.value}</strong>
-                    <p>{countdown.label}</p>
-                    <i style={{ "--value": `${countdown.progress}%` }} />
-                  </div>
-                  <small>{countdown.footer}</small>
-                </article>
-              ))}
-            </div>
-
-            <time className={styles.dateBox} dateTime="2026-10-04T10:06">
-              <strong>04/10</strong>
-              <span />
-              <small>10:06</small>
-            </time>
-          </div>
+          <CampaignStatusPanel className={styles.headerRight} />
         </header>
+
+        {costsResponse === null ? (
+          <AsyncSectionState
+            description="Os custos da campanha estao sendo carregados."
+            state="loading"
+            title="Carregando custos"
+          />
+        ) : loadError ? (
+          <AsyncSectionState
+            description={loadError}
+            state="error"
+            title="Nao foi possivel carregar os custos"
+          />
+        ) : (
+          <>
 
         <section className={styles.filtersRow} aria-label="Filtros de custos">
           <form className={styles.filtersPanel}>
@@ -459,6 +462,8 @@ function Emendas({ session, onLogout }) {
             </div>
           </article>
         </section>
+          </>
+        )}
       </section>
     </main>
   );

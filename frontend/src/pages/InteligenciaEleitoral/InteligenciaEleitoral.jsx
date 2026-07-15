@@ -1,19 +1,26 @@
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import cityNightImage from "../../assets/images/campaign/sao-jose-night.jpg";
 import logoNav from "../../assets/images/home/logo nav.png";
+import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
+import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import {
   ageRanges,
   ballotStats,
   businessStats,
   cityStats,
-  countdowns,
   menuItems,
   mostVoted,
 } from "./data/inteligenciaEleitoralData";
 import styles from "./InteligenciaEleitoral.module.css";
 
 function InteligenciaEleitoral({ session, onLogout }) {
-  const userName = session?.user?.name || "Deputado Alan Leal";
+  const userName = session?.user?.name || "Candidato";
+  const hasIntelligenceData =
+    cityStats.length &&
+    ballotStats.length &&
+    businessStats.length &&
+    mostVoted.length &&
+    ageRanges.length;
 
   return (
     <main className={styles.page}>
@@ -35,29 +42,17 @@ function InteligenciaEleitoral({ session, onLogout }) {
             <h1>Inteligencia Eleitoral</h1>
           </div>
 
-          <div className={styles.headerRight}>
-            <div className={styles.countdowns} aria-label="Contagem regressiva">
-              {countdowns.map((countdown) => (
-                <article className={styles.countdownCard} key={countdown.label}>
-                  <span className={styles.countdownTitle}>Contagem regressiva</span>
-                  <div className={styles.countdownBody}>
-                    <strong>{countdown.value}</strong>
-                    <p>{countdown.label}</p>
-                    <i style={{ "--value": `${countdown.progress}%` }} />
-                  </div>
-                  <small>{countdown.footer}</small>
-                </article>
-              ))}
-            </div>
-
-            <time className={styles.dateBox} dateTime="2026-10-04T10:06">
-              <strong>04/10</strong>
-              <span />
-              <small>10:06</small>
-            </time>
-          </div>
+          <CampaignStatusPanel className={styles.headerRight} />
         </header>
 
+        {!hasIntelligenceData ? (
+          <AsyncSectionState
+            description="Os blocos de inteligencia serao exibidos aqui quando a tela receber a fonte definitiva de dados."
+            state="empty"
+            title="Nenhum dado de inteligencia disponivel"
+          />
+        ) : (
+          <>
         <section className={styles.insightGrid} aria-label="Filtros e contexto">
           <form className={styles.filterBar}>
             <label>
@@ -226,6 +221,8 @@ function InteligenciaEleitoral({ session, onLogout }) {
             </div>
           </aside>
         </section>
+          </>
+        )}
       </section>
     </main>
   );

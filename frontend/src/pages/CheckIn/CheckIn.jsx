@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
+import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import {
-  countdowns,
   menuItems,
   photoCards,
 } from "./data/checkInData";
@@ -28,7 +28,7 @@ const ACTIVITY_TYPE_OPTIONS = [
 ];
 
 function CheckIn({ session, onLogout }) {
-  const userName = session?.user?.name || "Deputado Alan Leal";
+  const userName = session?.user?.name || "Candidato";
   const [search, setSearch] = useState("");
   const [tableSearch, setTableSearch] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
@@ -549,27 +549,7 @@ function CheckIn({ session, onLogout }) {
             <h1>Check-in</h1>
           </div>
 
-          <div className={styles.headerRight}>
-            <div className={styles.countdowns} aria-label="Contagem regressiva">
-              {countdowns.map((countdown) => (
-                <article className={styles.countdownCard} key={countdown.label}>
-                  <span className={styles.countdownTitle}>Contagem regressiva</span>
-                  <div className={styles.countdownBody}>
-                    <strong>{countdown.value}</strong>
-                    <p>{countdown.label}</p>
-                    <i style={{ "--value": `${countdown.progress}%` }} />
-                  </div>
-                  <small>{countdown.footer}</small>
-                </article>
-              ))}
-            </div>
-
-            <time className={styles.dateBox} dateTime="2026-10-04T10:06">
-              <strong>04/10</strong>
-              <span />
-              <small>10:06</small>
-            </time>
-          </div>
+          <CampaignStatusPanel className={styles.headerRight} />
         </header>
 
         <form

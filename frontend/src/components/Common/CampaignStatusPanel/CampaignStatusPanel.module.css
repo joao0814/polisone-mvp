@@ -1,0 +1,140 @@
+.root {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.stack {
+  display: grid;
+  gap: 6px;
+}
+
+.card,
+.dateBox,
+.dashboardCard {
+  border: 1px solid #ffca18;
+  border-radius: 4px;
+  background: #071320;
+}
+
+.card {
+  min-height: 52px;
+  padding: 5px 10px;
+}
+
+.cardTitle {
+  display: block;
+  color: #ffca18;
+  font-size: 6px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.cardBody {
+  display: grid;
+  grid-template-columns: auto minmax(82px, 96px) minmax(96px, 1fr);
+  align-items: center;
+  gap: 7px;
+}
+
+.cardBody strong {
+  color: #ffffff;
+  font-size: 33px;
+  font-weight: 500;
+  line-height: 0.9;
+}
+
+.cardBody p {
+  margin: 0;
+  color: #f3f5f8;
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.cardBody i,
+.dashboardCard i {
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffca18 var(--value), #000812 var(--value));
+}
+
+.card small {
+  display: block;
+  margin-top: 1px;
+  color: #ffffff;
+  font-size: 6px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.dateBox {
+  display: grid;
+  place-items: center;
+  padding: 7px 4px;
+  color: #ffffff;
+}
+
+.dateBox strong,
+.dateBox small {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.dateBox span {
+  width: 48px;
+  height: 2px;
+  background: #ffca18;
+}
+
+.dashboard {
+  grid-template-columns: minmax(0, 1fr) 56px;
+  gap: 4px;
+}
+
+.dashboard .stack {
+  gap: 4px;
+}
+
+.dashboardCard {
+  min-height: 40px;
+  display: grid;
+  grid-template-columns: auto minmax(84px, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+}
+
+.dashboardCard strong {
+  color: #ffffff;
+  font-size: 29px;
+  line-height: 1;
+}
+
+.dashboardCard span {
+  color: #f3f5f8;
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.dashboardCard i {
+  grid-column: 2;
+}
+
+.dashboard .dateBox strong,
+.dashboard .dateBox small {
+  font-size: 15px;
+}
+
+.dashboard .dateBox span {
+  width: 38px;
+}
+
+@media (max-width: 760px) {
+  .root,
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+}

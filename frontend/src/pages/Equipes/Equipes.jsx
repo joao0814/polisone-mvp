@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
 import {
@@ -542,7 +543,15 @@ function Equipes({ session, onLogout }) {
   }
 
   if (loading) {
-    return <main className={styles.loading}>Carregando equipes...</main>;
+    return (
+      <main className={styles.loading}>
+        <AsyncSectionState
+          description="As equipes da campanha estao sendo carregadas."
+          state="loading"
+          title="Carregando equipes"
+        />
+      </main>
+    );
   }
 
   return (

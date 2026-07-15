@@ -1,7 +1,8 @@
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
+import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
+import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import {
-  countdowns,
   menuItems,
   municipalities,
   summaryCards,
@@ -9,7 +10,8 @@ import {
 import styles from "./Municipios.module.css";
 
 function Municipios({ session, onLogout }) {
-  const userName = session?.user?.name || "Deputado Alan Leal";
+  const userName = session?.user?.name || "Candidato";
+  const municipalityRows = municipalities ?? [];
 
   return (
     <main className={styles.page}>
@@ -31,27 +33,7 @@ function Municipios({ session, onLogout }) {
             <h1>Municipios</h1>
           </div>
 
-          <div className={styles.headerRight}>
-            <div className={styles.countdowns} aria-label="Contagem regressiva">
-              {countdowns.map((countdown) => (
-                <article className={styles.countdownCard} key={countdown.label}>
-                  <span className={styles.countdownTitle}>Contagem regressiva</span>
-                  <div className={styles.countdownBody}>
-                    <strong>{countdown.value}</strong>
-                    <p>{countdown.label}</p>
-                    <i style={{ "--value": `${countdown.progress}%` }} />
-                  </div>
-                  <small>{countdown.footer}</small>
-                </article>
-              ))}
-            </div>
-
-            <time className={styles.dateBox} dateTime="2026-10-04T10:06">
-              <strong>04/10</strong>
-              <span />
-              <small>10:06</small>
-            </time>
-          </div>
+          <CampaignStatusPanel className={styles.headerRight} />
         </header>
 
         <section className={styles.summaryGrid} aria-label="Indicadores dos municipios">
@@ -88,34 +70,42 @@ function Municipios({ session, onLogout }) {
 
           <p className={styles.scrollHint}>Arraste a tabela para ver todas as colunas.</p>
 
-          <div className={styles.tableScroll}>
-            <table className={styles.municipalityTable}>
-              <thead>
-                <tr>
-                  <th>Municipios</th>
-                  <th>Regiao</th>
-                  <th>Representantes</th>
-                  <th>Populacao</th>
-                  <th>Eleitores</th>
-                  <th>Emendas (R$)</th>
-                  <th>Emendas (QTD)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {municipalities.map((municipality) => (
-                  <tr key={municipality.id}>
-                    <td>{municipality.name}</td>
-                    <td>{municipality.region}</td>
-                    <td>{municipality.representatives}</td>
-                    <td>{municipality.population}</td>
-                    <td>{municipality.voters}</td>
-                    <td>{municipality.amendmentsValue}</td>
-                    <td>{municipality.amendmentsCount}</td>
+          {municipalityRows.length ? (
+            <div className={styles.tableScroll}>
+              <table className={styles.municipalityTable}>
+                <thead>
+                  <tr>
+                    <th>Municipios</th>
+                    <th>Regiao</th>
+                    <th>Representantes</th>
+                    <th>Populacao</th>
+                    <th>Eleitores</th>
+                    <th>Emendas (R$)</th>
+                    <th>Emendas (QTD)</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {municipalityRows.map((municipality) => (
+                    <tr key={municipality.id}>
+                      <td>{municipality.name}</td>
+                      <td>{municipality.region}</td>
+                      <td>{municipality.representatives}</td>
+                      <td>{municipality.population}</td>
+                      <td>{municipality.voters}</td>
+                      <td>{municipality.amendmentsValue}</td>
+                      <td>{municipality.amendmentsCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <AsyncSectionState
+              description="Os municipios aparecerao aqui assim que a fonte de dados desta tela estiver conectada."
+              state="empty"
+              title="Nenhum municipio disponivel"
+            />
+          )}
         </section>
       </section>
     </main>
