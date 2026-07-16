@@ -21,6 +21,7 @@ const INITIAL_FILTERS = {
 
 function PesquisaCampo({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato";
+  const [feedback, setFeedback] = useState("");
   const [draftFilters, setDraftFilters] = useState(INITIAL_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(INITIAL_FILTERS);
   const [showAllSpontaneous, setShowAllSpontaneous] = useState(false);
@@ -94,6 +95,7 @@ function PesquisaCampo({ session, onLogout }) {
 
   const handleDraftChange = (field, value) => {
     setDraftFilters((current) => ({ ...current, [field]: value }));
+    setFeedback("");
   };
 
   const handleApplyFilters = (event) => {
@@ -101,6 +103,7 @@ function PesquisaCampo({ session, onLogout }) {
     setAppliedFilters(draftFilters);
     setShowAllSpontaneous(false);
     setShowAllGrowth(false);
+    setFeedback("");
   };
 
   return (
@@ -207,10 +210,20 @@ function PesquisaCampo({ session, onLogout }) {
             </div>
           </form>
 
-          <button className={styles.addButton} type="button">
+          <button
+            className={styles.addButton}
+            type="button"
+            onClick={() =>
+              setFeedback(
+                "O cadastro da pesquisa sera conectado depois ao formulario externo de coleta.",
+              )
+            }
+          >
             Cadastrar nova pesquisa
           </button>
         </section>
+
+        {feedback ? <p className={styles.infoBanner}>{feedback}</p> : null}
 
         {!activeScenario ? (
           <AsyncSectionState

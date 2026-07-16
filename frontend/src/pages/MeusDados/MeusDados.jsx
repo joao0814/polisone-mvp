@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import logoNav from "../../assets/images/home/logo nav.png";
+import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
 import ProtectedStorageImage from "../../components/Common/ProtectedStorageImage/ProtectedStorageImage";
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import { getProfile, updateProfile } from "../../services/profile";
@@ -227,10 +228,6 @@ function MeusDados({ session, onLogout, onUserUpdate }) {
     }
   }
 
-  if (loading) {
-    return <main className={styles.loading}>Carregando seus dados...</main>;
-  }
-
   return (
     <main className={styles.page}>
       <Sidebar
@@ -245,6 +242,20 @@ function MeusDados({ session, onLogout, onUserUpdate }) {
       />
 
       <section className={styles.workspace}>
+        {loading ? (
+          <AsyncSectionState
+            state="loading"
+            title="Carregando seus dados"
+            description="Estamos preparando o perfil e as configuracoes da campanha."
+          />
+        ) : error && !form.email ? (
+          <AsyncSectionState
+            state="error"
+            title="Nao foi possivel carregar seus dados"
+            description={error}
+          />
+        ) : (
+          <>
         <header className={styles.header}>
           <div>
             <p>Perfil e configuracoes</p>
@@ -454,6 +465,8 @@ function MeusDados({ session, onLogout, onUserUpdate }) {
             </button>
           </footer>
         </form>
+          </>
+        )}
       </section>
     </main>
   );
