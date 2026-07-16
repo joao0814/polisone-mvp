@@ -270,6 +270,7 @@
   margin-top: 16px;
 }
 .success,
+.info,
 .error {
   margin: 0;
   padding: 13px 16px;
@@ -286,6 +287,11 @@
   border: 1px solid rgba(255, 87, 87, 0.45);
   background: rgba(255, 87, 87, 0.1);
   color: #ff9d9d;
+}
+.info {
+  border: 1px solid rgba(88, 156, 255, 0.45);
+  background: rgba(88, 156, 255, 0.1);
+  color: #9fc1ff;
 }
 .contentGrid {
   display: grid;
@@ -753,6 +759,17 @@
   font-size: 13px;
 }
 
+.modalWarningMessage {
+  margin: 0 0 16px;
+  border: 1px solid rgba(255, 149, 24, 0.55);
+  border-radius: 12px;
+  background: rgba(255, 149, 24, 0.12);
+  color: #ffd09b;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .modalActions {
   display: flex;
   justify-content: flex-end;
@@ -763,7 +780,8 @@
 }
 
 .modalPrimaryButton,
-.modalSecondaryButton {
+.modalSecondaryButton,
+.modalDangerButton {
   min-width: 180px;
   min-height: 44px;
   padding: 0 20px;
@@ -785,6 +803,12 @@
   border: 1px solid var(--line);
   background: transparent;
   color: #ffffff;
+}
+
+.modalDangerButton {
+  border: 1px solid rgba(240, 17, 25, 0.45);
+  background: rgba(240, 17, 25, 0.15);
+  color: #ffb5b9;
 }
 @media (max-width: 1280px) {
   .header,
@@ -831,7 +855,8 @@
   }
 
   .modalPrimaryButton,
-  .modalSecondaryButton {
+  .modalSecondaryButton,
+  .modalDangerButton {
     width: 100%;
   }
 }

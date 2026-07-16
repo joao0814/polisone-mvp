@@ -103,7 +103,9 @@ function Equipes({ session, onLogout }) {
   );
   const [teamMessage, setTeamMessage] = useState("");
   const [memberMessage, setMemberMessage] = useState("");
+  const [accessInviteMessage, setAccessInviteMessage] = useState("");
   const [error, setError] = useState("");
+  const [confirmAction, setConfirmAction] = useState(null);
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -222,6 +224,13 @@ function Equipes({ session, onLogout }) {
     }
   }
 
+  function clearFeedback() {
+    setTeamMessage("");
+    setMemberMessage("");
+    setAccessInviteMessage("");
+    setError("");
+  }
+
   async function loadLeaders(isActive = () => true) {
     try {
       const data = await getCampaignLeaders();
@@ -238,6 +247,7 @@ function Equipes({ session, onLogout }) {
     if (savingMember || savingTeam) return;
     setModalType(null);
     setModalError("");
+    setConfirmAction(null);
     setEditingTeamId(null);
     setEditingMemberId(null);
     setTeamModalForm(initialTeamModalForm);
@@ -247,15 +257,19 @@ function Equipes({ session, onLogout }) {
   }
 
   function openTeamModal() {
+    clearFeedback();
     setModalType("team");
     setModalError("");
+    setConfirmAction(null);
     setEditingTeamId(null);
     setTeamModalForm(initialTeamModalForm);
   }
 
   function openEditTeamModal(team) {
+    clearFeedback();
     setModalType("team");
     setModalError("");
+    setConfirmAction(null);
     setEditingTeamId(team.id);
     setTeamModalForm({
       name: team.name ?? "",
@@ -272,8 +286,10 @@ function Equipes({ session, onLogout }) {
   function openMemberModal() {
     const defaultTeam = selectedTeam ?? teams[0] ?? null;
 
+    clearFeedback();
     setModalType("member");
     setModalError("");
+    setConfirmAction(null);
     setEditingMemberId(null);
     setMemberModalForm({
       ...initialMemberModalForm,
@@ -285,8 +301,10 @@ function Equipes({ session, onLogout }) {
   function openEditMemberModal(member) {
     if (!selectedTeam) return;
 
+    clearFeedback();
     setModalType("member");
     setModalError("");
+    setConfirmAction(null);
     setEditingMemberId(member.id);
     setMemberModalForm({
       teamId: selectedTeam.id,
@@ -300,8 +318,10 @@ function Equipes({ session, onLogout }) {
   }
 
   function openLeaderModal() {
+    clearFeedback();
     setModalType("leader");
     setModalError("");
+    setConfirmAction(null);
     setLeaderModalForm({
       ...initialLeaderModalForm,
       teamId: selectedTeam?.id ?? teams[0]?.id ?? "",
@@ -309,8 +329,10 @@ function Equipes({ session, onLogout }) {
   }
 
   function openRepresentativeModal() {
+    clearFeedback();
     setModalType("representative");
     setModalError("");
+    setConfirmAction(null);
     setRepresentativeModalForm({
       ...initialRepresentativeModalForm,
       teamId: selectedTeam?.id ?? teams[0]?.id ?? "",
@@ -323,8 +345,14 @@ function Equipes({ session, onLogout }) {
   }
 
   async function submitTeamModal() {
+    if (!teamModalForm.name.trim() || !teamModalForm.cityName.trim() || !teamModalForm.cityIbgeCode.trim()) {
+      setModalError("Informe nome da equipe, municipio e codigo IBGE.");
+      return;
+    }
+
     setSavingTeam(true);
     setModalError("");
+    clearFeedback();
 
     try {
       if (editingTeamId) {
@@ -347,9 +375,15 @@ function Equipes({ session, onLogout }) {
 
   async function handleInactivateTeam() {
     if (!editingTeamId) return;
+    if (confirmAction !== "inactivate-team") {
+      setConfirmAction("inactivate-team");
+      setModalError("");
+      return;
+    }
 
     setSavingTeam(true);
     setModalError("");
+    clearFeedback();
 
     try {
       await updateTeam(editingTeamId, { status: "INACTIVE" });
@@ -360,14 +394,21 @@ function Equipes({ session, onLogout }) {
       setModalError(requestError.message);
     } finally {
       setSavingTeam(false);
+      setConfirmAction(null);
     }
   }
 
   async function handleRemoveTeam() {
     if (!editingTeamId) return;
+    if (confirmAction !== "remove-team") {
+      setConfirmAction("remove-team");
+      setModalError("");
+      return;
+    }
 
     setSavingTeam(true);
     setModalError("");
+    clearFeedback();
 
     try {
       await removeTeam(editingTeamId);
@@ -378,6 +419,7 @@ function Equipes({ session, onLogout }) {
       setModalError(requestError.message);
     } finally {
       setSavingTeam(false);
+      setConfirmAction(null);
     }
   }
 
@@ -396,6 +438,7 @@ function Equipes({ session, onLogout }) {
 
     setSavingMember(true);
     setModalError("");
+    clearFeedback();
 
     try {
       if (editingMemberId) {
@@ -410,9 +453,12 @@ function Equipes({ session, onLogout }) {
         });
 
         setMemberMessage(
+          "Membro cadastrado com sucesso.",
+        );
+        setAccessInviteMessage(
           createdMember?.access_invite
-            ? `Membro cadastrado com sucesso. Login: ${createdMember.access_invite.email} | Senha provisoria: ${createdMember.access_invite.temporary_password}`
-            : "Membro cadastrado com sucesso.",
+            ? `Acesso provisório: ${createdMember.access_invite.email} | Senha: ${createdMember.access_invite.temporary_password}`
+            : "",
         );
       }
 
@@ -430,8 +476,7 @@ function Equipes({ session, onLogout }) {
     if (!selectedTeam) return;
 
     setSavingMember(true);
-    setMemberMessage("");
-    setError("");
+    clearFeedback();
 
     try {
       const nextStatus = member.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
@@ -449,8 +494,7 @@ function Equipes({ session, onLogout }) {
     if (!selectedTeam) return;
 
     setSavingMember(true);
-    setMemberMessage("");
-    setError("");
+    clearFeedback();
 
     try {
       await removeTeamMember(selectedTeam.id, memberId);
@@ -478,6 +522,7 @@ function Equipes({ session, onLogout }) {
 
     setSavingMember(true);
     setModalError("");
+    clearFeedback();
 
     try {
       await createCampaignLeader({
@@ -516,6 +561,7 @@ function Equipes({ session, onLogout }) {
 
     setSavingMember(true);
     setModalError("");
+    clearFeedback();
 
     try {
       const createdMember = await createTeamMember(team.id, {
@@ -528,9 +574,12 @@ function Equipes({ session, onLogout }) {
       });
 
       setMemberMessage(
+        "Representante cadastrado com sucesso.",
+      );
+      setAccessInviteMessage(
         createdMember?.access_invite
-          ? `Representante cadastrado com sucesso. Login: ${createdMember.access_invite.email} | Senha provisoria: ${createdMember.access_invite.temporary_password}`
-          : "Representante cadastrado com sucesso.",
+          ? `Acesso provisório: ${createdMember.access_invite.email} | Senha: ${createdMember.access_invite.temporary_password}`
+          : "",
       );
       setSelectedTeamId(team.id);
       await Promise.all([loadTeams(team.id), refreshMembers(team.id)]);
@@ -653,10 +702,11 @@ function Equipes({ session, onLogout }) {
           </label>
         </section>
 
-        {(teamMessage || memberMessage || error) && (
+        {(teamMessage || memberMessage || accessInviteMessage || error) && (
           <section className={styles.feedbackStack} aria-live="polite">
             {teamMessage ? <p className={styles.success}>{teamMessage}</p> : null}
             {memberMessage ? <p className={styles.success}>{memberMessage}</p> : null}
+            {accessInviteMessage ? <p className={styles.info}>{accessInviteMessage}</p> : null}
             {error ? <p className={styles.error}>{error}</p> : null}
           </section>
         )}
@@ -780,6 +830,8 @@ function Equipes({ session, onLogout }) {
           savingTeam={savingTeam}
           teamForm={teamModalForm}
           teams={teams}
+          confirmAction={confirmAction}
+          onConfirmActionChange={setConfirmAction}
         />
       ) : null}
     </main>
@@ -831,6 +883,7 @@ function formatPhoneInput(value) {
 }
 
 function EntityManagementModal({
+  confirmAction,
   editingMemberId,
   editingTeamId,
   leaderForm,
@@ -840,6 +893,7 @@ function EntityManagementModal({
   modalError,
   modalType,
   onClose,
+  onConfirmActionChange,
   onInactivateTeam,
   onLeaderChange,
   onMemberChange,
@@ -911,6 +965,14 @@ function EntityManagementModal({
         </div>
 
         <div className={styles.modalBody}>
+          {confirmAction ? (
+            <p className={styles.modalWarningMessage}>
+              {confirmAction === "remove-team"
+                ? "Confirme a remoção da equipe. Essa ação remove o cadastro da equipe."
+                : "Confirme a inativação da equipe. Você poderá reativá-la depois."}
+            </p>
+          ) : null}
+
           {isTeam ? (
             <div className={styles.modalGrid}>
               <label className={styles.modalField}>
@@ -1052,17 +1114,35 @@ function EntityManagementModal({
         </div>
 
         <div className={styles.modalActions}>
-          <button className={styles.modalSecondaryButton} type="button" onClick={onClose} disabled={saving || savingTeam}>
+          <button
+            className={styles.modalSecondaryButton}
+            type="button"
+            onClick={() => {
+              onConfirmActionChange(null);
+              onClose();
+            }}
+            disabled={saving || savingTeam}
+          >
             Cancelar
           </button>
 
           {isTeam && editingTeamId ? (
             <>
-              <button className={styles.modalSecondaryButton} type="button" onClick={onInactivateTeam} disabled={savingTeam}>
-                Inativar equipe
+              <button
+                className={styles.modalSecondaryButton}
+                type="button"
+                onClick={onInactivateTeam}
+                disabled={savingTeam}
+              >
+                {confirmAction === "inactivate-team" ? "Confirmar inativação" : "Inativar equipe"}
               </button>
-              <button className={styles.modalPrimaryButton} type="button" onClick={onRemoveTeam} disabled={savingTeam}>
-                Remover equipe
+              <button
+                className={styles.modalDangerButton}
+                type="button"
+                onClick={onRemoveTeam}
+                disabled={savingTeam}
+              >
+                {confirmAction === "remove-team" ? "Confirmar remoção" : "Remover equipe"}
               </button>
             </>
           ) : null}
