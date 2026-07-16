@@ -1,32 +1,107 @@
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
+import { useMemo, useState } from "react";
 import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
 import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import {
-  cityDistribution,
-  cityProblems,
-  electorateProfile,
   filterOptions,
-  footerMetrics,
-  growingCandidates,
   menuItems,
-  perceptionPanels,
-  priorityRanking,
-  spontaneousVotes,
-  summaryCards,
-  voteInfluence,
+  researchScenarios,
 } from "./data/pesquisaCampoData";
 import styles from "./PesquisaCampo.module.css";
 
+const INITIAL_FILTERS = {
+  type: filterOptions.type[0],
+  year: filterOptions.year[0],
+  status: filterOptions.status[0],
+  city: "Todos",
+  entity: "Todos",
+  search: "",
+};
+
 function PesquisaCampo({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato";
-  const hasResearchData =
-    cityDistribution.length &&
-    cityProblems.length &&
-    priorityRanking.length &&
-    spontaneousVotes.length &&
-    growingCandidates.length &&
-    perceptionPanels.length;
+  const [draftFilters, setDraftFilters] = useState(INITIAL_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(INITIAL_FILTERS);
+  const [showAllSpontaneous, setShowAllSpontaneous] = useState(false);
+  const [showAllGrowth, setShowAllGrowth] = useState(false);
+
+  const availableCities = useMemo(
+    () => ["Todos", ...new Set(researchScenarios.map((scenario) => scenario.title))],
+    [],
+  );
+  const availableEntities = useMemo(
+    () => ["Todos", ...new Set(researchScenarios.map((scenario) => scenario.entity))],
+    [],
+  );
+
+  const filteredScenarios = useMemo(() => {
+    const normalizedSearch = normalizeText(appliedFilters.search);
+
+    return researchScenarios.filter((scenario) => {
+      if (appliedFilters.type !== "Todos" && scenario.type !== appliedFilters.type) {
+        return false;
+      }
+
+      if (appliedFilters.year !== "Todos" && scenario.year !== appliedFilters.year) {
+        return false;
+      }
+
+      if (appliedFilters.status !== "Todas" && scenario.status !== appliedFilters.status) {
+        return false;
+      }
+
+      if (appliedFilters.city !== "Todos" && scenario.title !== appliedFilters.city) {
+        return false;
+      }
+
+      if (appliedFilters.entity !== "Todos" && scenario.entity !== appliedFilters.entity) {
+        return false;
+      }
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      const haystack = [
+        scenario.title,
+        scenario.entity,
+        scenario.type,
+        scenario.status,
+        scenario.year,
+        ...scenario.searchTerms,
+      ]
+        .join(" ")
+        .trim();
+
+      return normalizeText(haystack).includes(normalizedSearch);
+    });
+  }, [appliedFilters]);
+
+  const activeScenario = filteredScenarios[0] || null;
+  const hasResearchData = researchScenarios.length > 0;
+
+  const visibleSpontaneousVotes = activeScenario
+    ? showAllSpontaneous
+      ? activeScenario.spontaneousVotes
+      : activeScenario.spontaneousVotes.slice(0, 3)
+    : [];
+  const visibleGrowthCandidates = activeScenario
+    ? showAllGrowth
+      ? activeScenario.growingCandidates
+      : activeScenario.growingCandidates.slice(0, 5)
+    : [];
+
+  const handleDraftChange = (field, value) => {
+    setDraftFilters((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleApplyFilters = (event) => {
+    event.preventDefault();
+    setAppliedFilters(draftFilters);
+    setShowAllSpontaneous(false);
+    setShowAllGrowth(false);
+  };
 
   return (
     <main className={styles.page}>
@@ -60,10 +135,13 @@ function PesquisaCampo({ session, onLogout }) {
         ) : (
           <>
         <section className={styles.filtersRow} aria-label="Filtros de pesquisa">
-          <form className={styles.filtersPanel}>
+          <form className={styles.filtersPanel} onSubmit={handleApplyFilters}>
             <label>
               <span>TIPO</span>
-              <select defaultValue={filterOptions.type[0]}>
+              <select
+                onChange={(event) => handleDraftChange("type", event.target.value)}
+                value={draftFilters.type}
+              >
                 {filterOptions.type.map((option) => (
                   <option key={option}>{option}</option>
                 ))}
@@ -71,7 +149,10 @@ function PesquisaCampo({ session, onLogout }) {
             </label>
             <label>
               <span>Ano</span>
-              <select defaultValue={filterOptions.year[0]}>
+              <select
+                onChange={(event) => handleDraftChange("year", event.target.value)}
+                value={draftFilters.year}
+              >
                 {filterOptions.year.map((option) => (
                   <option key={option}>{option}</option>
                 ))}
@@ -79,7 +160,10 @@ function PesquisaCampo({ session, onLogout }) {
             </label>
             <label>
               <span>Situacao</span>
-              <select defaultValue={filterOptions.status[0]}>
+              <select
+                onChange={(event) => handleDraftChange("status", event.target.value)}
+                value={draftFilters.status}
+              >
                 {filterOptions.status.map((option) => (
                   <option key={option}>{option}</option>
                 ))}
@@ -87,16 +171,22 @@ function PesquisaCampo({ session, onLogout }) {
             </label>
             <label>
               <span>Municipio</span>
-              <select defaultValue={filterOptions.city[0]}>
-                {filterOptions.city.map((option) => (
+              <select
+                onChange={(event) => handleDraftChange("city", event.target.value)}
+                value={draftFilters.city}
+              >
+                {availableCities.map((option) => (
                   <option key={option}>{option}</option>
                 ))}
               </select>
             </label>
             <label>
               <span>Entidade</span>
-              <select defaultValue={filterOptions.entity[0]}>
-                {filterOptions.entity.map((option) => (
+              <select
+                onChange={(event) => handleDraftChange("entity", event.target.value)}
+                value={draftFilters.entity}
+              >
+                {availableEntities.map((option) => (
                   <option key={option}>{option}</option>
                 ))}
               </select>
@@ -106,9 +196,11 @@ function PesquisaCampo({ session, onLogout }) {
               <input
                 aria-label="Buscar pesquisa"
                 placeholder="Buscar emendas, entidades e etc..."
+                onChange={(event) => handleDraftChange("search", event.target.value)}
+                value={draftFilters.search}
                 type="search"
               />
-              <button type="button">
+              <button type="submit">
                 <span aria-hidden="true" />
                 Buscar
               </button>
@@ -120,8 +212,27 @@ function PesquisaCampo({ session, onLogout }) {
           </button>
         </section>
 
+        {!activeScenario ? (
+          <AsyncSectionState
+            description="Ajuste os filtros para visualizar um recorte de pesquisa local."
+            state="empty"
+            title="Nenhum recorte encontrado"
+          />
+        ) : (
+          <>
+        <section className={styles.appliedSummary} aria-label="Resumo do filtro aplicado">
+          <div>
+            <span>Recorte ativo</span>
+            <strong>{activeScenario.title}</strong>
+            <small>
+              {activeScenario.entity} · {activeScenario.type} · {activeScenario.status}
+            </small>
+          </div>
+          <p>{filteredScenarios.length} resultado(s) com os filtros atuais</p>
+        </section>
+
         <section className={styles.summaryGrid} aria-label="Resumo das pesquisas">
-          {summaryCards.map((card) => (
+          {activeScenario.summaryCards.map((card) => (
             <article className={`${styles.summaryCard} ${styles[card.tone]}`} key={card.title}>
               <span className={styles.summaryIcon} aria-hidden="true" />
               <div>
@@ -134,28 +245,38 @@ function PesquisaCampo({ session, onLogout }) {
         </section>
 
         <section className={styles.topGrid} aria-label="Indicadores principais de campo">
-          <DonutPanel title="Em qual cidade voce esta?" items={cityDistribution} />
+          <DonutPanel title="Em qual cidade voce esta?" items={activeScenario.cityDistribution} />
 
-          <BarPanel title="Qual e o principal problema da sua cidade?" items={cityProblems} />
+          <BarPanel title="Qual e o principal problema da sua cidade?" items={activeScenario.cityProblems} />
 
           <RankingPanel
-            items={priorityRanking}
+            items={activeScenario.priorityRanking}
             title="Qual dessas areas deveria ser prioridade para um deputado estadual?"
           />
         </section>
 
-        <VoterProfile profile={electorateProfile} />
+        <VoterProfile profile={activeScenario.electorateProfile} />
 
         <section className={styles.middleGrid} aria-label="Analise eleitoral">
-          <DonutPanel title="O que mais influencia seu voto?" items={voteInfluence} />
+          <DonutPanel title="O que mais influencia seu voto?" items={activeScenario.voteInfluence} />
 
-          <SpontaneousPanel items={spontaneousVotes} />
+          <SpontaneousPanel
+            items={visibleSpontaneousVotes}
+            onToggle={() => setShowAllSpontaneous((current) => !current)}
+            showToggle={activeScenario.spontaneousVotes.length > 3}
+            showingAll={showAllSpontaneous}
+          />
 
-          <GrowthPanel items={growingCandidates} />
+          <GrowthPanel
+            items={visibleGrowthCandidates}
+            onToggle={() => setShowAllGrowth((current) => !current)}
+            showToggle={activeScenario.growingCandidates.length > 5}
+            showingAll={showAllGrowth}
+          />
         </section>
 
         <section className={styles.footerMetrics} aria-label="Metricas finais de pesquisa">
-          {footerMetrics.map((metric) => (
+          {activeScenario.footerMetrics.map((metric) => (
             <article key={metric.title}>
               <span>{metric.title}</span>
               <strong>
@@ -168,15 +289,25 @@ function PesquisaCampo({ session, onLogout }) {
         </section>
 
         <section className={styles.perceptionGrid} aria-label="Percepcao sobre o candidato">
-          {perceptionPanels.map((panel, index) => (
+          {activeScenario.perceptionPanels.map((panel, index) => (
             <PerceptionPanel key={`${panel.title}-${index}`} panel={panel} />
           ))}
         </section>
           </>
         )}
+          </>
+        )}
       </section>
     </main>
   );
+}
+
+function normalizeText(value) {
+  return (value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 function DonutPanel({ items, title }) {
@@ -296,7 +427,7 @@ function VoterProfile({ profile }) {
   );
 }
 
-function SpontaneousPanel({ items }) {
+function SpontaneousPanel({ items, onToggle, showToggle, showingAll }) {
   return (
     <article className={styles.panel}>
       <div className={styles.panelHeader}>
@@ -319,14 +450,16 @@ function SpontaneousPanel({ items }) {
           </div>
         ))}
       </div>
-      <button className={styles.moreButton} type="button">
-        Ver mais
-      </button>
+      {showToggle ? (
+        <button className={styles.moreButton} onClick={onToggle} type="button">
+          {showingAll ? "Ver menos" : "Ver mais"}
+        </button>
+      ) : null}
     </article>
   );
 }
 
-function GrowthPanel({ items }) {
+function GrowthPanel({ items, onToggle, showToggle, showingAll }) {
   return (
     <article className={styles.panel}>
       <div className={styles.panelHeader}>
@@ -344,9 +477,11 @@ function GrowthPanel({ items }) {
           </div>
         ))}
       </div>
-      <button className={styles.moreButton} type="button">
-        Ver mais
-      </button>
+      {showToggle ? (
+        <button className={styles.moreButton} onClick={onToggle} type="button">
+          {showingAll ? "Ver menos" : "Ver mais"}
+        </button>
+      ) : null}
     </article>
   );
 }

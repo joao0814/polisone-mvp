@@ -12,151 +12,323 @@ export const menuItems = [
   { label: "Metricas" },
 ];
 
-export const countdowns = [
-  { value: "38", label: "Dias para o inicio da campanha.", progress: 48, footer: "16/08" },
-  {
-    value: "72",
-    label: "Dias para o dia da eleicao.",
-    progress: 18,
-    footer: "04/10 (primeiro turno)",
-  },
-];
-
 export const filterOptions = {
   type: ["Todos", "Quantitativa", "Espontanea"],
-  year: ["2023 - 2026", "2024", "2025"],
-  status: ["TODAS", "Em campo", "Concluida"],
-  city: ["TODOS", "Sumare", "Guaratingueta", "Sao Paulo"],
-  entity: ["TODOS", "Equipe Centro", "Equipe Leste", "Equipe Norte"],
+  year: ["Todos", "2024", "2025", "2026"],
+  status: ["Todas", "Em campo", "Concluida"],
 };
 
-export const summaryCards = [
-  { tone: "blue", title: "Pesquisas Realizadas", value: "248", note: "100% do total" },
-  { tone: "green", title: "Respostas Coletadas", value: "2.842", note: "70,3% do total" },
-  { tone: "cyan", title: "Cidades visitadas", value: "32", note: "de 45 (total)" },
-  { tone: "orange", title: "Equipes em campo", value: "18", note: "de 24 equipes (total)" },
-  { tone: "red", title: "Taxa de resposta", value: "78%", note: "" },
-];
-
-export const cityDistribution = [
-  { label: "Sumare", value: "70,3%", color: "#00b765" },
-  { label: "Guaratingueta", value: "19,3%", color: "#1687df" },
-  { label: "Sao Paulo", value: "8%", color: "#ff9518" },
-  { label: "Sao Jose dos Campos", value: "2%", color: "#ff3030" },
-];
-
-export const voteInfluence = [
-  { label: "Propostas", value: "70,3%", color: "#00b765" },
-  { label: "Honestidade", value: "19,3%", color: "#1687df" },
-  { label: "Partido", value: "8%", color: "#ff9518" },
-  { label: "Experiencia", value: "2%", color: "#ff3030" },
-];
-
-export const cityProblems = [
-  { label: "Educacao", value: 38 },
-  { label: "Saude", value: 24 },
-  { label: "Infraestrutura", value: 18 },
-  { label: "Assistencia Social", value: 10 },
-  { label: "Esporte e lazer", value: 6 },
-  { label: "Outros", value: 4 },
-];
-
-export const priorityRanking = [
-  { position: "1o", label: "Saude", value: 92, votes: "4520 votos" },
-  { position: "2o", label: "Seguranca", value: 74, votes: "1100 votos" },
-  { position: "3o", label: "Educacao", value: 62, votes: "927 votos" },
-  { position: "4o", label: "Emprego/renda", value: 48, votes: "754 votos" },
-  { position: "5o", label: "Outros...", value: 34, votes: "698 votos" },
-];
-
-export const electorateProfile = {
-  gender: {
-    female: 70,
-    male: 30,
-  },
-  ageRanges: [
-    { label: "16-24", value: 15.3, percent: "15,3%" },
-    { label: "25-34", value: 22.8, percent: "22,8%" },
-    { label: "35-44", value: 23.7, percent: "23,7%" },
-    { label: "45-54", value: 25.6, percent: "25,6%" },
-    { label: "55+", value: 12.6, percent: "12,6%" },
-  ],
-  averageAge: {
-    total: 32,
-    female: 25,
-    male: 35,
-  },
-};
-
-export const spontaneousVotes = [
+export const researchScenarios = [
   {
-    name: "Dr. Elton",
-    party: "PSC",
-    votes: "35.629",
-    percent: "8,95%",
-    score: 100,
-    avatar: "DE",
-  },
-  {
-    name: "Dulce Rita",
-    party: "PSDB",
-    votes: "28.156",
-    percent: "7,07%",
-    score: 78,
-    avatar: "DR",
-  },
-  {
-    name: "Leticia Aguiar",
-    party: "Progressistas",
-    votes: "27.272",
-    percent: "6,85%",
-    score: 76,
-    avatar: "LA",
-  },
-];
-
-export const growingCandidates = [
-  { position: "1o", name: "Carlos Eduardo", votes: "3.200 votos", growth: "32%", avatar: "CE" },
-  { position: "2o", name: "Janaina Salmeirao", votes: "2.700 votos", growth: "28%", avatar: "JS" },
-  { position: "3o", name: "Jorge Paz", votes: "1.500 votos", growth: "22%", avatar: "JP" },
-  { position: "4o", name: "Roberto Silva", votes: "1.200 votos", growth: "16%", avatar: "RS" },
-  { position: "5o", name: "Maria Eduarda", votes: "750 votos", growth: "9%", avatar: "ME" },
-];
-
-export const footerMetrics = [
-  { title: "Meta da semana", value: "2.000", note: "TOTAL" },
-  { title: "Realizadas na semana", value: "1.000", note: "50% DO TOTAL" },
-  { title: "Crescimento de Pesquisas", value: "36%", note: "Em relacao a semana anterior", trend: true },
-  { title: "Crescimento de Municipios pesquisados", value: "28%", note: "Em relacao a semana anterior", trend: true },
-  { title: "Ranking do candidato", value: "3o", note: "Subiu duas posicoes em relacao a semana anterior" },
-];
-
-export const perceptionPanels = [
-  {
-    title: "Voce conhece o candidato?",
-    items: [
-      { label: "Sim", value: 38 },
-      { label: "Ja ouvi falar", value: 34 },
-      { label: "Conheco de vista", value: 20 },
-      { label: "Não conheço", value: 18 },
+    id: "campinas-2026",
+    title: "Campinas",
+    entity: "Equipe Campinas Centro",
+    type: "Quantitativa",
+    year: "2026",
+    status: "Concluida",
+    searchTerms: ["regiao metropolitana", "saude", "campinas centro"],
+    summaryCards: [
+      { tone: "blue", title: "Pesquisas Realizadas", value: "248", note: "100% do total" },
+      { tone: "green", title: "Respostas Coletadas", value: "2.842", note: "70,3% do total" },
+      { tone: "cyan", title: "Cidades visitadas", value: "32", note: "de 45 (total)" },
+      { tone: "orange", title: "Equipes em campo", value: "18", note: "de 24 equipes (total)" },
+      { tone: "red", title: "Taxa de resposta", value: "78%", note: "" },
+    ],
+    cityDistribution: [
+      { label: "Campinas", value: "46,2%", color: "#00b765" },
+      { label: "Sumare", value: "21,8%", color: "#1687df" },
+      { label: "Hortolandia", value: "18,5%", color: "#ff9518" },
+      { label: "Monte Mor", value: "13,5%", color: "#ff3030" },
+    ],
+    voteInfluence: [
+      { label: "Propostas", value: "41,6%", color: "#00b765" },
+      { label: "Honestidade", value: "24,4%", color: "#1687df" },
+      { label: "Presenca local", value: "19,1%", color: "#ff9518" },
+      { label: "Partido", value: "14,9%", color: "#ff3030" },
+    ],
+    cityProblems: [
+      { label: "Saude", value: 38 },
+      { label: "Mobilidade", value: 24 },
+      { label: "Seguranca", value: 16 },
+      { label: "Emprego", value: 12 },
+      { label: "Educacao", value: 6 },
+      { label: "Outros", value: 4 },
+    ],
+    priorityRanking: [
+      { position: "1o", label: "Saude", value: 92, votes: "4.520 votos" },
+      { position: "2o", label: "Seguranca", value: 74, votes: "1.100 votos" },
+      { position: "3o", label: "Educacao", value: 62, votes: "927 votos" },
+      { position: "4o", label: "Emprego/renda", value: 48, votes: "754 votos" },
+      { position: "5o", label: "Outros", value: 34, votes: "698 votos" },
+    ],
+    electorateProfile: {
+      gender: { female: 56, male: 44 },
+      ageRanges: [
+        { label: "16-24", value: 18.4, percent: "18,4%" },
+        { label: "25-34", value: 24.2, percent: "24,2%" },
+        { label: "35-44", value: 22.1, percent: "22,1%" },
+        { label: "45-54", value: 21.6, percent: "21,6%" },
+        { label: "55+", value: 13.7, percent: "13,7%" },
+      ],
+      averageAge: { total: 37, female: 35, male: 39 },
+    },
+    spontaneousVotes: [
+      { name: "Dr. Elton", party: "PSC", votes: "35.629", percent: "8,95%", score: 100, avatar: "DE" },
+      { name: "Dulce Rita", party: "PSDB", votes: "28.156", percent: "7,07%", score: 78, avatar: "DR" },
+      { name: "Leticia Aguiar", party: "Progressistas", votes: "27.272", percent: "6,85%", score: 76, avatar: "LA" },
+      { name: "Jorge Paz", party: "MDB", votes: "22.148", percent: "5,58%", score: 64, avatar: "JP" },
+      { name: "Marcos Leal", party: "PSD", votes: "18.920", percent: "4,76%", score: 52, avatar: "ML" },
+    ],
+    growingCandidates: [
+      { position: "1o", name: "Carlos Eduardo", votes: "3.200 votos", growth: "32%", avatar: "CE" },
+      { position: "2o", name: "Janaina Salmeirao", votes: "2.700 votos", growth: "28%", avatar: "JS" },
+      { position: "3o", name: "Jorge Paz", votes: "1.500 votos", growth: "22%", avatar: "JP" },
+      { position: "4o", name: "Roberto Silva", votes: "1.200 votos", growth: "16%", avatar: "RS" },
+      { position: "5o", name: "Maria Eduarda", votes: "750 votos", growth: "9%", avatar: "ME" },
+    ],
+    footerMetrics: [
+      { title: "Meta da semana", value: "2.000", note: "TOTAL" },
+      { title: "Realizadas na semana", value: "1.428", note: "71,4% DO TOTAL" },
+      { title: "Crescimento de Pesquisas", value: "36%", note: "Em relacao a semana anterior", trend: true },
+      { title: "Crescimento de Municipios pesquisados", value: "28%", note: "Em relacao a semana anterior", trend: true },
+      { title: "Ranking do candidato", value: "3o", note: "Subiu duas posicoes em relacao a semana anterior" },
+    ],
+    perceptionPanels: [
+      {
+        title: "Voce conhece o candidato?",
+        items: [
+          { label: "Sim", value: 38 },
+          { label: "Ja ouvi falar", value: 34 },
+          { label: "Conheco de vista", value: 20 },
+          { label: "Nao conheco", value: 8 },
+        ],
+      },
+      {
+        title: "Hoje, qual a chance de votar nesse candidato?",
+        items: [
+          { label: "Com certeza", value: 33 },
+          { label: "Provavel votar", value: 28 },
+          { label: "Ainda estou indeciso", value: 25 },
+          { label: "Nao votaria", value: 14 },
+        ],
+      },
+      {
+        title: "Como esta a imagem do candidato hoje?",
+        items: [
+          { label: "Muito positiva", value: 29 },
+          { label: "Positiva", value: 36 },
+          { label: "Neutra", value: 24 },
+          { label: "Negativa", value: 11 },
+        ],
+      },
     ],
   },
   {
-    title: "Hoje, qual a chance de votar nesse candidato?",
-    items: [
-      { label: "Com certeza", value: 38 },
-      { label: "Provavel votar", value: 34 },
-      { label: "Ainda estou indeciso", value: 20 },
-      { label: "Não votaria", value: 18 },
+    id: "sao-jose-2025",
+    title: "Sao Jose dos Campos",
+    entity: "Equipe Vale Norte",
+    type: "Espontanea",
+    year: "2025",
+    status: "Em campo",
+    searchTerms: ["vale do paraiba", "pesquisa espontanea", "sao jose"],
+    summaryCards: [
+      { tone: "blue", title: "Pesquisas Realizadas", value: "164", note: "100% do total" },
+      { tone: "green", title: "Respostas Coletadas", value: "1.964", note: "68,1% do total" },
+      { tone: "cyan", title: "Cidades visitadas", value: "14", note: "de 20 (total)" },
+      { tone: "orange", title: "Equipes em campo", value: "9", note: "de 12 equipes (total)" },
+      { tone: "red", title: "Taxa de resposta", value: "71%", note: "" },
+    ],
+    cityDistribution: [
+      { label: "Sao Jose dos Campos", value: "52,1%", color: "#00b765" },
+      { label: "Jacarei", value: "19,7%", color: "#1687df" },
+      { label: "Taubate", value: "16,4%", color: "#ff9518" },
+      { label: "Cacapava", value: "11,8%", color: "#ff3030" },
+    ],
+    voteInfluence: [
+      { label: "Honestidade", value: "35,2%", color: "#00b765" },
+      { label: "Propostas", value: "28,9%", color: "#1687df" },
+      { label: "Historico politico", value: "21,6%", color: "#ff9518" },
+      { label: "Partido", value: "14,3%", color: "#ff3030" },
+    ],
+    cityProblems: [
+      { label: "Saude", value: 31 },
+      { label: "Emprego", value: 23 },
+      { label: "Transporte", value: 18 },
+      { label: "Seguranca", value: 14 },
+      { label: "Habitacao", value: 8 },
+      { label: "Outros", value: 6 },
+    ],
+    priorityRanking: [
+      { position: "1o", label: "Saude", value: 86, votes: "3.910 votos" },
+      { position: "2o", label: "Emprego/renda", value: 69, votes: "1.540 votos" },
+      { position: "3o", label: "Seguranca", value: 58, votes: "1.118 votos" },
+      { position: "4o", label: "Educacao", value: 44, votes: "884 votos" },
+      { position: "5o", label: "Mobilidade", value: 29, votes: "603 votos" },
+    ],
+    electorateProfile: {
+      gender: { female: 51, male: 49 },
+      ageRanges: [
+        { label: "16-24", value: 12.9, percent: "12,9%" },
+        { label: "25-34", value: 19.3, percent: "19,3%" },
+        { label: "35-44", value: 24.8, percent: "24,8%" },
+        { label: "45-54", value: 27.4, percent: "27,4%" },
+        { label: "55+", value: 15.6, percent: "15,6%" },
+      ],
+      averageAge: { total: 41, female: 39, male: 43 },
+    },
+    spontaneousVotes: [
+      { name: "Dulce Rita", party: "PSDB", votes: "19.428", percent: "9,41%", score: 100, avatar: "DR" },
+      { name: "Dr. Elton", party: "PSC", votes: "17.950", percent: "8,69%", score: 92, avatar: "DE" },
+      { name: "Jorge Paz", party: "MDB", votes: "11.628", percent: "5,63%", score: 64, avatar: "JP" },
+      { name: "Roberta Lima", party: "PL", votes: "9.512", percent: "4,61%", score: 53, avatar: "RL" },
+      { name: "Paulo Reis", party: "Novo", votes: "7.806", percent: "3,78%", score: 42, avatar: "PR" },
+    ],
+    growingCandidates: [
+      { position: "1o", name: "Roberta Lima", votes: "2.900 votos", growth: "26%", avatar: "RL" },
+      { position: "2o", name: "Dr. Elton", votes: "2.540 votos", growth: "22%", avatar: "DE" },
+      { position: "3o", name: "Felipe Gomes", votes: "1.860 votos", growth: "18%", avatar: "FG" },
+      { position: "4o", name: "Maria Eduarda", votes: "1.200 votos", growth: "13%", avatar: "ME" },
+      { position: "5o", name: "Paulo Reis", votes: "980 votos", growth: "10%", avatar: "PR" },
+    ],
+    footerMetrics: [
+      { title: "Meta da semana", value: "1.500", note: "TOTAL" },
+      { title: "Realizadas na semana", value: "902", note: "60,1% DO TOTAL" },
+      { title: "Crescimento de Pesquisas", value: "18%", note: "Em relacao a semana anterior", trend: true },
+      { title: "Crescimento de Municipios pesquisados", value: "12%", note: "Em relacao a semana anterior", trend: true },
+      { title: "Ranking do candidato", value: "4o", note: "Manteve a posicao na semana" },
+    ],
+    perceptionPanels: [
+      {
+        title: "Voce conhece o candidato?",
+        items: [
+          { label: "Sim", value: 31 },
+          { label: "Ja ouvi falar", value: 29 },
+          { label: "Conheco de vista", value: 24 },
+          { label: "Nao conheco", value: 16 },
+        ],
+      },
+      {
+        title: "Hoje, qual a chance de votar nesse candidato?",
+        items: [
+          { label: "Com certeza", value: 24 },
+          { label: "Provavel votar", value: 31 },
+          { label: "Ainda estou indeciso", value: 27 },
+          { label: "Nao votaria", value: 18 },
+        ],
+      },
+      {
+        title: "Como esta a imagem do candidato hoje?",
+        items: [
+          { label: "Muito positiva", value: 19 },
+          { label: "Positiva", value: 33 },
+          { label: "Neutra", value: 29 },
+          { label: "Negativa", value: 19 },
+        ],
+      },
     ],
   },
   {
-    title: "Hoje, qual a chance de votar nesse candidato?",
-    items: [
-      { label: "Com certeza", value: 38 },
-      { label: "Provavel votar", value: 34 },
-      { label: "Ainda estou indeciso", value: 20 },
-      { label: "Não votaria", value: 18 },
+    id: "sao-paulo-2024",
+    title: "Sao Paulo",
+    entity: "Equipe Capital Leste",
+    type: "Quantitativa",
+    year: "2024",
+    status: "Concluida",
+    searchTerms: ["capital", "zona leste", "transporte"],
+    summaryCards: [
+      { tone: "blue", title: "Pesquisas Realizadas", value: "312", note: "100% do total" },
+      { tone: "green", title: "Respostas Coletadas", value: "3.486", note: "74,8% do total" },
+      { tone: "cyan", title: "Cidades visitadas", value: "8", note: "de 8 (total)" },
+      { tone: "orange", title: "Equipes em campo", value: "22", note: "de 26 equipes (total)" },
+      { tone: "red", title: "Taxa de resposta", value: "81%", note: "" },
+    ],
+    cityDistribution: [
+      { label: "Zona Leste", value: "34,8%", color: "#00b765" },
+      { label: "Zona Sul", value: "25,4%", color: "#1687df" },
+      { label: "Zona Norte", value: "22,6%", color: "#ff9518" },
+      { label: "Centro", value: "17,2%", color: "#ff3030" },
+    ],
+    voteInfluence: [
+      { label: "Propostas", value: "38,3%", color: "#00b765" },
+      { label: "Historico politico", value: "26,1%", color: "#1687df" },
+      { label: "Honestidade", value: "20,5%", color: "#ff9518" },
+      { label: "Partido", value: "15,1%", color: "#ff3030" },
+    ],
+    cityProblems: [
+      { label: "Transporte", value: 34 },
+      { label: "Saude", value: 26 },
+      { label: "Seguranca", value: 17 },
+      { label: "Moradia", value: 11 },
+      { label: "Emprego", value: 7 },
+      { label: "Outros", value: 5 },
+    ],
+    priorityRanking: [
+      { position: "1o", label: "Transporte", value: 88, votes: "5.240 votos" },
+      { position: "2o", label: "Saude", value: 72, votes: "2.004 votos" },
+      { position: "3o", label: "Seguranca", value: 56, votes: "1.480 votos" },
+      { position: "4o", label: "Moradia", value: 41, votes: "1.022 votos" },
+      { position: "5o", label: "Emprego/renda", value: 33, votes: "910 votos" },
+    ],
+    electorateProfile: {
+      gender: { female: 53, male: 47 },
+      ageRanges: [
+        { label: "16-24", value: 17.1, percent: "17,1%" },
+        { label: "25-34", value: 27.8, percent: "27,8%" },
+        { label: "35-44", value: 21.6, percent: "21,6%" },
+        { label: "45-54", value: 19.9, percent: "19,9%" },
+        { label: "55+", value: 13.6, percent: "13,6%" },
+      ],
+      averageAge: { total: 36, female: 35, male: 38 },
+    },
+    spontaneousVotes: [
+      { name: "Leticia Aguiar", party: "Progressistas", votes: "43.210", percent: "10,11%", score: 100, avatar: "LA" },
+      { name: "Dr. Elton", party: "PSC", votes: "38.940", percent: "9,11%", score: 90, avatar: "DE" },
+      { name: "Dulce Rita", party: "PSDB", votes: "33.420", percent: "7,82%", score: 77, avatar: "DR" },
+      { name: "Carlos Eduardo", party: "Uniiao", votes: "28.116", percent: "6,58%", score: 65, avatar: "CE" },
+      { name: "Marta Souza", party: "PSD", votes: "20.408", percent: "4,78%", score: 47, avatar: "MS" },
+    ],
+    growingCandidates: [
+      { position: "1o", name: "Marta Souza", votes: "4.100 votos", growth: "29%", avatar: "MS" },
+      { position: "2o", name: "Carlos Eduardo", votes: "3.480 votos", growth: "24%", avatar: "CE" },
+      { position: "3o", name: "Leticia Aguiar", votes: "2.960 votos", growth: "18%", avatar: "LA" },
+      { position: "4o", name: "Dulce Rita", votes: "1.840 votos", growth: "13%", avatar: "DR" },
+      { position: "5o", name: "Paula Nunes", votes: "1.200 votos", growth: "9%", avatar: "PN" },
+    ],
+    footerMetrics: [
+      { title: "Meta da semana", value: "2.800", note: "TOTAL" },
+      { title: "Realizadas na semana", value: "2.132", note: "76,1% DO TOTAL" },
+      { title: "Crescimento de Pesquisas", value: "22%", note: "Em relacao a semana anterior", trend: true },
+      { title: "Crescimento de Municipios pesquisados", value: "11%", note: "Em relacao a semana anterior", trend: true },
+      { title: "Ranking do candidato", value: "2o", note: "Subiu uma posicao em relacao a semana anterior" },
+    ],
+    perceptionPanels: [
+      {
+        title: "Voce conhece o candidato?",
+        items: [
+          { label: "Sim", value: 42 },
+          { label: "Ja ouvi falar", value: 30 },
+          { label: "Conheco de vista", value: 18 },
+          { label: "Nao conheco", value: 10 },
+        ],
+      },
+      {
+        title: "Hoje, qual a chance de votar nesse candidato?",
+        items: [
+          { label: "Com certeza", value: 36 },
+          { label: "Provavel votar", value: 26 },
+          { label: "Ainda estou indeciso", value: 23 },
+          { label: "Nao votaria", value: 15 },
+        ],
+      },
+      {
+        title: "Como esta a imagem do candidato hoje?",
+        items: [
+          { label: "Muito positiva", value: 34 },
+          { label: "Positiva", value: 31 },
+          { label: "Neutra", value: 21 },
+          { label: "Negativa", value: 14 },
+        ],
+      },
     ],
   },
 ];
