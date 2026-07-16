@@ -311,6 +311,23 @@
   overscroll-behavior-inline: contain;
 }
 
+.tableMeta {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 14px;
+}
+
+.tableMeta span {
+  display: inline-flex;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 202, 24, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 202, 24, 0.08);
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 900;
+}
+
 .scrollHint {
   display: none;
   margin: -12px 0 14px;
@@ -387,6 +404,12 @@
   text-overflow: ellipsis;
 }
 
+.emptyCell {
+  padding: 32px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
 .municipalityTable tbody tr {
   transition:
     background 150ms ease,
@@ -405,6 +428,46 @@
 .municipalityTable th:last-child,
 .municipalityTable td:last-child {
   padding-right: 1px;
+}
+
+.pagination {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-top: 26px;
+  color: #ffffff;
+  font-size: 11px;
+}
+
+.pagination nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pagination button {
+  min-width: 28px;
+  min-height: 22px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.pagination .pageActive {
+  border-color: var(--yellow);
+  background: rgba(255, 202, 24, 0.24);
+  color: var(--yellow);
+}
+
+.pagination > button {
+  justify-self: end;
+  min-width: 106px;
+  border-color: var(--yellow);
 }
 
 @media (max-width: 1360px) {
@@ -477,6 +540,18 @@
   .tableToolbar {
     display: grid;
     gap: 12px;
+  }
+
+  .pagination {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination nav {
+    flex-wrap: wrap;
+  }
+
+  .pagination > button {
+    justify-self: start;
   }
 
   .searchBox {
