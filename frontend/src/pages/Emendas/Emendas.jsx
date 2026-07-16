@@ -23,11 +23,15 @@ function Emendas({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato";
   const [costsResponse, setCostsResponse] = useState(null);
   const [loadError, setLoadError] = useState("");
+  const [feedback, setFeedback] = useState({ type: "", message: "" });
   const [regionFilter, setRegionFilter] = useState("TODAS");
   const [cityFilter, setCityFilter] = useState("TODOS");
-  const [search, setSearch] = useState("");
+  const [draftSearch, setDraftSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCostId, setEditingCostId] = useState(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [form, setForm] = useState({
     amount: "",
     cityIbgeCode: "",
@@ -75,7 +79,7 @@ function Emendas({ session, onLogout }) {
 
       return matchesRegion && matchesCity && matchesSearch;
     });
-  }, [allCosts, cityFilter, regionFilter, search]);
+  }, [allCosts, appliedSearch, cityFilter, regionFilter]);
 
   const summary = useMemo(() => buildSummary(filteredCosts), [filteredCosts]);
   const cityRanking = useMemo(() => buildCityRanking(filteredCosts), [filteredCosts]);
@@ -83,10 +87,34 @@ function Emendas({ session, onLogout }) {
     () => buildRegionDistribution(filteredCosts),
     [filteredCosts],
   );
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(filteredCosts.length / pageSize));
+  const paginatedCosts = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredCosts.slice(start, start + pageSize);
+  }, [currentPage, filteredCosts]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [regionFilter, cityFilter, appliedSearch]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   async function handleSubmit(event) {
     event.preventDefault();
+    const validationError = validateForm(form);
+
+    if (validationError) {
+      setFeedback({ type: "error", message: validationError });
+      return;
+    }
+
     setIsSubmitting(true);
+    setFeedback({ type: "", message: "" });
 
     try {
       const selectedRegion = campaignSubregions.find(
@@ -110,12 +138,25 @@ function Emendas({ session, onLogout }) {
 
       resetForm();
       await loadCosts();
+      setFeedback({
+        type: "success",
+        message: editingCostId
+          ? "Custo atualizado com sucesso."
+          : "Custo cadastrado com sucesso.",
+      });
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: error?.message || "Nao foi possivel salvar o custo.",
+      });
     } finally {
       setIsSubmitting(false);
     }
   }
 
   function handleEdit(cost) {
+    setFeedback({ type: "", message: "" });
+    setPendingDeleteId(null);
     setEditingCostId(cost.id);
     setForm({
       amount: String(cost.amount ?? ""),
@@ -128,15 +169,36 @@ function Emendas({ session, onLogout }) {
   }
 
   async function handleDelete(costId) {
-    await deleteCampaignCost(costId);
-    if (editingCostId === costId) {
-      resetForm();
+    if (pendingDeleteId !== costId) {
+      setPendingDeleteId(costId);
+      setFeedback({
+        type: "info",
+        message: "Clique novamente em excluir para confirmar a remocao do custo.",
+      });
+      return;
     }
-    await loadCosts();
+
+    try {
+      setFeedback({ type: "", message: "" });
+      await deleteCampaignCost(costId);
+      if (editingCostId === costId) {
+        resetForm();
+      }
+      await loadCosts();
+      setFeedback({ type: "success", message: "Custo removido com sucesso." });
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: error?.message || "Nao foi possivel remover o custo.",
+      });
+    } finally {
+      setPendingDeleteId(null);
+    }
   }
 
   function resetForm() {
     setEditingCostId(null);
+    setPendingDeleteId(null);
     setForm({
       amount: "",
       cityIbgeCode: "",
@@ -146,6 +208,15 @@ function Emendas({ session, onLogout }) {
       spentAt: "",
     });
   }
+
+  function handleApplySearch(event) {
+    event.preventDefault();
+    setAppliedSearch(draftSearch);
+  }
+
+  const paginationRange = buildPaginationRange(currentPage, totalPages);
+  const startEntry = filteredCosts.length ? (currentPage - 1) * pageSize + 1 : 0;
+  const endEntry = Math.min(currentPage * pageSize, filteredCosts.length);
 
   return (
     <main className={styles.page}>
@@ -186,7 +257,7 @@ function Emendas({ session, onLogout }) {
           <>
 
         <section className={styles.filtersRow} aria-label="Filtros de custos">
-          <form className={styles.filtersPanel}>
+          <form className={styles.filtersPanel} onSubmit={handleApplySearch}>
             <label>
               <span>REGIAO</span>
               <select value={regionFilter} onChange={(event) => setRegionFilter(event.target.value)}>
@@ -214,13 +285,27 @@ function Emendas({ session, onLogout }) {
                 aria-label="Buscar custos"
                 placeholder="Buscar por cidade, regiao ou observacao"
                 type="search"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                value={draftSearch}
+                onChange={(event) => setDraftSearch(event.target.value)}
               />
-              <button type="button">Filtrar</button>
+              <button type="submit">Filtrar</button>
             </div>
           </form>
         </section>
+
+        {feedback.message ? (
+          <div
+            className={`${styles.feedback} ${
+              feedback.type === "error"
+                ? styles.feedbackError
+                : feedback.type === "success"
+                  ? styles.feedbackSuccess
+                  : styles.feedbackInfo
+            }`}
+          >
+            {feedback.message}
+          </div>
+        ) : null}
 
         <section className={styles.financialGrid} aria-label="Resumo financeiro">
           <article className={`${styles.financialCard} ${styles.blue}`}>
@@ -273,10 +358,10 @@ function Emendas({ session, onLogout }) {
                   aria-label="Busca na lista de custos"
                   placeholder="Busca rapida"
                   type="search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  value={draftSearch}
+                  onChange={(event) => setDraftSearch(event.target.value)}
                 />
-                <button type="button" aria-label="Buscar na lista">
+                <button type="button" aria-label="Buscar na lista" onClick={() => setAppliedSearch(draftSearch)}>
                   <span aria-hidden="true" />
                 </button>
               </label>
@@ -296,8 +381,8 @@ function Emendas({ session, onLogout }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredCosts.length ? (
-                    filteredCosts.map((cost) => (
+                  {paginatedCosts.length ? (
+                    paginatedCosts.map((cost) => (
                       <tr key={cost.id}>
                         <td>{cost.city_name}</td>
                         <td>{cost.city_ibge_code}</td>
@@ -311,7 +396,7 @@ function Emendas({ session, onLogout }) {
                               Editar
                             </button>
                             <button type="button" onClick={() => handleDelete(cost.id)}>
-                              Excluir
+                              {pendingDeleteId === cost.id ? "Confirmar" : "Excluir"}
                             </button>
                           </div>
                         </td>
@@ -326,6 +411,25 @@ function Emendas({ session, onLogout }) {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            <div className={styles.pagination}>
+              <span>
+                Mostrando {startEntry} a {endEntry} de {filteredCosts.length}
+              </span>
+              <nav aria-label="Paginacao de custos">
+                {paginationRange.map((page) => (
+                  <button
+                    key={page}
+                    className={page === currentPage ? styles.pageActive : ""}
+                    onClick={() => setCurrentPage(page)}
+                    type="button"
+                  >
+                    {page}
+                  </button>
+                ))}
+              </nav>
+              <button type="button">{pageSize} por pagina</button>
             </div>
           </section>
 
@@ -343,7 +447,10 @@ function Emendas({ session, onLogout }) {
                   type="text"
                   value={form.cityName}
                   onChange={(event) =>
-                    setForm((current) => ({ ...current, cityName: event.target.value }))
+                    setForm((current) => ({
+                      ...current,
+                      cityName: event.target.value,
+                    }))
                   }
                 />
               </label>
@@ -417,7 +524,10 @@ function Emendas({ session, onLogout }) {
                 <button
                   className={styles.secondaryButton}
                   type="button"
-                  onClick={resetForm}
+                  onClick={() => {
+                    resetForm();
+                    setFeedback({ type: "", message: "" });
+                  }}
                 >
                   Cancelar edicao
                 </button>
@@ -534,6 +644,32 @@ function buildRegionDistribution(items) {
       ...item,
       percent: total ? Math.round((item.amount / total) * 100) : 0,
     }));
+}
+
+function buildPaginationRange(currentPage, totalPages) {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const start = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+  return Array.from({ length: 5 }, (_, index) => start + index);
+}
+
+function validateForm(form) {
+  if (!form.cityName.trim()) {
+    return "Informe a cidade do custo.";
+  }
+
+  if (form.cityIbgeCode.length !== 7) {
+    return "Informe um codigo IBGE valido com 7 digitos.";
+  }
+
+  const amount = Number(form.amount);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return "Informe um valor valido maior que zero.";
+  }
+
+  return "";
 }
 
 function normalizeText(value) {
