@@ -1,26 +1,68 @@
+import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import cityNightImage from "../../assets/images/campaign/sao-jose-night.jpg";
 import logoNav from "../../assets/images/home/logo nav.png";
 import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
 import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
 import {
-  ageRanges,
-  ballotStats,
-  businessStats,
-  cityStats,
+  intelligenceFilters,
+  intelligenceScenarios,
   menuItems,
-  mostVoted,
 } from "./data/inteligenciaEleitoralData";
 import styles from "./InteligenciaEleitoral.module.css";
 
 function InteligenciaEleitoral({ session, onLogout }) {
   const userName = session?.user?.name || "Candidato";
-  const hasIntelligenceData =
-    cityStats.length &&
-    ballotStats.length &&
-    businessStats.length &&
-    mostVoted.length &&
-    ageRanges.length;
+  const [draftFilters, setDraftFilters] = useState({
+    uf: intelligenceFilters.uf[0] ?? "SP",
+    region: intelligenceFilters.region[0] ?? "",
+    city:
+      intelligenceFilters.city?.SP?.[intelligenceFilters.region[0] ?? ""]?.[0] ?? "",
+  });
+  const [appliedFilters, setAppliedFilters] = useState({
+    uf: intelligenceFilters.uf[0] ?? "SP",
+    region: intelligenceFilters.region[0] ?? "",
+    city:
+      intelligenceFilters.city?.SP?.[intelligenceFilters.region[0] ?? ""]?.[0] ?? "",
+  });
+  const [showAllCandidates, setShowAllCandidates] = useState(false);
+
+  const regionOptions = intelligenceFilters.region;
+  const cityOptions =
+    intelligenceFilters.city?.[draftFilters.uf]?.[draftFilters.region] ?? [];
+  const scenario = useMemo(
+    () =>
+      intelligenceScenarios.find(
+        (item) =>
+          item.uf === appliedFilters.uf &&
+          item.region === appliedFilters.region &&
+          item.city === appliedFilters.city,
+      ) ?? null,
+    [appliedFilters],
+  );
+  const hasIntelligenceData = intelligenceScenarios.length > 0;
+  const visibleCandidates = useMemo(() => {
+    if (!scenario) return [];
+    return showAllCandidates ? scenario.mostVoted : scenario.mostVoted.slice(0, 5);
+  }, [scenario, showAllCandidates]);
+
+  useEffect(() => {
+    const nextCities =
+      intelligenceFilters.city?.[draftFilters.uf]?.[draftFilters.region] ?? [];
+
+    if (!nextCities.includes(draftFilters.city)) {
+      setDraftFilters((current) => ({
+        ...current,
+        city: nextCities[0] ?? "",
+      }));
+    }
+  }, [draftFilters.city, draftFilters.region, draftFilters.uf]);
+
+  function handleAnalyze(event) {
+    event.preventDefault();
+    setAppliedFilters(draftFilters);
+    setShowAllCandidates(false);
+  }
 
   return (
     <main className={styles.page}>
@@ -54,57 +96,88 @@ function InteligenciaEleitoral({ session, onLogout }) {
         ) : (
           <>
         <section className={styles.insightGrid} aria-label="Filtros e contexto">
-          <form className={styles.filterBar}>
+          <form className={styles.filterBar} onSubmit={handleAnalyze}>
             <label>
               <span>UF</span>
-              <select defaultValue="SP">
-                <option>SP</option>
+              <select
+                value={draftFilters.uf}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({
+                    ...current,
+                    uf: event.target.value,
+                    region: intelligenceFilters.region[0] ?? "",
+                    city:
+                      intelligenceFilters.city?.[event.target.value]?.[
+                        intelligenceFilters.region[0] ?? ""
+                      ]?.[0] ?? "",
+                  }))
+                }
+              >
+                {intelligenceFilters.uf.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
               </select>
             </label>
             <label>
               <span>Regiao</span>
-              <select defaultValue="Vale do Paraiba">
-                <option>Vale do Paraiba</option>
+              <select
+                value={draftFilters.region}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({
+                    ...current,
+                    region: event.target.value,
+                    city:
+                      intelligenceFilters.city?.[current.uf]?.[event.target.value]?.[0] ?? "",
+                  }))
+                }
+              >
+                {regionOptions.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
               </select>
             </label>
             <label>
               <span>Municipio</span>
-              <select defaultValue="Sao Jose dos Campos">
-                <option>Sao Jose dos Campos</option>
+              <select
+                value={draftFilters.city}
+                onChange={(event) =>
+                  setDraftFilters((current) => ({
+                    ...current,
+                    city: event.target.value,
+                  }))
+                }
+              >
+                {cityOptions.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
               </select>
             </label>
-            <button type="button">Analisar</button>
+            <button type="submit">Analisar</button>
           </form>
 
           <aside className={styles.salaryInsight}>
-            <strong>+20%</strong>
-            <p>
-              Contexto Salarial: A media salarial na cidade tende a superar as
-              medias nacionais, com estimativas que apontam valores cerca de 20%
-              acima da media do pais.
-            </p>
+            <strong>{scenario?.salaryInsight.highlight ?? "--"}</strong>
+            <p>{scenario?.salaryInsight.description ?? "Nenhum contexto disponivel."}</p>
           </aside>
         </section>
 
+        {scenario ? (
+          <>
         <section className={styles.contentGrid}>
           <article className={styles.cityPanel}>
-            <h2>Sao Jose dos Campos</h2>
+            <h2>{scenario.cityTitle}</h2>
 
             <div className={styles.cityOverview}>
               <figure className={styles.cityPhoto}>
-                <img src={cityNightImage} alt="Vista noturna de Sao Jose dos Campos" />
+                <img src={cityNightImage} alt={`Vista da cidade de ${scenario.cityTitle}`} />
               </figure>
 
               <div className={styles.workforceCard}>
                 <h3>Forca de Trabalho por Regiao</h3>
-                <p>
-                  Municipio com alto potencial eleitoral, boas taxas de
-                  engajamento e historico consistente de crescimento do seu grupo
-                  politico.
-                </p>
+                <p>{scenario.workforceText}</p>
 
                 <div className={styles.statGrid}>
-                  {cityStats.map((stat) => (
+                  {scenario.cityStats.map((stat) => (
                     <article key={stat.label}>
                       <span>{stat.label}</span>
                       <strong>{stat.value}</strong>
@@ -113,7 +186,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
                 </div>
 
                 <div className={styles.ballotGrid}>
-                  {ballotStats.map((stat) => (
+                  {scenario.ballotStats.map((stat) => (
                     <article key={stat.label}>
                       <span>{stat.label}</span>
                       <strong>{stat.value}</strong>
@@ -125,7 +198,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
             </div>
 
             <div className={styles.businessGrid}>
-              {businessStats.map((stat) => (
+              {scenario.businessStats.map((stat) => (
                 <article key={stat.label}>
                   <span>{stat.label}</span>
                   <strong>{stat.value}</strong>
@@ -141,7 +214,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
             </div>
 
             <div className={styles.votedList}>
-              {mostVoted.map((candidate) => (
+              {visibleCandidates.map((candidate) => (
                 <article className={styles.votedItem} key={candidate.name}>
                   <div className={styles.votedAvatar} aria-hidden="true" />
                   <div className={styles.votedInfo}>
@@ -157,8 +230,12 @@ function InteligenciaEleitoral({ session, onLogout }) {
               ))}
             </div>
 
-            <button className={styles.moreButton} type="button">
-              Ver mais
+            <button
+              className={styles.moreButton}
+              type="button"
+              onClick={() => setShowAllCandidates((current) => !current)}
+            >
+              {showAllCandidates ? "Ver menos" : "Ver mais"}
             </button>
           </aside>
         </section>
@@ -173,12 +250,16 @@ function InteligenciaEleitoral({ session, onLogout }) {
               <div className={styles.peopleGrid} aria-hidden="true">
                 {Array.from({ length: 20 }).map((_, index) => (
                   <span
-                    className={index < 14 ? styles.personYellow : styles.personMuted}
+                    className={
+                      index < Math.round((scenario.gender.female / 100) * 20)
+                        ? styles.personYellow
+                        : styles.personMuted
+                    }
                     key={`female-${index}`}
                   />
                 ))}
               </div>
-              <strong className={styles.femaleValue}>70%</strong>
+              <strong className={styles.femaleValue}>{scenario.gender.female}%</strong>
             </div>
 
             <div className={styles.genderRow}>
@@ -186,18 +267,22 @@ function InteligenciaEleitoral({ session, onLogout }) {
               <div className={styles.peopleGrid} aria-hidden="true">
                 {Array.from({ length: 20 }).map((_, index) => (
                   <span
-                    className={index < 6 ? styles.personBlue : styles.personMuted}
+                    className={
+                      index < Math.round((scenario.gender.male / 100) * 20)
+                        ? styles.personBlue
+                        : styles.personMuted
+                    }
                     key={`male-${index}`}
                   />
                 ))}
               </div>
-              <strong className={styles.maleValue}>30%</strong>
+              <strong className={styles.maleValue}>{scenario.gender.male}%</strong>
             </div>
           </div>
 
           <div className={styles.ageBlock}>
             <h3>Faixa Etaria:</h3>
-            {ageRanges.map((range) => (
+            {scenario.ageRanges.map((range) => (
               <div className={styles.ageRow} key={range.label}>
                 <span>{range.label}</span>
                 <i style={{ "--value": `${range.value}%` }} />
@@ -208,19 +293,27 @@ function InteligenciaEleitoral({ session, onLogout }) {
 
           <aside className={styles.averageCard}>
             <h3>Idade Media</h3>
-            <strong>32</strong>
+            <strong>{scenario.averageAge.total}</strong>
             <div className={styles.averageMeta}>
               <span className={styles.averageFemale}>
                 <i aria-hidden="true" />
-                25
+                {scenario.averageAge.female}
               </span>
               <span className={styles.averageMale}>
                 <i aria-hidden="true" />
-                35
+                {scenario.averageAge.male}
               </span>
             </div>
           </aside>
         </section>
+          </>
+        ) : (
+          <AsyncSectionState
+            description="Nao encontramos um cenario local para esse conjunto de filtros. Ajuste UF, regiao ou municipio e analise novamente."
+            state="empty"
+            title="Nenhum cenario disponivel"
+          />
+        )}
           </>
         )}
       </section>
