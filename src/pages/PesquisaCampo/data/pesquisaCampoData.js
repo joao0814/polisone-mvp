@@ -62,11 +62,11 @@ export const cityProblems = [
 ];
 
 export const priorityRanking = [
-  { position: "1o", label: "Saúde", value: 92, votes: "4520 votos" },
-  { position: "2o", label: "Segurança", value: 74, votes: "1100 votos" },
-  { position: "3o", label: "Educação", value: 62, votes: "927 votos" },
-  { position: "4o", label: "Emprego/renda", value: 48, votes: "754 votos" },
-  { position: "5o", label: "Outros...", value: 34, votes: "698 votos" },
+  { position: "1º", label: "Saúde", value: 92, votes: "4520 votos" },
+  { position: "2º", label: "Segurança", value: 74, votes: "1100 votos" },
+  { position: "3º", label: "Educação", value: 62, votes: "927 votos" },
+  { position: "4º", label: "Emprego/renda", value: 48, votes: "754 votos" },
+  { position: "5º", label: "Outros...", value: 34, votes: "698 votos" },
 ];
 
 export const electorateProfile = {
@@ -116,11 +116,11 @@ export const spontaneousVotes = [
 ];
 
 export const growingCandidates = [
-  { position: "1o", name: "Carlos Eduardo", votes: "3.200 votos", growth: "32%", avatar: "CE" },
-  { position: "2o", name: "Janaína Salmeirão", votes: "2.700 votos", growth: "28%", avatar: "JS" },
-  { position: "3o", name: "Jorge Paz", votes: "1.500 votos", growth: "22%", avatar: "JP" },
-  { position: "4o", name: "Roberto Silva", votes: "1.200 votos", growth: "16%", avatar: "RS" },
-  { position: "5o", name: "Maria Eduarda", votes: "750 votos", growth: "9%", avatar: "ME" },
+  { position: "1º", name: "Carlos Eduardo", votes: "3.200 votos", growth: "32%", avatar: "CE" },
+  { position: "2º", name: "Janaína Salmeirão", votes: "2.700 votos", growth: "28%", avatar: "JS" },
+  { position: "3º", name: "Jorge Paz", votes: "1.500 votos", growth: "22%", avatar: "JP" },
+  { position: "4º", name: "Roberto Silva", votes: "1.200 votos", growth: "16%", avatar: "RS" },
+  { position: "5º", name: "Maria Eduarda", votes: "750 votos", growth: "9%", avatar: "ME" },
 ];
 
 export const footerMetrics = [
@@ -128,7 +128,7 @@ export const footerMetrics = [
   { title: "Realizadas na semana", value: "1.000", note: "50% DO TOTAL" },
   { title: "Crescimento de Pesquisas", value: "36%", note: "Em relação à semana anterior", trend: true },
   { title: "Crescimento de Municípios pesquisados", value: "28%", note: "Em relação à semana anterior", trend: true },
-  { title: "Ranking do candidato", value: "3o", note: "Subiu duas posições em relação à semana anterior" },
+  { title: "Ranking do candidato", value: "3º", note: "Subiu duas posições em relação à semana anterior" },
 ];
 
 export const perceptionPanels = [

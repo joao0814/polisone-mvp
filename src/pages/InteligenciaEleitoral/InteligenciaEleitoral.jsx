@@ -12,6 +12,19 @@ import {
 } from "./data/inteligenciaEleitoralData";
 import styles from "./InteligenciaEleitoral.module.css";
 
+const votedAvatars = {
+  "Dr. Elton": "https://i.pravatar.cc/120?img=12",
+  "Dulce Rita": "https://i.pravatar.cc/120?img=32",
+  "Letícia Aguiar": "https://i.pravatar.cc/120?img=47",
+  "LetÃ­cia Aguiar": "https://i.pravatar.cc/120?img=47",
+  "Carlos Abranches": "https://i.pravatar.cc/120?img=14",
+  "Fernando Petiti": "https://i.pravatar.cc/120?img=18",
+};
+
+function getVotedAvatar(name) {
+  return votedAvatars[name] ?? "https://i.pravatar.cc/120?img=14";
+}
+
 function InteligenciaEleitoral({ session, onLogout }) {
   const userName = session?.user?.name || "Deputado Alan Leal";
 
@@ -148,7 +161,11 @@ function InteligenciaEleitoral({ session, onLogout }) {
             <div className={styles.votedList}>
               {mostVoted.map((candidate) => (
                 <article className={styles.votedItem} key={candidate.name}>
-                  <div className={styles.votedAvatar} aria-hidden="true" />
+                  <img
+                    className={styles.votedAvatar}
+                    src={getVotedAvatar(candidate.name)}
+                    alt={`Foto de ${candidate.name}`}
+                  />
                   <div className={styles.votedInfo}>
                     <strong>{candidate.name}</strong>
                     <span>{candidate.party}</span>

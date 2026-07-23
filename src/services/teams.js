@@ -13,13 +13,13 @@ const initialTeams = [
 const initialMembers = [
   { id: 'member-1', team_id: 'team-campinas', name: 'Julia Rocha', phone: '(19) 99999-1001', role: 'Coordenadora', status: 'ACTIVE', city_ibge_code: '3509502' },
   { id: 'member-2', team_id: 'team-campinas', name: 'Ana Paula', phone: '(19) 99999-1002', role: 'Mobilizadora', status: 'ACTIVE', city_ibge_code: '3509502' },
-  { id: 'member-3', team_id: 'team-campinas', name: 'Daniel Costa', phone: '(19) 99999-1003', role: 'Voluntario', status: 'ACTIVE', city_ibge_code: '3509502' },
-  { id: 'member-4', team_id: 'team-campinas', name: 'Paula Nunes', phone: '(19) 99999-1004', role: 'Voluntaria', status: 'INACTIVE', city_ibge_code: '3509502' },
+  { id: 'member-3', team_id: 'team-campinas', name: 'Daniel Costa', phone: '(19) 99999-1003', role: 'Voluntário', status: 'ACTIVE', city_ibge_code: '3509502' },
+  { id: 'member-4', team_id: 'team-campinas', name: 'Paula Nunes', phone: '(19) 99999-1004', role: 'Voluntária', status: 'INACTIVE', city_ibge_code: '3509502' },
   { id: 'member-5', team_id: 'team-sao-paulo', name: 'Marcos Lima', phone: '(11) 99999-2001', role: 'Coordenador', status: 'ACTIVE', city_ibge_code: '3550308' },
   { id: 'member-6', team_id: 'team-sao-paulo', name: 'Bianca Prado', phone: '(11) 99999-2002', role: 'Mobilizadora', status: 'ACTIVE', city_ibge_code: '3550308' },
-  { id: 'member-7', team_id: 'team-sao-paulo', name: 'Igor Ramos', phone: '(11) 99999-2003', role: 'Voluntario', status: 'ACTIVE', city_ibge_code: '3550308' },
+  { id: 'member-7', team_id: 'team-sao-paulo', name: 'Igor Ramos', phone: '(11) 99999-2003', role: 'Voluntário', status: 'ACTIVE', city_ibge_code: '3550308' },
   { id: 'member-8', team_id: 'team-santos', name: 'Camila Reis', phone: '(13) 99999-3001', role: 'Coordenadora', status: 'ACTIVE', city_ibge_code: '3548500' },
-  { id: 'member-9', team_id: 'team-santos', name: 'Bruna Alves', phone: '(13) 99999-3002', role: 'Voluntaria', status: 'ACTIVE', city_ibge_code: '3548500' },
+  { id: 'member-9', team_id: 'team-santos', name: 'Bruna Alves', phone: '(13) 99999-3002', role: 'Voluntária', status: 'ACTIVE', city_ibge_code: '3548500' },
   { id: 'member-10', team_id: 'team-ribeirao', name: 'Rafael Torres', phone: '(16) 99999-4001', role: 'Coordenador', status: 'INACTIVE', city_ibge_code: '3543402' },
 ]
 
@@ -60,7 +60,12 @@ export function createTeamMember(teamId, payload) {
 
 export async function getTeamsSummary() {
   const teams = withMemberCounts(readLocal(TEAM_KEY, initialTeams)).map(normalizeTeamText)
-  const members = readLocal(MEMBER_KEY, initialMembers)
+  const members = readLocal(MEMBER_KEY, initialMembers).map((item) => ({
+    ...item,
+    name: fixText(item.name),
+    role: fixText(item.role),
+  }))
+
   return localDelay({
     metrics: {
       municipalities_active: new Set(teams.filter((item) => item.status === 'ACTIVE').map((item) => item.city_ibge_code)).size,
@@ -140,6 +145,21 @@ function fixText(value) {
   if (typeof value !== 'string') return value
 
   return value
+    .replaceAll('ÃƒÂ£', 'ã')
+    .replaceAll('ÃƒÂ¡', 'á')
+    .replaceAll('ÃƒÂ¢', 'â')
+    .replaceAll('ÃƒÂ©', 'é')
+    .replaceAll('ÃƒÂª', 'ê')
+    .replaceAll('ÃƒÂ­', 'í')
+    .replaceAll('ÃƒÂ³', 'ó')
+    .replaceAll('ÃƒÂ´', 'ô')
+    .replaceAll('ÃƒÂº', 'ú')
+    .replaceAll('ÃƒÂ§', 'ç')
+    .replaceAll('ÃƒÂµ', 'õ')
+    .replaceAll('Ãƒ ', 'à')
+    .replaceAll('Ãƒâ€°', 'É')
+    .replaceAll('Ãƒâ€¡', 'Ç')
+    .replaceAll('ÃƒÆ’', 'Ã')
     .replaceAll('Ã£', 'ã')
     .replaceAll('Ã¡', 'á')
     .replaceAll('Ã¢', 'â')
@@ -154,5 +174,4 @@ function fixText(value) {
     .replaceAll('Ã ', 'à')
     .replaceAll('Ã‰', 'É')
     .replaceAll('Ã‡', 'Ç')
-    .replaceAll('Ãƒ', 'Ã')
 }

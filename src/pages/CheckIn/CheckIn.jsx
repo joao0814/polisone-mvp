@@ -11,6 +11,18 @@ import {
 } from "./data/checkInData";
 import styles from "./CheckIn.module.css";
 
+const activityAvatars = {
+  "Dr. Elton": "https://i.pravatar.cc/120?img=12",
+  "Dulce Rita": "https://i.pravatar.cc/120?img=32",
+  "Letícia Aguiar": "https://i.pravatar.cc/120?img=47",
+  "LetÃ­cia Aguiar": "https://i.pravatar.cc/120?img=47",
+  "Jorge Paz": "https://i.pravatar.cc/120?img=18",
+};
+
+function getActivityAvatar(name) {
+  return activityAvatars[name] ?? "https://i.pravatar.cc/120?img=14";
+}
+
 function CheckIn({ session, onLogout }) {
   const userName = session?.user?.name || "Deputado Alan Leal";
 
@@ -107,6 +119,7 @@ function CheckIn({ session, onLogout }) {
                 <thead>
                   <tr>
                     <th>Nome</th>
+                    <th>Atividade</th>
                     <th>Status</th>
                     <th>Check-in</th>
                     <th>Check-out</th>
@@ -117,13 +130,21 @@ function CheckIn({ session, onLogout }) {
                     <tr key={team.id}>
                       <td>
                         <div className={styles.personCell}>
-                          <span className={styles.avatar}>{team.initials}</span>
+                          <img
+                            className={styles.avatar}
+                            src={getActivityAvatar(team.name)}
+                            alt={`Foto de ${team.name}`}
+                          />
                           <div>
                             <strong>{team.name}</strong>
                             <small>{team.city}</small>
                           </div>
-                          <em className={styles[team.badgeTone]}>{team.badge}</em>
                         </div>
+                      </td>
+                      <td>
+                        <em className={`${styles.activityBadge} ${styles[team.badgeTone]}`}>
+                          {team.badge}
+                        </em>
                       </td>
                       <td>
                         <span className={styles.statusBadge}>{team.status}</span>
@@ -196,10 +217,17 @@ function DonutPanel({ center, items, title }) {
 }
 
 function PhotoCard({ card }) {
+  const photoStyle =
+    card.title === "Foto de Check-in"
+      ? { objectFit: "contain", objectPosition: "center" }
+      : card.title === "Foto de Check-out"
+        ? { objectFit: "contain", objectPosition: "center" }
+        : { objectFit: "cover", objectPosition: "center 36%" };
+
   return (
     <article className={styles.photoCard}>
       <h2>{card.title}</h2>
-      <img alt={card.title} src={card.photo} />
+      <img alt={card.title} src={card.photo} style={photoStyle} />
       <div className={styles.photoMeta}>
         <strong>
           {card.time}

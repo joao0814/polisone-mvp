@@ -128,8 +128,9 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(170px, 1fr));
   gap: 16px;
-  max-width: 850px;
-  margin: 50px 0 20px auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 50px 0 20px;
 }
 
 .summaryCard {
@@ -256,7 +257,7 @@
   width: 10px;
   height: 10px;
   display: block;
-  border: 2px solid #ffffff;
+  border: 2px solid #07121f;
   border-radius: 50%;
   position: relative;
 }
@@ -269,7 +270,7 @@
   right: -5px;
   bottom: -3px;
   border-radius: 999px;
-  background: #ffffff;
+  background: #07121f;
   transform: rotate(45deg);
 }
 
@@ -368,8 +369,8 @@
 .municipalityTable th {
   padding: 0 0 16px;
   color: var(--yellow);
-  font-size: 17px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   text-align: left;
   white-space: nowrap;
 }
@@ -378,8 +379,8 @@
   padding: 25px 0;
   border-bottom: 1px solid var(--line);
   color: #ffffff;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

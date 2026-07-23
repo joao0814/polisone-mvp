@@ -4,7 +4,7 @@ const KEY = 'campaign-costs'
 const initialCosts = [
   { id: 'cost-1', amount: 800000, city_ibge_code: '3550308', city_name: 'São Paulo', region_id: 'metropolitana-sp', region_name: 'Região metropolitana de SP', notes: 'Material gráfico', spent_at: '2026-07-10T12:00:00.000Z' },
   { id: 'cost-2', amount: 520000, city_ibge_code: '3509502', city_name: 'Campinas', region_id: 'campinas', region_name: 'Região de Campinas', notes: 'Estrutura de eventos', spent_at: '2026-07-08T12:00:00.000Z' },
-  { id: 'cost-3', amount: 310000, city_ibge_code: '3548500', city_name: 'Santos', region_id: 'baixada-santista', region_name: 'Baixada Santista', notes: 'Mobilizacao local', spent_at: '2026-07-05T12:00:00.000Z' },
+  { id: 'cost-3', amount: 310000, city_ibge_code: '3548500', city_name: 'Santos', region_id: 'baixada-santista', region_name: 'Baixada Santista', notes: 'Mobilização local', spent_at: '2026-07-05T12:00:00.000Z' },
   { id: 'cost-4', amount: 190000, city_ibge_code: '3543402', city_name: 'Ribeirão Preto', region_id: 'ribeirao-preto', region_name: 'Região de Ribeirão Preto', notes: 'Comunicação regional', spent_at: '2026-07-02T12:00:00.000Z' },
 ]
 
@@ -62,6 +62,21 @@ function fixText(value) {
   if (typeof value !== 'string') return value
 
   return value
+    .replaceAll('ÃƒÂ£', 'ã')
+    .replaceAll('ÃƒÂ¡', 'á')
+    .replaceAll('ÃƒÂ¢', 'â')
+    .replaceAll('ÃƒÂ©', 'é')
+    .replaceAll('ÃƒÂª', 'ê')
+    .replaceAll('ÃƒÂ­', 'í')
+    .replaceAll('ÃƒÂ³', 'ó')
+    .replaceAll('ÃƒÂ´', 'ô')
+    .replaceAll('ÃƒÂº', 'ú')
+    .replaceAll('ÃƒÂ§', 'ç')
+    .replaceAll('ÃƒÂµ', 'õ')
+    .replaceAll('Ãƒ ', 'à')
+    .replaceAll('Ãƒâ€°', 'É')
+    .replaceAll('Ãƒâ€¡', 'Ç')
+    .replaceAll('ÃƒÆ’', 'Ã')
     .replaceAll('Ã£', 'ã')
     .replaceAll('Ã¡', 'á')
     .replaceAll('Ã¢', 'â')
@@ -76,5 +91,4 @@ function fixText(value) {
     .replaceAll('Ã ', 'à')
     .replaceAll('Ã‰', 'É')
     .replaceAll('Ã‡', 'Ç')
-    .replaceAll('Ãƒ', 'Ã')
 }

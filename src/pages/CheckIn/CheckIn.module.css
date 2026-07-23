@@ -400,7 +400,7 @@
 
 .activityTable {
   width: 100%;
-  min-width: 640px;
+  min-width: 760px;
   table-layout: fixed;
   border-collapse: collapse;
 }
@@ -424,40 +424,39 @@
 
 .activityTable th:nth-child(1),
 .activityTable td:nth-child(1) {
-  width: 40%;
+  width: 34%;
 }
 
 .activityTable th:nth-child(2),
 .activityTable td:nth-child(2) {
-  width: 22%;
+  width: 18%;
+  text-align: center;
 }
 
 .activityTable th:nth-child(3),
 .activityTable td:nth-child(3),
 .activityTable th:nth-child(4),
-.activityTable td:nth-child(4) {
-  width: 19%;
+.activityTable td:nth-child(4),
+.activityTable th:nth-child(5),
+.activityTable td:nth-child(5) {
+  width: 16%;
   text-align: center;
 }
 
 .personCell {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
-  gap: 9px;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
+  width: 46px;
+  height: 46px;
+  display: block;
+  object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.75);
   border-radius: 50%;
-  background: linear-gradient(145deg, #e5d0c4, #6f879c);
-  color: #07121f;
-  font-size: 10px;
-  font-weight: 900;
 }
 
 .personCell strong {
@@ -473,28 +472,32 @@
   font-size: 11px;
 }
 
-.personCell em {
+.activityBadge {
   min-width: 64px;
-  min-height: 14px;
+  min-height: 24px;
+  padding: 0 10px;
   display: inline-grid;
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 999px;
-  font-size: 5px;
+  font-size: 9px;
   font-style: normal;
   font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .statusBadge {
   display: inline-grid;
   place-items: center;
-  min-width: 92px;
+  min-width: 108px;
   min-height: 24px;
   border: 1px solid var(--yellow);
   border-radius: 6px;
   background: rgba(255, 202, 24, 0.16);
   color: #ffffff;
   font-size: 10px;
+  font-weight: 700;
 }
 
 .pagination {

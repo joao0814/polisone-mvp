@@ -22,8 +22,28 @@ import { getTeamsMap, getTeamsSummary } from "../../services/teams";
 import campaignRegions from "./data/campaignRegions";
 import styles from "./GestaoCampanha.module.css";
 
+function fixDisplayText(value) {
+  if (typeof value !== "string") return value;
+
+  return value
+    .replaceAll("VisÃ£o", "Visão")
+    .replaceAll("InteligÃªncia", "Inteligência")
+    .replaceAll("MunicÃ­pios", "Municípios")
+    .replaceAll("TerritÃ³rio", "Território")
+    .replaceAll("necessÃ¡rios", "necessários")
+    .replaceAll("LideranÃ§as", "Lideranças")
+    .replaceAll("RegiÃ£o", "Região")
+    .replaceAll("RibeirÃ£o", "Ribeirão")
+    .replaceAll("SÃ£o", "São")
+    .replaceAll("JosÃ©", "José")
+    .replaceAll("GuaratinguetÃ¡", "Guaratinguetá")
+    .replaceAll("OperaÃ§Ã£o", "Operação")
+    .replaceAll("PerÃ­odo", "Período")
+    .replaceAll("ApuraÃ§Ã£o", "Apuração")
+    .replaceAll("Âº", "º");
+}
+
 const menuItems = [
-  { label: "Portal do Candidato", path: "/" },
   { label: "Visão Geral", path: "/gestao-campanha" },
   { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
   { label: "Municípios", path: "/municipios" },
@@ -45,10 +65,34 @@ const metrics = [
 
 const dailySummary = [
   { key: "events_scheduled", label: "Eventos", value: "--", note: "Agendados", icon: "events" },
-  { key: "municipalities_visited_today", label: "Municípios visitados", value: "--", note: "Hoje", icon: "visited" },
-  { key: "field_teams_active_now", label: "Equipes em campo", value: "--", note: "Ativas agora", icon: "teams" },
-  { key: "activities_registered_today", label: "Atividades registradas", value: "0", note: "Hoje", icon: "activities" },
-  { key: "new_leaders_today", label: "Novas lideranças", value: "0", note: "Hoje", icon: "newLeaders" },
+  {
+    key: "municipalities_visited_today",
+    label: "Municípios visitados",
+    value: "--",
+    note: "Hoje",
+    icon: "visited",
+  },
+  {
+    key: "field_teams_active_now",
+    label: "Equipes em campo",
+    value: "--",
+    note: "Ativas agora",
+    icon: "teams",
+  },
+  {
+    key: "activities_registered_today",
+    label: "Atividades registradas",
+    value: "0",
+    note: "Hoje",
+    icon: "activities",
+  },
+  {
+    key: "new_leaders_today",
+    label: "Novas lideranças",
+    value: "0",
+    note: "Hoje",
+    icon: "newLeaders",
+  },
 ];
 
 const municipalityRanking = [
@@ -234,19 +278,36 @@ function GestaoCampanha({ session, onLogout }) {
   });
 
   const resolvedMunicipalityRanking =
-    municipalityRankingData?.items?.length ? municipalityRankingData.items : municipalityRanking;
+    municipalityRankingData?.items?.length
+      ? municipalityRankingData.items.map((item) => ({
+          ...item,
+          name: fixDisplayText(item.name),
+        }))
+      : municipalityRanking;
 
-  const resolvedFieldTeams = summary?.field_teams?.length ? summary.field_teams : fieldTeams;
+  const resolvedFieldTeams = summary?.field_teams?.length
+    ? summary.field_teams.map((team) => ({
+        ...team,
+        city: fixDisplayText(team.city),
+      }))
+    : fieldTeams;
+
   const resolvedCostRanking =
     costRankingData?.items?.length
       ? costRankingData.items.map((item) => ({
-          region: item.label,
+          region: fixDisplayText(item.label),
           amount: formatCurrency(item.amount),
           percent: item.percent,
         }))
       : costRanking;
+
   const resolvedRealtimeActivities =
-    realtimeActivitiesData?.items?.length ? realtimeActivitiesData.items : realtimeActivities;
+    realtimeActivitiesData?.items?.length
+      ? realtimeActivitiesData.items.map((item) => ({
+          ...item,
+          description: fixDisplayText(item.description),
+        }))
+      : realtimeActivities;
 
   const resolvedRegions = campaignRegions.map((region) => {
     const regionStats = mapData?.regions?.find((item) => item.id === region.id);
@@ -258,7 +319,10 @@ function GestaoCampanha({ session, onLogout }) {
           teamCount: regionStats.team_count,
           membersCount: regionStats.members_count,
         }
-      : region;
+      : {
+          ...region,
+          label: fixDisplayText(region.label),
+        };
   });
 
   const resolvedPerformanceRegions = resolvedRegions.filter(

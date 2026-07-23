@@ -17,6 +17,23 @@ import {
 } from "./data/pesquisaCampoData";
 import styles from "./PesquisaCampo.module.css";
 
+const rankingAvatars = {
+  "Dr. Elton": "https://i.pravatar.cc/120?img=12",
+  "Dulce Rita": "https://i.pravatar.cc/120?img=32",
+  "Letícia Aguiar": "https://i.pravatar.cc/120?img=47",
+  "LetÃ­cia Aguiar": "https://i.pravatar.cc/120?img=47",
+  "Carlos Eduardo": "https://i.pravatar.cc/120?img=14",
+  "Janaína Salmeirão": "https://i.pravatar.cc/120?img=25",
+  "JanaÃ­na SalmeirÃ£o": "https://i.pravatar.cc/120?img=25",
+  "Jorge Paz": "https://i.pravatar.cc/120?img=18",
+  "Roberto Silva": "https://i.pravatar.cc/120?img=61",
+  "Maria Eduarda": "https://i.pravatar.cc/120?img=49",
+};
+
+function getRankingAvatar(name) {
+  return rankingAvatars[name] ?? "https://i.pravatar.cc/120?img=14";
+}
+
 function PesquisaCampo({ session, onLogout }) {
   const userName = session?.user?.name || "Deputado Alan Leal";
 
@@ -308,7 +325,11 @@ function SpontaneousPanel({ items }) {
       <div className={styles.spontaneousList}>
         {items.map((item) => (
           <div className={styles.spontaneousItem} key={item.name}>
-            <span className={styles.avatar}>{item.avatar}</span>
+            <img
+              className={styles.avatar}
+              src={getRankingAvatar(item.name)}
+              alt={`Foto de ${item.name}`}
+            />
             <div>
               <strong>{item.name}</strong>
               <small>{item.party}</small>
@@ -339,7 +360,11 @@ function GrowthPanel({ items }) {
         {items.map((item) => (
           <div className={styles.growthItem} key={item.name}>
             <strong>{item.position}</strong>
-            <span className={styles.avatar}>{item.avatar}</span>
+            <img
+              className={styles.avatar}
+              src={getRankingAvatar(item.name)}
+              alt={`Foto de ${item.name}`}
+            />
             <p>{item.name}</p>
             <small>{item.votes}</small>
             <em>{item.growth}</em>
