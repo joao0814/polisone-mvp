@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PortalNavbar from "../../components/Common/PortalNavbar/PortalNavbar";
 import logoNav from "../../assets/images/home/logo nav.png";
+import portalSignature from "../../assets/images/home/portal-signature.png";
 import HomeCalendarSection from "./HomeCalendarSection";
 import HomeCommunicationsSection from "./HomeCommunicationsSection";
 import HomeFooter from "./HomeFooter";
@@ -131,15 +132,7 @@ function BrandLogo({ small = false }) {
 
   return (
     <div className={styles.logo}>
-      <span className={styles.logoIcon} aria-hidden="true">
-        <i />
-        <i />
-        <i />
-      </span>
-      <span className={styles.logoText}>
-        <strong>POLIS</strong>
-        <small>ONE</small>
-      </span>
+      <img className={styles.logoImage} src={portalSignature} alt="Polis One" />
     </div>
   );
 }

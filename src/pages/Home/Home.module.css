@@ -1200,58 +1200,142 @@
 
 .footer {
   display: grid;
-  grid-template-columns: 1.3fr 0.9fr 0.8fr;
-  gap: 48px;
-  padding: 38px 56px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.7fr) minmax(260px, 0.85fr);
+  gap: 34px;
+  align-items: start;
+  padding: 30px 48px 34px;
   background: #000;
   color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .footer h2 {
-  margin: 0 0 20px;
-  font-size: 26px;
-  line-height: 1.1;
+  margin: 0 0 14px;
+  font-size: 20px;
+  line-height: 1.12;
+  font-weight: 800;
 }
 
 .footer p {
-  margin: 0 0 14px;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.25;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.footerBlock {
+  min-width: 0;
+}
+
+.footerText {
+  max-width: 420px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.contactList {
+  display: grid;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.contactItem {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+}
+
+.contactItem svg {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  fill: #fff;
+}
+
+.contactItem p {
+  line-height: 1.35;
 }
 
 .storeButtons {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-bottom: 18px;
 }
 
-.storeButtons span {
-  min-width: 98px;
-  min-height: 34px;
+.storeBadge {
+  min-width: 120px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  text-decoration: none;
+}
+
+.storeBadge svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.storeBadgeText {
   display: grid;
-  place-items: center;
-  border: 1px solid #777;
-  border-radius: 5px;
+  line-height: 1;
+}
+
+.storeBadgeText small {
+  margin-bottom: 2px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.storeBadgeText strong {
+  color: #fff;
   font-size: 12px;
   font-weight: 800;
 }
 
+.socialTitle {
+  margin-top: 2px;
+}
+
 .socials {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.socials span {
-  width: 42px;
-  height: 42px;
+.socialIcon {
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: #fff;
   color: #000;
-  font-size: 14px;
-  font-weight: 900;
+  text-decoration: none;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.socialIcon:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(255, 255, 255, 0.16);
+}
+
+.socialIcon svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  fill: currentColor;
 }
 
 .logo {
