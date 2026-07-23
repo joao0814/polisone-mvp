@@ -72,10 +72,12 @@ export default function Blog({ session, onLogout }) {
               minHeight: 44,
               padding: "0 20px",
               borderRadius: 999,
-              border: "1px solid #111",
-              color: "#111",
+              border: "1px solid rgba(20, 52, 93, 0.18)",
+              background: "rgba(255, 255, 255, 0.96)",
+              color: "#14345d",
               fontSize: 13,
               fontWeight: 900,
+              boxShadow: "0 10px 22px rgba(8, 27, 51, 0.08)",
               textDecoration: "none",
             }}
           >
@@ -89,10 +91,11 @@ export default function Blog({ session, onLogout }) {
               minHeight: 44,
               padding: "0 20px",
               borderRadius: 999,
-              background: "#111",
-              color: "#ffca18",
+              background: "linear-gradient(180deg, #14345d, #0b213f)",
+              color: "#fff",
               fontSize: 13,
               fontWeight: 900,
+              boxShadow: "0 14px 24px rgba(8, 27, 51, 0.18)",
               textDecoration: "none",
             }}
           >

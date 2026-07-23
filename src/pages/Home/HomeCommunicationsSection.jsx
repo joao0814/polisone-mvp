@@ -9,7 +9,7 @@ function HomeCommunicationsSection() {
   const [comunicados, setComunicados] = useState([]);
 
   useEffect(() => {
-    list({ limit: 3 }).then((result) => setComunicados(result.data)).catch(() => setComunicados([]));
+    list({ limit: 12 }).then((result) => setComunicados(result.data)).catch(() => setComunicados([]));
   }, [list]);
 
   return (

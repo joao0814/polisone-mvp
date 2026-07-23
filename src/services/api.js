@@ -3,7 +3,68 @@ import { createLocalId, localDelay, readLocal, writeLocal } from './localStore'
 const seeds = {
   tickets: [],
   calendar: [],
-  communications: [],
+  communications: [
+    {
+      id: 'communication-1',
+      slug: 'agenda-da-semana-equipes-em-campo',
+      title: 'Agenda da semana para equipes em campo',
+      description: 'Confira os principais compromissos, roteiros e pontos de mobilização definidos para os próximos dias.',
+      content: 'As equipes regionais devem priorizar agendas de rua, visitas institucionais e reuniões com lideranças locais. Consulte os horários confirmados e mantenha o check-in atualizado.',
+      status: 'PUBLISHED',
+      author: 'Coordenação de Campanha',
+      views: 184,
+      publishedAt: '2026-07-22T10:30:00.000Z',
+      created_at: '2026-07-22T09:00:00.000Z',
+      categoryId: 'agenda',
+      category: { id: 'agenda', name: 'Agenda', slug: 'agenda' },
+      coverImagePath: '',
+    },
+    {
+      id: 'communication-2',
+      slug: 'novos-materiais-ja-estao-disponiveis',
+      title: 'Novos materiais de campanha já estão disponíveis',
+      description: 'A equipe de comunicação liberou novas peças para redes sociais, panfletagem e grupos regionais.',
+      content: 'Os materiais atualizados já podem ser acessados pelos responsáveis de cada núcleo. Dê preferência às versões mais recentes e evite reutilizar arquivos antigos.',
+      status: 'PUBLISHED',
+      author: 'Comunicação',
+      views: 126,
+      publishedAt: '2026-07-21T15:00:00.000Z',
+      created_at: '2026-07-21T13:20:00.000Z',
+      categoryId: 'campanha',
+      category: { id: 'campaign', name: 'Campanha', slug: 'campanha' },
+      coverImagePath: '',
+    },
+    {
+      id: 'communication-3',
+      slug: 'orientacoes-para-visitas-e-registro-de-atividade',
+      title: 'Orientações para visitas e registro de atividade',
+      description: 'Padronizamos o preenchimento das atividades para melhorar relatórios e acompanhamento diário.',
+      content: 'Sempre registre local, horário, equipe envolvida e objetivo da ação. Isso garante leitura mais precisa nos painéis e facilita a coordenação operacional.',
+      status: 'PUBLISHED',
+      author: 'Operações',
+      views: 93,
+      publishedAt: '2026-07-19T08:45:00.000Z',
+      created_at: '2026-07-19T08:00:00.000Z',
+      categoryId: 'news',
+      category: { id: 'news', name: 'Notícias', slug: 'noticias' },
+      coverImagePath: '',
+    },
+    {
+      id: 'communication-4',
+      slug: 'boletim-de-resultados-das-ultimas-acoes',
+      title: 'Boletim de resultados das últimas ações',
+      description: 'Resumo consolidado com desempenho das frentes de campo, alcance de materiais e novos contatos gerados.',
+      content: 'As ações mais recentes mostraram avanço nas regiões prioritárias, com aumento de presença local e melhor taxa de resposta das equipes em rota.',
+      status: 'PUBLISHED',
+      author: 'Inteligência Eleitoral',
+      views: 71,
+      publishedAt: '2026-07-18T17:15:00.000Z',
+      created_at: '2026-07-18T16:40:00.000Z',
+      categoryId: 'news',
+      category: { id: 'news', name: 'Notícias', slug: 'noticias' },
+      coverImagePath: '',
+    },
+  ],
   banners: [],
 }
 
@@ -89,6 +150,10 @@ async function handleCalendar(parts, method, payload, params) {
 
 async function handleCommunications(parts, method, payload) {
   let items = readLocal('communications', seeds.communications)
+  if ((!Array.isArray(items) || items.length === 0) && seeds.communications.length) {
+    items = structuredClone(seeds.communications)
+    writeLocal('communications', items)
+  }
   const index = parts.indexOf('communications')
   const idOrSlug = parts[index + 1]
   const action = parts[index + 2]

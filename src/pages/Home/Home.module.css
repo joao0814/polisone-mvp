@@ -2,10 +2,18 @@
   --yellow: #ffca18;
   --yellow-dark: #d8aa00;
   --black: #020202;
-  --text: #111111;
-  --muted: #5f5f5f;
+  --navy-980: #04101d;
+  --navy-950: #081a30;
+  --navy-900: #0d2747;
+  --navy-850: #12365f;
+  --surface: #eff5fb;
+  --surface-strong: #ffffff;
+  --text: #0f2035;
+  --muted: #5b6f86;
   min-height: 100svh;
-  background: #ffffff;
+  background:
+    radial-gradient(circle at top right, rgba(34, 103, 197, 0.12), transparent 26%),
+    linear-gradient(180deg, #f6f9fc 0%, #eef3f9 100%);
   color: var(--text);
   font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
 }
@@ -238,18 +246,21 @@
   width: 100%;
   height: 50px;
   padding: 0 66px 0 20px;
-  border: 2px solid #8ba1bd;
+  border: 1px solid rgba(17, 48, 86, 0.16);
   border-radius: 24px;
-  background: #fbfbfb;
-  color: #202020;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(241, 246, 252, 0.96));
+  color: var(--text);
   font-size: 17px;
   font-weight: 600;
+  box-shadow: 0 14px 28px rgba(14, 33, 56, 0.08);
   outline: none;
 }
 
 .search input:focus {
-  border-color: var(--yellow);
-  box-shadow: 0 0 0 4px rgba(255, 202, 24, 0.24);
+  border-color: rgba(35, 103, 244, 0.45);
+  box-shadow:
+    0 14px 28px rgba(14, 33, 56, 0.1),
+    0 0 0 4px rgba(35, 103, 244, 0.12);
 }
 
 .search button {
@@ -260,7 +271,8 @@
   height: 52px;
   border: 0;
   border-radius: 50%;
-  background: var(--yellow);
+  background: linear-gradient(180deg, #1f60d7, #163f9b);
+  box-shadow: 0 14px 24px rgba(17, 67, 157, 0.28);
   cursor: pointer;
 }
 
@@ -289,7 +301,7 @@
 
 .links {
   padding-left: 36px;
-  border-left: 2px solid #d4d4d4;
+  border-left: 1px solid rgba(18, 54, 95, 0.14);
 }
 
 .links h2 {
@@ -313,10 +325,21 @@
   display: grid;
   place-items: center;
   gap: 4px;
-  border: 0;
-  border-radius: 10px;
+  border: 1px solid transparent;
+  border-radius: 14px;
   font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 14px 24px rgba(12, 31, 56, 0.08);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.linkCard:hover,
+.addLink:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 28px rgba(12, 31, 56, 0.12);
 }
 
 .linkCard small,
@@ -334,28 +357,29 @@
 }
 
 .yellow {
-  background: var(--yellow);
+  background: linear-gradient(180deg, #163a68, #0d2545);
+  border-color: rgba(255, 202, 24, 0.22);
   color: #fff;
 }
 
 .black {
-  border: 2px solid var(--yellow);
-  background: #000;
-  color: var(--yellow);
+  border-color: rgba(255, 202, 24, 0.28);
+  background: linear-gradient(180deg, #0d203a, #081425);
+  color: #ffcf35;
 }
 
 .blue {
-  background: #2367f4;
+  background: linear-gradient(180deg, #2f77ff, #184db8);
   color: #fff;
 }
 
 .red {
-  background: #ff3939;
+  background: linear-gradient(180deg, #295694, #183765);
   color: #fff;
 }
 
 .cyan {
-  background: linear-gradient(135deg, #00c0d5, #6678ff);
+  background: linear-gradient(135deg, #255ea7, #4f86d9);
   color: #fff;
 }
 
@@ -413,8 +437,9 @@
 }
 
 .addLink {
-  background: transparent;
-  color: #8b8b8b;
+  background: rgba(255, 255, 255, 0.74);
+  border-color: rgba(18, 54, 95, 0.12);
+  color: var(--muted);
 }
 
 .addLink > span {
@@ -423,7 +448,7 @@
   position: relative;
   display: inline-block;
   border-radius: 50%;
-  background: var(--yellow);
+  background: linear-gradient(180deg, #1f60d7, #163f9b);
   color: transparent;
 }
 
@@ -476,8 +501,8 @@
   border: 0;
   border-radius: 17px;
   overflow: hidden;
-  background: #171717;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+  background: linear-gradient(180deg, #0d223f, #081729);
+  box-shadow: 0 18px 32px rgba(12, 31, 56, 0.14);
   cursor: pointer;
 }
 
@@ -501,6 +526,7 @@
   margin: 0;
   text-align: center;
   font-size: 27px;
+  color: var(--navy-900);
 }
 
 .banner {
@@ -509,9 +535,10 @@
   min-height: 0;
   overflow: hidden;
   border-radius: 18px;
-  background: #171717;
+  background: linear-gradient(180deg, #0b1d34, #081525);
   color: #fff;
   cursor: pointer;
+  box-shadow: 0 22px 40px rgba(12, 31, 56, 0.18);
 }
 
 .banner img {
@@ -538,7 +565,7 @@
   place-items: center;
   border: 0;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.48);
+  background: rgba(10, 26, 47, 0.72);
   color: #ffffff;
   font-size: 32px;
   line-height: 1;
@@ -550,7 +577,7 @@
 }
 
 .bannerArrow:hover {
-  background: rgba(0, 0, 0, 0.68);
+  background: rgba(12, 34, 60, 0.88);
   transform: translateY(-50%) scale(1.04);
 }
 
@@ -574,7 +601,7 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: #dfdfdf;
+  background: rgba(18, 54, 95, 0.2);
   cursor: pointer;
 }
 
@@ -598,7 +625,7 @@
   gap: 20px;
 }
 .comunicadosHeading a {
-  color: #111;
+  color: var(--navy-900);
   font-size: 13px;
   font-weight: 900;
   text-decoration: none;
@@ -612,20 +639,34 @@
 
 .comunicadoGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 40px) / 3);
   gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: 10px;
+}
+
+.comunicadoGrid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.comunicadoGrid::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(20, 52, 93, 0.24);
 }
 
 .comunicadoCard {
   min-width: 0;
+  scroll-snap-align: start;
 }
 
 .comunicadoImage {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 14px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
-  background: #171717;
+  box-shadow: 0 18px 30px rgba(12, 31, 56, 0.14);
+  background: linear-gradient(180deg, #0d223f, #081729);
 }
 
 .comunicadoImage img {
@@ -643,10 +684,10 @@
   background:
     radial-gradient(
       circle at 20% 20%,
-      rgba(255, 202, 24, 0.32),
+      rgba(35, 103, 244, 0.24),
       transparent 32%
     ),
-    #111;
+    #081729;
   color: var(--yellow);
   font-size: 14px;
   font-weight: 900;
@@ -698,17 +739,19 @@
   width: calc(100% - 48px);
   margin: 54px auto 0;
   overflow: hidden;
-  border-radius: 0 0 28px 28px;
-  background: #000;
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.24);
+  border-radius: 28px;
+  background: linear-gradient(180deg, #07182d, #04101d);
+  box-shadow: 0 28px 56px rgba(12, 31, 56, 0.2);
 }
 
 .calendarLeft {
   display: grid;
   align-content: start;
-  gap: 26px;
-  padding: 34px 30px 30px;
-  background: linear-gradient(180deg, #ffca18 0%, #ffc615 100%);
+  gap: 28px;
+  padding: 38px 32px 34px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.24), transparent 24%),
+    linear-gradient(180deg, #ffcf35 0%, #ffc515 100%);
   color: #101010;
 }
 
@@ -754,7 +797,7 @@
 
 .calendarEventsHeader h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1;
 }
 
@@ -780,21 +823,23 @@
 .calendarEventCard {
   position: relative;
   display: grid;
-  gap: 4px;
-  min-height: 62px;
-  padding: 14px 16px 12px 34px;
-  border-radius: 10px;
-  background: #d9d9d9;
-  box-shadow: none;
+  gap: 6px;
+  min-height: 78px;
+  padding: 16px 18px 14px 26px;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 24px rgba(17, 17, 17, 0.08);
+  backdrop-filter: blur(6px);
 }
 
 .calendarEventCard::before {
   content: "";
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 18px;
-  border-radius: 10px 0 0 10px;
-  background: #111111;
+  inset: 12px auto 12px 10px;
+  width: 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #14345d, #0b213f);
 }
 
 .calendarEventHeader {
@@ -805,7 +850,7 @@
 }
 
 .calendarEventHeader strong {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.2;
 }
 
@@ -838,16 +883,16 @@
 }
 
 .calendarEventTime {
-  color: #4b4b4b;
-  font-size: 11px;
+  color: #405066;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .calendarEventCard p {
   margin: 0;
-  color: #222222;
+  color: #243447;
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.45;
 }
 
 .calendarEventCard small {
@@ -868,7 +913,7 @@
   padding: 0 16px;
   border: 0;
   border-radius: 999px;
-  background: #111111;
+  background: linear-gradient(180deg, #14345d, #0b213f);
   color: #ffffff;
   font: inherit;
   font-size: 12px;
@@ -887,10 +932,10 @@
   width: fit-content;
   min-height: 34px;
   padding: 0 14px;
-  border: 1px solid rgba(17, 17, 17, 0.16);
+  border: 1px solid rgba(20, 52, 93, 0.14);
   border-radius: 999px;
-  background: #ffffff;
-  color: #111111;
+  background: rgba(255, 255, 255, 0.9);
+  color: #14345d;
   font: inherit;
   font-size: 12px;
   font-weight: 900;
@@ -924,7 +969,7 @@
   height: 52px;
   display: inline-block;
   border-radius: 50%;
-  background: #111111;
+  background: linear-gradient(180deg, #14345d, #0b213f);
   color: transparent;
 }
 
@@ -951,30 +996,31 @@
 
 .calendarRight {
   min-width: 0;
-  padding: 28px 40px 30px;
+  padding: 34px 40px 34px;
   color: #ffffff;
 }
 
 .calendarTopbar {
   display: flex;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
 .calendarYearControls {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
 }
 
 .calendarYearControls button {
-  min-width: 30px;
-  height: 30px;
+  min-width: 38px;
+  height: 38px;
   padding: 0;
-  border: 0;
-  background: transparent;
+  border: 1px solid rgba(255, 202, 24, 0.18);
+  border-radius: 50%;
+  background: rgba(255, 202, 24, 0.06);
   color: var(--yellow);
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 400;
   line-height: 1;
   cursor: pointer;
@@ -994,20 +1040,20 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0;
-  margin-bottom: 10px;
+  margin-bottom: 18px;
 }
 
 .calendarMonthSelector button {
   position: relative;
   min-height: auto;
-  padding: 0 8px;
+  padding: 4px 8px;
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.82);
   font: inherit;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.02em;
   cursor: pointer;
 }
@@ -1026,21 +1072,22 @@
 }
 
 .calendarGrid {
-  padding: 10px 18px 14px;
-  border-radius: 16px;
-  background: #ffffff;
+  padding: 18px 22px 20px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 248, 252, 0.98));
   border: 0;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.12);
 }
 
 .calendarWeekHeader,
 .calendarDays {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8px 12px;
+  gap: 10px 14px;
 }
 
 .calendarWeekHeader {
-  margin-bottom: 2px;
+  margin-bottom: 8px;
 }
 
 .calendarWeekDay {
@@ -1048,9 +1095,9 @@
   place-items: center;
   min-height: 34px;
   color: var(--yellow);
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 900;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .calendarDayEmpty,
@@ -1062,26 +1109,28 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  min-height: 42px;
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
   margin: 0 auto;
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: #232323;
+  color: #1c2a3a;
   font: inherit;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition:
     background 140ms ease,
     color 140ms ease,
-    transform 140ms ease;
+    transform 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .calendarDay:hover {
-  background: rgba(255, 202, 24, 0.14);
+  background: rgba(255, 202, 24, 0.16);
+  box-shadow: 0 10px 16px rgba(255, 202, 24, 0.18);
   transform: translateY(-1px);
 }
 
@@ -1091,9 +1140,10 @@
 }
 
 .calendarDay.selected {
-  background: var(--yellow);
+  background: linear-gradient(180deg, #ffca18, #f0b700);
   color: #ffffff;
   font-weight: 900;
+  box-shadow: 0 12px 18px rgba(255, 202, 24, 0.28);
 }
 
 .calendarDay.hasEvent {
@@ -1102,12 +1152,12 @@
 
 .eventDot {
   position: absolute;
-  top: 3px;
-  right: -1px;
-  width: 4px;
-  height: 4px;
+  top: 5px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--yellow);
+  background: #14345d;
 }
 
 .calendarManageTools {
@@ -1410,7 +1460,7 @@
   }
 
   .comunicadoGrid {
-    grid-template-columns: 1fr;
+    grid-auto-columns: minmax(280px, 82%);
   }
 
   .calendar {

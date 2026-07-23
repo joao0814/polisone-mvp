@@ -12,14 +12,14 @@ import styles from "./Equipes.module.css";
 
 const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
 ];
 
 const states = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];

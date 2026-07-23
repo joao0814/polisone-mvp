@@ -44,6 +44,7 @@ function fixDisplayText(value) {
 }
 
 const menuItems = [
+  { label: "Portal do Candidato", path: "/" },
   { label: "Visão Geral", path: "/gestao-campanha" },
   { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
   { label: "Municípios", path: "/municipios" },

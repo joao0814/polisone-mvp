@@ -5,7 +5,10 @@
 
 .sidebar {
   width: 214px;
-  min-height: 100svh;
+  height: 100svh;
+  position: sticky;
+  top: 0;
+  align-self: start;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
