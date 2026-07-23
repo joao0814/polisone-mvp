@@ -653,7 +653,9 @@
 }
 
 .modalCard {
-  width: min(100%, 760px);
+  width: min(100%, 980px);
+  max-height: calc(100svh - 48px);
+  overflow: auto;
   border: 1px solid var(--line);
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(8, 21, 34, 0.99), rgba(3, 10, 18, 0.99));
@@ -747,6 +749,33 @@
   min-height: 120px;
   padding: 14px;
   resize: vertical;
+}
+
+.modalMembersSection {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 202, 24, 0.14);
+}
+
+.modalMembersHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modalMembersHeader h3 {
+  margin: 8px 0 0;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.modalMembersActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .modalErrorMessage {

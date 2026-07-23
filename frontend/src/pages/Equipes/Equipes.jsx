@@ -267,6 +267,7 @@ function Equipes({ session, onLogout }) {
 
   function openEditTeamModal(team) {
     clearFeedback();
+    setSelectedTeamId(team.id);
     setModalType("team");
     setModalError("");
     setConfirmAction(null);
@@ -281,10 +282,28 @@ function Equipes({ session, onLogout }) {
       status: team.status ?? "ACTIVE",
       notes: team.notes ?? "",
     });
+    getTeamMembers(team.id)
+      .then((data) => setMembers(data.items ?? []))
+      .catch(() => {});
   }
 
   function openMemberModal() {
     const defaultTeam = selectedTeam ?? teams[0] ?? null;
+
+    clearFeedback();
+    setModalType("member");
+    setModalError("");
+    setConfirmAction(null);
+    setEditingMemberId(null);
+    setMemberModalForm({
+      ...initialMemberModalForm,
+      teamId: defaultTeam?.id ?? "",
+      cityIbgeCode: defaultTeam?.city_ibge_code ?? "",
+    });
+  }
+
+  function openMemberModalForTeam(teamId) {
+    const defaultTeam = teams.find((team) => team.id === teamId) ?? null;
 
     clearFeedback();
     setModalType("member");
@@ -328,6 +347,17 @@ function Equipes({ session, onLogout }) {
     });
   }
 
+  function openLeaderModalForTeam(teamId) {
+    clearFeedback();
+    setModalType("leader");
+    setModalError("");
+    setConfirmAction(null);
+    setLeaderModalForm({
+      ...initialLeaderModalForm,
+      teamId,
+    });
+  }
+
   function openRepresentativeModal() {
     clearFeedback();
     setModalType("representative");
@@ -336,6 +366,17 @@ function Equipes({ session, onLogout }) {
     setRepresentativeModalForm({
       ...initialRepresentativeModalForm,
       teamId: selectedTeam?.id ?? teams[0]?.id ?? "",
+    });
+  }
+
+  function openRepresentativeModalForTeam(teamId) {
+    clearFeedback();
+    setModalType("representative");
+    setModalError("");
+    setConfirmAction(null);
+    setRepresentativeModalForm({
+      ...initialRepresentativeModalForm,
+      teamId,
     });
   }
 
@@ -809,6 +850,8 @@ function Equipes({ session, onLogout }) {
           editingTeamId={editingTeamId}
           leaderForm={leaderModalForm}
           leaderTeam={teams.find((team) => team.id === leaderModalForm.teamId) ?? null}
+          leaders={leaders}
+          members={members}
           memberForm={memberModalForm}
           memberTeam={teams.find((team) => team.id === memberModalForm.teamId) ?? null}
           modalError={modalError}
@@ -817,17 +860,24 @@ function Equipes({ session, onLogout }) {
           onInactivateTeam={handleInactivateTeam}
           onLeaderChange={setLeaderModalForm}
           onMemberChange={setMemberModalForm}
+          onOpenEditMemberModal={openEditMemberModal}
+          onOpenLeaderModalForTeam={openLeaderModalForTeam}
+          onOpenMemberModalForTeam={openMemberModalForTeam}
+          onOpenRepresentativeModalForTeam={openRepresentativeModalForTeam}
           onRemoveTeam={handleRemoveTeam}
+          onRemoveMember={handleRemoveMember}
           onRepresentativeChange={setRepresentativeModalForm}
           onSubmitLeader={submitLeaderModal}
           onSubmitMember={submitMemberModal}
           onSubmitRepresentative={submitRepresentativeModal}
           onSubmitTeam={submitTeamModal}
           onTeamChange={setTeamModalForm}
+          onToggleMemberStatus={handleToggleMemberStatus}
           representativeForm={representativeModalForm}
           representativeTeam={teams.find((team) => team.id === representativeModalForm.teamId) ?? null}
           saving={savingMember}
           savingTeam={savingTeam}
+          selectedTeam={selectedTeam}
           teamForm={teamModalForm}
           teams={teams}
           confirmAction={confirmAction}
@@ -888,6 +938,8 @@ function EntityManagementModal({
   editingTeamId,
   leaderForm,
   leaderTeam,
+  leaders,
+  members,
   memberForm,
   memberTeam,
   modalError,
@@ -897,17 +949,24 @@ function EntityManagementModal({
   onInactivateTeam,
   onLeaderChange,
   onMemberChange,
+  onOpenEditMemberModal,
+  onOpenLeaderModalForTeam,
+  onOpenMemberModalForTeam,
+  onOpenRepresentativeModalForTeam,
   onRemoveTeam,
+  onRemoveMember,
   onRepresentativeChange,
   onSubmitLeader,
   onSubmitMember,
   onSubmitRepresentative,
   onSubmitTeam,
   onTeamChange,
+  onToggleMemberStatus,
   representativeForm,
   representativeTeam,
   saving,
   savingTeam,
+  selectedTeam,
   teamForm,
   teams,
 }) {
@@ -974,40 +1033,141 @@ function EntityManagementModal({
           ) : null}
 
           {isTeam ? (
-            <div className={styles.modalGrid}>
-              <label className={styles.modalField}>
-                <span>Nome da equipe</span>
-                <input type="text" value={teamForm.name} onChange={(event) => onTeamChange((current) => ({ ...current, name: event.target.value }))} disabled={savingTeam} />
-              </label>
-              <label className={styles.modalField}>
-                <span>Municipio</span>
-                <input type="text" value={teamForm.cityName} onChange={(event) => onTeamChange((current) => ({ ...current, cityName: event.target.value }))} disabled={savingTeam} />
-              </label>
-              <label className={styles.modalField}>
-                <span>Codigo IBGE</span>
-                <input type="text" value={teamForm.cityIbgeCode} onChange={(event) => onTeamChange((current) => ({ ...current, cityIbgeCode: event.target.value }))} disabled={savingTeam} />
-              </label>
-              <label className={styles.modalField}>
-                <span>UF</span>
-                <select value={teamForm.state} onChange={(event) => onTeamChange((current) => ({ ...current, state: event.target.value }))} disabled={savingTeam}>
-                  {states.map((state) => <option key={state} value={state}>{state}</option>)}
-                </select>
-              </label>
-              <label className={styles.modalField}>
-                <span>Coordenador</span>
-                <input type="text" value={teamForm.coordinatorName} onChange={(event) => onTeamChange((current) => ({ ...current, coordinatorName: event.target.value }))} disabled={savingTeam} />
-              </label>
-              <label className={styles.modalField}>
-                <span>Status</span>
-                <select value={teamForm.status} onChange={(event) => onTeamChange((current) => ({ ...current, status: event.target.value }))} disabled={savingTeam}>
-                  {memberStatuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
-                </select>
-              </label>
-              <label className={styles.modalField}>
+            <>
+              <div className={styles.modalGrid}>
+                <label className={styles.modalField}>
+                  <span>Nome da equipe</span>
+                  <input type="text" value={teamForm.name} onChange={(event) => onTeamChange((current) => ({ ...current, name: event.target.value }))} disabled={savingTeam} />
+                </label>
+                <label className={styles.modalField}>
+                  <span>Municipio</span>
+                  <input type="text" value={teamForm.cityName} onChange={(event) => onTeamChange((current) => ({ ...current, cityName: event.target.value }))} disabled={savingTeam} />
+                </label>
+                <label className={styles.modalField}>
+                  <span>Codigo IBGE</span>
+                  <input type="text" value={teamForm.cityIbgeCode} onChange={(event) => onTeamChange((current) => ({ ...current, cityIbgeCode: event.target.value.replace(/\D/g, "").slice(0, 7) }))} disabled={savingTeam} />
+                </label>
+                <label className={styles.modalField}>
+                  <span>UF</span>
+                  <select value={teamForm.state} onChange={(event) => onTeamChange((current) => ({ ...current, state: event.target.value }))} disabled={savingTeam}>
+                    {states.map((state) => <option key={state} value={state}>{state}</option>)}
+                  </select>
+                </label>
+                <label className={styles.modalField}>
+                  <span>Coordenador</span>
+                  <input type="text" value={teamForm.coordinatorName} onChange={(event) => onTeamChange((current) => ({ ...current, coordinatorName: event.target.value }))} disabled={savingTeam} />
+                </label>
+                <label className={styles.modalField}>
+                  <span>Lideranca vinculada</span>
+                  <select value={teamForm.linkedLeaderId} onChange={(event) => onTeamChange((current) => ({ ...current, linkedLeaderId: event.target.value }))} disabled={savingTeam}>
+                    <option value="">Sem lideranca vinculada</option>
+                    {leaders.map((leader) => (
+                      <option key={leader.id} value={leader.id}>
+                        {leader.name} {leader.city_name ? `- ${leader.city_name}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className={styles.modalField}>
+                  <span>Status</span>
+                  <select value={teamForm.status} onChange={(event) => onTeamChange((current) => ({ ...current, status: event.target.value }))} disabled={savingTeam}>
+                    {memberStatuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
+                  </select>
+                </label>
+              </div>
+
+              <label className={styles.modalTextareaField}>
                 <span>Observacoes</span>
-                <input type="text" value={teamForm.notes} onChange={(event) => onTeamChange((current) => ({ ...current, notes: event.target.value }))} disabled={savingTeam} />
+                <textarea rows={4} maxLength={400} value={teamForm.notes} onChange={(event) => onTeamChange((current) => ({ ...current, notes: event.target.value }))} disabled={savingTeam} />
               </label>
-            </div>
+
+              {editingTeamId ? (
+                <section className={styles.modalMembersSection}>
+                  <div className={styles.modalMembersHeader}>
+                    <div>
+                      <span className={styles.modalEyebrow}>Membros da equipe</span>
+                      <h3>{selectedTeam?.name || teamForm.name || "Equipe"}</h3>
+                    </div>
+                    <div className={styles.modalMembersActions}>
+                      <button
+                        className={styles.modalSecondaryButton}
+                        type="button"
+                        onClick={() => onOpenLeaderModalForTeam(editingTeamId)}
+                        disabled={saving || savingTeam}
+                      >
+                        Nova lideranca
+                      </button>
+                      <button
+                        className={styles.modalSecondaryButton}
+                        type="button"
+                        onClick={() => onOpenRepresentativeModalForTeam(editingTeamId)}
+                        disabled={saving || savingTeam}
+                      >
+                        Novo representante
+                      </button>
+                      <button
+                        className={styles.modalSecondaryButton}
+                        type="button"
+                        onClick={() => onOpenMemberModalForTeam(editingTeamId)}
+                        disabled={saving || savingTeam}
+                      >
+                        Novo membro
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className={styles.membersList}>
+                    {members.length ? (
+                      members.map((member) => (
+                        <article className={styles.memberCard} key={member.id}>
+                          <div className={styles.memberCardTop}>
+                            <div>
+                              <strong>{member.name || "--"}</strong>
+                              <span>{member.role || "Membro de equipe"}</span>
+                              <small>{member.email || "Sem e-mail informado"}</small>
+                              <small>{member.phone || "Sem telefone informado"}</small>
+                            </div>
+                            <span
+                              className={`${styles.memberStatusBadge} ${
+                                member.status === "ACTIVE" ? styles.statusActive : styles.statusInactive
+                              }`}
+                            >
+                              {member.status === "ACTIVE" ? "Ativo" : "Inativo"}
+                            </span>
+                          </div>
+
+                          <div className={styles.memberActions}>
+                            <button
+                              className={styles.memberActionButton}
+                              type="button"
+                              onClick={() => onOpenEditMemberModal(member)}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              className={styles.memberActionButton}
+                              type="button"
+                              onClick={() => onToggleMemberStatus(member)}
+                            >
+                              {member.status === "ACTIVE" ? "Inativar" : "Reativar"}
+                            </button>
+                            <button
+                              className={styles.memberActionDangerButton}
+                              type="button"
+                              onClick={() => onRemoveMember(member.id)}
+                            >
+                              Remover
+                            </button>
+                          </div>
+                        </article>
+                      ))
+                    ) : (
+                      <p className={styles.emptyMembers}>Nenhum membro vinculado a esta equipe.</p>
+                    )}
+                  </div>
+                </section>
+              ) : null}
+            </>
           ) : isMember ? (
             <div className={styles.modalGrid}>
               <label className={styles.modalField}>
