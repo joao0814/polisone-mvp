@@ -6,7 +6,10 @@ import {
   municipalities,
   summaryCards,
 } from "./data/municipiosData";
+import metaDeVotosIcon from "../../assets/images/visao_geral/icons_centered/metadevotos.png";
 import styles from "./Municipios.module.css";
+
+const summaryIcon = metaDeVotosIcon;
 
 function Municipios({ session, onLogout }) {
   const userName = session?.user?.name || "Deputado Alan Leal";
@@ -14,7 +17,7 @@ function Municipios({ session, onLogout }) {
   return (
     <main className={styles.page}>
       <Sidebar
-        activeItem="Municipios"
+        activeItem="Municípios"
         brandImage={logoNav}
         brandLabel="Campanha"
         items={menuItems}
@@ -27,8 +30,8 @@ function Municipios({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Visao Geral da Campanha</p>
-            <h1>Municipios</h1>
+            <p className={styles.kicker}>Visão Geral da Campanha</p>
+            <h1>Municípios</h1>
           </div>
 
           <div className={styles.headerRight}>
@@ -58,7 +61,12 @@ function Municipios({ session, onLogout }) {
           {summaryCards.map((card) => (
             <article className={styles.summaryCard} key={card.label}>
               <span className={styles.summaryIcon} aria-hidden="true">
-                <i />
+                <img
+                  alt=""
+                  className={styles.summaryImage}
+                  draggable="false"
+                  src={summaryIcon}
+                />
               </span>
               <div>
                 <span>{card.label}</span>
@@ -80,9 +88,9 @@ function Municipios({ session, onLogout }) {
 
             <div className={styles.segmented} aria-label="Filtros de periodo">
               <button className={styles.segmentedActive} type="button">
-                Periodo de campanha
+                Período de campanha
               </button>
-              <button type="button">Apuracao dos votos</button>
+              <button type="button">Apuração dos votos</button>
             </div>
           </div>
 
@@ -92,10 +100,10 @@ function Municipios({ session, onLogout }) {
             <table className={styles.municipalityTable}>
               <thead>
                 <tr>
-                  <th>Municipios</th>
-                  <th>Regiao</th>
+                  <th>Municípios</th>
+                  <th>Região</th>
                   <th>Representantes</th>
-                  <th>Populacao</th>
+                  <th>População</th>
                   <th>Eleitores</th>
                   <th>Emendas (R$)</th>
                   <th>Emendas (QTD)</th>

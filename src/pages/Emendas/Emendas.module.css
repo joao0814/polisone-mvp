@@ -267,7 +267,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.78fr);
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
   margin-top: 14px;
 }
 
@@ -355,30 +355,50 @@
 }
 
 .tablePanel {
-  min-height: 532px;
+  min-height: 440px;
+  height: 440px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   padding: 16px 19px 28px;
   border-radius: 24px;
 }
 
 .formPanel {
-  min-height: 532px;
+  min-height: 440px;
+  height: 440px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
   padding: 18px 19px 24px;
   border: 1px solid var(--line);
   border-radius: 24px;
   background: rgba(8, 21, 34, 0.96);
+  overflow: hidden;
 }
 
 .formHeader h2 {
   margin: 4px 0 0;
   color: var(--yellow);
-  font-size: 30px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 600;
 }
 
 .costForm {
   display: grid;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  padding-bottom: 12px;
+}
+
+.costForm::-webkit-scrollbar {
+  width: 8px;
+}
+
+.costForm::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 202, 24, 0.45);
 }
 
 .costForm label {
@@ -388,9 +408,10 @@
 
 .costForm span {
   color: var(--yellow);
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .costForm input,
@@ -404,18 +425,27 @@
   background: #03080f;
   color: #ffffff;
   font: inherit;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .costForm textarea {
-  min-height: 130px;
+  min-height: 120px;
+  height: 120px;
   padding: 12px;
-  resize: vertical;
+  line-height: 1.4;
+  resize: none;
 }
 
 .notesField {
   min-height: 0;
+}
+
+.formActions {
+  display: grid;
+  gap: 10px;
+  padding-top: 6px;
+  background: rgba(8, 21, 34, 0.96);
 }
 
 .emptyCell {
@@ -480,12 +510,18 @@
 }
 
 .tableScroll {
+  height: 100%;
   overflow-x: auto;
+  overflow-y: auto;
   overscroll-behavior-inline: contain;
 }
 
 .tableScroll::-webkit-scrollbar {
   height: 8px;
+}
+
+.tableScroll::-webkit-scrollbar:vertical {
+  width: 8px;
 }
 
 .tableScroll::-webkit-scrollbar-thumb {
@@ -510,7 +546,7 @@
 }
 
 .amendmentsTable td {
-  padding: 13px 0;
+  padding: 18px 0;
   border-bottom: 1px solid var(--line);
   color: #ffffff;
   font-size: 11px;
@@ -646,7 +682,7 @@
 .statusPanel,
 .destinationPanel,
 .rankingPanel {
-  min-height: 292px;
+  min-height: 340px;
   padding: 17px 22px;
   border-radius: 22px;
 }
@@ -729,22 +765,23 @@
 
 .destinationRow {
   display: grid;
-  grid-template-columns: 104px minmax(120px, 1fr) 28px;
+  grid-template-columns: 128px minmax(160px, 1fr) 36px;
   gap: 12px;
   align-items: center;
   color: #ffffff;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .destinationRow i,
 .rankingItem i {
-  height: 10px;
+  height: 12px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--yellow) var(--value), #020912 var(--value));
 }
 
 .destinationRow small {
-  font-size: 7px;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .rankingPanel p {
@@ -852,7 +889,7 @@
   }
 
   .workspace {
-    padding: 24px 14px 52px;
+    padding: 84px 14px 52px;
   }
 
   .headerRight,

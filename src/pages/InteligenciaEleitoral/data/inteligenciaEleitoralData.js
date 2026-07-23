@@ -1,27 +1,27 @@
 export const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
   { label: "Mapa eleitoral" },
-  { label: "Metricas" },
+  { label: "Métricas" },
 ];
 
 export const countdowns = [
   {
     value: "38",
-    label: "Dias para o inicio da campanha.",
+    label: "Dias para o início da campanha.",
     progress: 48,
     footer: "16/08",
   },
   {
     value: "72",
-    label: "Dias para o dia da eleicao.",
+    label: "Dias para o dia da eleição.",
     progress: 18,
     footer: "04/10 (primeiro turno)",
   },
@@ -30,7 +30,7 @@ export const countdowns = [
 export const cityStats = [
   { label: "Habitantes", value: "756.484" },
   { label: "Eleitores", value: "582.219" },
-  { label: "Abstencao (2024)", value: "18,42%" },
+  { label: "Abstenção (2024)", value: "18,42%" },
   { label: "PIB per capita", value: "R$ 73.879,00" },
 ];
 
@@ -53,7 +53,7 @@ export const mostVoted = [
   { name: "Dr. Elton", party: "PSC", votes: "35.629", percent: "8,95%", score: 100 },
   { name: "Dulce Rita", party: "PSDB", votes: "28.156", percent: "7,07%", score: 79 },
   {
-    name: "Leticia Aguiar",
+    name: "Letícia Aguiar",
     party: "Progressistas",
     votes: "27.272",
     percent: "6,85%",

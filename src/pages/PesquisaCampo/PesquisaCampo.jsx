@@ -36,7 +36,7 @@ function PesquisaCampo({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Visao Geral da Campanha</p>
+            <p className={styles.kicker}>Visão Geral da Campanha</p>
             <h1>Pesquisa de Campo</h1>
           </div>
 
@@ -82,7 +82,7 @@ function PesquisaCampo({ session, onLogout }) {
               </select>
             </label>
             <label>
-              <span>Situacao</span>
+              <span>Situação</span>
               <select defaultValue={filterOptions.status[0]}>
                 {filterOptions.status.map((option) => (
                   <option key={option}>{option}</option>
@@ -90,7 +90,7 @@ function PesquisaCampo({ session, onLogout }) {
               </select>
             </label>
             <label>
-              <span>Municipio</span>
+              <span>Município</span>
               <select defaultValue={filterOptions.city[0]}>
                 {filterOptions.city.map((option) => (
                   <option key={option}>{option}</option>
@@ -158,7 +158,7 @@ function PesquisaCampo({ session, onLogout }) {
           <GrowthPanel items={growingCandidates} />
         </section>
 
-        <section className={styles.footerMetrics} aria-label="Metricas finais de pesquisa">
+        <section className={styles.footerMetrics} aria-label="Métricas finais de pesquisa">
           {footerMetrics.map((metric) => (
             <article key={metric.title}>
               <span>{metric.title}</span>

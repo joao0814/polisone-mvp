@@ -31,7 +31,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Visao Geral da Campanha</p>
+            <p className={styles.kicker}>Visão Geral da Campanha</p>
             <h1>Inteligencia Eleitoral</h1>
           </div>
 
@@ -67,15 +67,15 @@ function InteligenciaEleitoral({ session, onLogout }) {
               </select>
             </label>
             <label>
-              <span>Regiao</span>
-              <select defaultValue="Vale do Paraiba">
-                <option>Vale do Paraiba</option>
+              <span>Região</span>
+              <select defaultValue="Vale do Paraíba">
+                <option>Vale do Paraíba</option>
               </select>
             </label>
             <label>
-              <span>Municipio</span>
-              <select defaultValue="Sao Jose dos Campos">
-                <option>Sao Jose dos Campos</option>
+              <span>Município</span>
+              <select defaultValue="São José dos Campos">
+                <option>São José dos Campos</option>
               </select>
             </label>
             <button type="button">Analisar</button>
@@ -93,15 +93,15 @@ function InteligenciaEleitoral({ session, onLogout }) {
 
         <section className={styles.contentGrid}>
           <article className={styles.cityPanel}>
-            <h2>Sao Jose dos Campos</h2>
+            <h2>São José dos Campos</h2>
 
             <div className={styles.cityOverview}>
               <figure className={styles.cityPhoto}>
-                <img src={cityNightImage} alt="Vista noturna de Sao Jose dos Campos" />
+                <img src={cityNightImage} alt="Vista noturna de São José dos Campos" />
               </figure>
 
               <div className={styles.workforceCard}>
-                <h3>Forca de Trabalho por Regiao</h3>
+                <h3>Força de Trabalho por Região</h3>
                 <p>
                   Municipio com alto potencial eleitoral, boas taxas de
                   engajamento e historico consistente de crescimento do seu grupo

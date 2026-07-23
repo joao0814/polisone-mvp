@@ -1,32 +1,32 @@
 export const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
   { label: "Mapa eleitoral" },
-  { label: "Metricas" },
+  { label: "Métricas" },
 ];
 
 export const countdowns = [
-  { value: "38", label: "Dias para o inicio da campanha.", progress: 48, footer: "16/08" },
+  { value: "38", label: "Dias para o início da campanha.", progress: 48, footer: "16/08" },
   {
     value: "72",
-    label: "Dias para o dia da eleicao.",
+    label: "Dias para o dia da eleição.",
     progress: 18,
     footer: "04/10 (primeiro turno)",
   },
 ];
 
 export const filterOptions = {
-  type: ["Todos", "Quantitativa", "Espontanea"],
+  type: ["Todos", "Quantitativa", "Espontânea"],
   year: ["2023 - 2026", "2024", "2025"],
-  status: ["TODAS", "Em campo", "Concluida"],
-  city: ["TODOS", "Sumare", "Guaratingueta", "Sao Paulo"],
+  status: ["TODAS", "Em campo", "Concluída"],
+  city: ["TODOS", "Sumaré", "Guaratinguetá", "São Paulo"],
   entity: ["TODOS", "Equipe Centro", "Equipe Leste", "Equipe Norte"],
 };
 
@@ -39,32 +39,32 @@ export const summaryCards = [
 ];
 
 export const cityDistribution = [
-  { label: "Sumare", value: "70,3%", color: "#00b765" },
-  { label: "Guaratingueta", value: "19,3%", color: "#1687df" },
-  { label: "Sao Paulo", value: "8%", color: "#ff9518" },
-  { label: "Sao Jose dos Campos", value: "2%", color: "#ff3030" },
+  { label: "Sumaré", value: "70,3%", color: "#00b765" },
+  { label: "Guaratinguetá", value: "19,3%", color: "#1687df" },
+  { label: "São Paulo", value: "8%", color: "#ff9518" },
+  { label: "São José dos Campos", value: "2%", color: "#ff3030" },
 ];
 
 export const voteInfluence = [
   { label: "Propostas", value: "70,3%", color: "#00b765" },
   { label: "Honestidade", value: "19,3%", color: "#1687df" },
   { label: "Partido", value: "8%", color: "#ff9518" },
-  { label: "Experiencia", value: "2%", color: "#ff3030" },
+  { label: "Experiência", value: "2%", color: "#ff3030" },
 ];
 
 export const cityProblems = [
-  { label: "Educacao", value: 38 },
-  { label: "Saude", value: 24 },
+  { label: "Educação", value: 38 },
+  { label: "Saúde", value: 24 },
   { label: "Infraestrutura", value: 18 },
-  { label: "Assistencia Social", value: 10 },
+  { label: "Assistência Social", value: 10 },
   { label: "Esporte e lazer", value: 6 },
   { label: "Outros", value: 4 },
 ];
 
 export const priorityRanking = [
-  { position: "1o", label: "Saude", value: 92, votes: "4520 votos" },
-  { position: "2o", label: "Seguranca", value: 74, votes: "1100 votos" },
-  { position: "3o", label: "Educacao", value: 62, votes: "927 votos" },
+  { position: "1o", label: "Saúde", value: 92, votes: "4520 votos" },
+  { position: "2o", label: "Segurança", value: 74, votes: "1100 votos" },
+  { position: "3o", label: "Educação", value: 62, votes: "927 votos" },
   { position: "4o", label: "Emprego/renda", value: 48, votes: "754 votos" },
   { position: "5o", label: "Outros...", value: 34, votes: "698 votos" },
 ];
@@ -106,7 +106,7 @@ export const spontaneousVotes = [
     avatar: "DR",
   },
   {
-    name: "Leticia Aguiar",
+    name: "Letícia Aguiar",
     party: "Progressistas",
     votes: "27.272",
     percent: "6,85%",
@@ -117,7 +117,7 @@ export const spontaneousVotes = [
 
 export const growingCandidates = [
   { position: "1o", name: "Carlos Eduardo", votes: "3.200 votos", growth: "32%", avatar: "CE" },
-  { position: "2o", name: "Janaina Salmeirao", votes: "2.700 votos", growth: "28%", avatar: "JS" },
+  { position: "2o", name: "Janaína Salmeirão", votes: "2.700 votos", growth: "28%", avatar: "JS" },
   { position: "3o", name: "Jorge Paz", votes: "1.500 votos", growth: "22%", avatar: "JP" },
   { position: "4o", name: "Roberto Silva", votes: "1.200 votos", growth: "16%", avatar: "RS" },
   { position: "5o", name: "Maria Eduarda", votes: "750 votos", growth: "9%", avatar: "ME" },
@@ -126,18 +126,18 @@ export const growingCandidates = [
 export const footerMetrics = [
   { title: "Meta da semana", value: "2.000", note: "TOTAL" },
   { title: "Realizadas na semana", value: "1.000", note: "50% DO TOTAL" },
-  { title: "Crescimento de Pesquisas", value: "36%", note: "Em relacao a semana anterior", trend: true },
-  { title: "Crescimento de Municipios pesquisados", value: "28%", note: "Em relacao a semana anterior", trend: true },
-  { title: "Ranking do candidato", value: "3o", note: "Subiu duas posicoes em relacao a semana anterior" },
+  { title: "Crescimento de Pesquisas", value: "36%", note: "Em relação à semana anterior", trend: true },
+  { title: "Crescimento de Municípios pesquisados", value: "28%", note: "Em relação à semana anterior", trend: true },
+  { title: "Ranking do candidato", value: "3o", note: "Subiu duas posições em relação à semana anterior" },
 ];
 
 export const perceptionPanels = [
   {
-    title: "Voce conhece o candidato?",
+    title: "Você conhece o candidato?",
     items: [
       { label: "Sim", value: 38 },
-      { label: "Ja ouvi falar", value: 34 },
-      { label: "Conheco de vista", value: 20 },
+      { label: "Já ouvi falar", value: 34 },
+      { label: "Conheço de vista", value: 20 },
       { label: "Não conheço", value: 18 },
     ],
   },
@@ -145,7 +145,7 @@ export const perceptionPanels = [
     title: "Hoje, qual a chance de votar nesse candidato?",
     items: [
       { label: "Com certeza", value: 38 },
-      { label: "Provavel votar", value: 34 },
+      { label: "Provável votar", value: 34 },
       { label: "Ainda estou indeciso", value: 20 },
       { label: "Não votaria", value: 18 },
     ],
@@ -154,7 +154,7 @@ export const perceptionPanels = [
     title: "Hoje, qual a chance de votar nesse candidato?",
     items: [
       { label: "Com certeza", value: 38 },
-      { label: "Provavel votar", value: 34 },
+      { label: "Provável votar", value: 34 },
       { label: "Ainda estou indeciso", value: 20 },
       { label: "Não votaria", value: 18 },
     ],

@@ -1,4 +1,5 @@
 import styles from "../GestaoCampanha.module.css";
+import { getAvatarPhoto } from "./avatarPhoto";
 
 function AvatarStack({ people }) {
   return (
@@ -10,16 +11,11 @@ function AvatarStack({ people }) {
           style={{ "--avatar-index": index }}
           title={person}
         >
-          {getInitials(person)}
+          <img alt={person} className={styles.avatarPhoto} src={getAvatarPhoto(person)} />
         </span>
       ))}
     </div>
   );
-}
-
-function getInitials(name) {
-  const [firstName = "", lastName = ""] = name.split(" ");
-  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 }
 
 export default AvatarStack;

@@ -13,8 +13,8 @@ export const links = [
 ];
 
 export const systems = [
-  { label: "Gestao de Campanha", image: gestaoCampanhaImage, path: "/gestao-campanha" },
-  { label: "Gestao de Mandato", image: gestaoMandatoImage },
+  { label: "Gestão de Campanha", image: gestaoCampanhaImage, path: "/gestao-campanha" },
+  { label: "Gestão de Mandato", image: gestaoMandatoImage },
   { label: "BI", image: biImage },
   { label: "IA", image: iaImage },
 ];

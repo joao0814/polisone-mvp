@@ -21,7 +21,7 @@ function HomeCommunicationsSection() {
 
       <div className={styles.comunicadoGrid}>
         {loading && !comunicados.length ? <p>Carregando comunicados...</p> : null}
-        {!loading && error ? <p>Nao foi possivel carregar os comunicados.</p> : null}
+        {!loading && error ? <p>Não foi possível carregar os comunicados.</p> : null}
         {!loading && !error && !comunicados.length ? <p>Nenhum comunicado publicado.</p> : null}
         {comunicados.map((comunicado) => (
           <Link to={`/comunicados/${comunicado.slug}`} className={styles.comunicadoCard} key={comunicado.id}>

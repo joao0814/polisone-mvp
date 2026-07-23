@@ -4,13 +4,13 @@ function HomeFooter() {
   return (
     <footer className={styles.footer}>
       <section>
-        <h2>POLIS I.A - Plataforma de gestao de campanha e mandato</h2>
+        <h2>POLIS I.A - Plataforma de gestão de campanha e mandato</h2>
         <p>
           CNPJ: 39.453.451/0001-22
           <br />
           Rua Tabapua, 594, Edificio Itaim, 3o andar,
           <br />
-          Itaim Bibi - Sao Paulo/SP.
+          Itaim Bibi - São Paulo/SP.
         </p>
       </section>
       <section>

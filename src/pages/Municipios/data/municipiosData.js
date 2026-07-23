@@ -1,43 +1,43 @@
 export const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
   { label: "Mapa eleitoral" },
-  { label: "Metricas" },
+  { label: "Métricas" },
 ];
 
 export const countdowns = [
   {
     value: "38",
-    label: "Dias para o inicio da campanha.",
+    label: "Dias para o início da campanha.",
     progress: 48,
     footer: "16/08",
   },
   {
     value: "72",
-    label: "Dias para o dia da eleicao.",
+    label: "Dias para o dia da eleição.",
     progress: 18,
     footer: "04/10 (primeiro turno)",
   },
 ];
 
 export const summaryCards = [
-  { label: "Municipios Ativos", value: "235", note: "No estado de Sao Paulo" },
-  { label: "Municipios Prioritarios", value: "32", note: "No estado de Sao Paulo" },
-  { label: "Municipios com votos", value: "212", note: "No estado de Sao Paulo" },
-  { label: "Municipios com recursos", value: "62", note: "No estado de Sao Paulo" },
+  { label: "Municípios Ativos", value: "235", note: "No estado de São Paulo", icon: "active" },
+  { label: "Municípios Prioritários", value: "32", note: "No estado de São Paulo", icon: "priority" },
+  { label: "Municípios com votos", value: "212", note: "No estado de São Paulo", icon: "votes" },
+  { label: "Municípios com recursos", value: "62", note: "No estado de São Paulo", icon: "resources" },
 ];
 
 export const municipalities = [
   {
     id: "sao-jose-rio-preto",
-    name: "Sao Jose do Rio Preto",
+    name: "São José do Rio Preto",
     region: "Noroeste",
     representatives: 18,
     population: "469.173",
@@ -47,7 +47,7 @@ export const municipalities = [
   },
   {
     id: "sao-jose-campos",
-    name: "Sao Jose dos Campos",
+    name: "São José dos Campos",
     region: "Leste",
     representatives: 32,
     population: "735.000",
@@ -57,7 +57,7 @@ export const municipalities = [
   },
   {
     id: "guaratingueta",
-    name: "Guaratingueta",
+    name: "Guaratinguetá",
     region: "Leste",
     representatives: 35,
     population: "130.000",
@@ -67,7 +67,7 @@ export const municipalities = [
   },
   {
     id: "sumare",
-    name: "Sumare",
+    name: "Sumaré",
     region: "Noroeste",
     representatives: 60,
     population: "280.000",
@@ -77,7 +77,7 @@ export const municipalities = [
   },
   {
     id: "rio-preto-reprise",
-    name: "Sao Jose do Rio Preto",
+    name: "São José do Rio Preto",
     region: "Noroeste",
     representatives: 18,
     population: "469.173",

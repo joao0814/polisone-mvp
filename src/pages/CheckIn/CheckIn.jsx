@@ -30,7 +30,7 @@ function CheckIn({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Visao Geral da Campanha</p>
+            <p className={styles.kicker}>Visão Geral da Campanha</p>
             <h1>Check-in</h1>
           </div>
 
@@ -138,7 +138,7 @@ function CheckIn({ session, onLogout }) {
 
             <footer className={styles.pagination}>
               <span>Mostrando 1 a 10 de 48</span>
-              <nav aria-label="Paginacao de check-in">
+              <nav aria-label="Paginação de check-in">
                 {Array.from({ length: 10 }).map((_, index) => (
                   <button
                     className={index === 0 ? styles.pageActive : ""}

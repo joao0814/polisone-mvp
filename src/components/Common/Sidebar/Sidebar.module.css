@@ -1,3 +1,8 @@
+.mobileToggle,
+.backdrop {
+  display: none;
+}
+
 .sidebar {
   width: 214px;
   min-height: 100svh;
@@ -89,7 +94,8 @@
   outline-offset: 4px;
 }
 
-.avatarButton:hover .avatar {
+.avatarButton:hover .avatar,
+.avatarButton:hover .avatarImage {
   border-color: #ffca18;
   transform: translateY(-1px);
 }
@@ -124,11 +130,6 @@
   border-radius: 18px;
   box-shadow: 0 14px 24px rgba(0, 0, 0, 0.34);
   transition: border-color 150ms ease, transform 150ms ease;
-}
-
-.avatarButton:hover .avatarImage {
-  border-color: #ffca18;
-  transform: translateY(-1px);
 }
 
 .name {
@@ -523,16 +524,114 @@
 }
 
 @media (max-width: 760px) {
+  .mobileToggle {
+    width: 48px;
+    height: 48px;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 41;
+    display: grid;
+    place-items: center;
+    gap: 4px;
+    padding: 0;
+    border: 1px solid rgba(255, 202, 24, 0.7);
+    border-radius: 14px;
+    background: rgba(4, 20, 39, 0.96);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+    cursor: pointer;
+  }
+
+  .mobileToggleLine {
+    width: 18px;
+    height: 2px;
+    display: block;
+    border-radius: 999px;
+    background: #ffca18;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    display: block;
+    border: 0;
+    background: rgba(0, 8, 18, 0.56);
+    cursor: pointer;
+  }
+
   .sidebar {
-    width: 100%;
-    min-height: auto;
+    width: min(320px, calc(100vw - 24px));
+    min-height: 100svh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 180ms ease;
+    border-right: 1px solid rgba(255, 202, 24, 0.42);
+    box-shadow: 20px 0 36px rgba(0, 0, 0, 0.3);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
   }
 
   .sidebarContent {
-    padding-bottom: 12px;
+    padding: 16px 16px 12px;
+  }
+
+  .brand img {
+    width: 132px;
+  }
+
+  .user {
+    margin: 16px 0;
+    padding: 12px 10px 14px;
+  }
+
+  .avatar,
+  .avatarImage {
+    width: 92px;
+    height: 92px;
+  }
+
+  .name {
+    font-size: 13px;
+  }
+
+  .role {
+    font-size: 9px;
   }
 
   .sideItems {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .sideLink,
+  .sideButton {
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .childItem {
+    margin-top: -2px;
+  }
+
+  .childItem .sideLink,
+  .childItem .sideButton {
+    min-height: 30px;
+    padding-left: 44px;
+    font-size: 11px;
+  }
+
+  .sidebarFooter {
+    padding: 10px 16px 16px;
+  }
+
+  .logoutBtn {
+    min-height: 40px;
   }
 }

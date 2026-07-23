@@ -24,72 +24,70 @@ import styles from "./GestaoCampanha.module.css";
 
 const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
 ];
 
 const metrics = [
   { label: "Meta de votos", value: null, icon: "chart" },
-  { label: "Votos necessarios", value: "80.000", icon: "ballot" },
+  { label: "Votos necessários", value: "80.000", icon: "ballot" },
   { label: "Total de votos", value: "86.000", icon: "vote" },
-  { label: "Municipios ativos", value: "142", icon: "pin" },
-  { label: "Liderancas", value: "180", icon: "network" },
+  { label: "Municípios ativos", value: "142", icon: "pin" },
+  { label: "Lideranças", value: "180", icon: "network" },
   { label: "Representantes", value: "650", icon: "person" },
 ];
 
 const dailySummary = [
-  { key: "events_scheduled", label: "Eventos", value: "--", note: "Agendados" },
-  { key: "municipalities_visited_today", label: "Municipios visitados", value: "--", note: "Hoje" },
-  { key: "field_teams_active_now", label: "Equipes em campo", value: "--", note: "Ativas agora" },
-  { key: "activities_registered_today", label: "Atividades registradas", value: "0", note: "Hoje" },
-  { key: "new_leaders_today", label: "Novas liderancas", value: "0", note: "Hoje" },
+  { key: "events_scheduled", label: "Eventos", value: "--", note: "Agendados", icon: "events" },
+  { key: "municipalities_visited_today", label: "Municípios visitados", value: "--", note: "Hoje", icon: "visited" },
+  { key: "field_teams_active_now", label: "Equipes em campo", value: "--", note: "Ativas agora", icon: "teams" },
+  { key: "activities_registered_today", label: "Atividades registradas", value: "0", note: "Hoje", icon: "activities" },
+  { key: "new_leaders_today", label: "Novas lideranças", value: "0", note: "Hoje", icon: "newLeaders" },
 ];
 
 const municipalityRanking = [
-  { name: "Sumare", value: 95 },
-  { name: "Guaratingueta", value: 89 },
-  { name: "Sao Paulo", value: 85 },
-  { name: "Campinas", value: 83 },
-  { name: "Sao Jose dos Campos", value: 79 },
+  { name: "Campinas", value: 100 },
+  { name: "São Paulo", value: 75 },
+  { name: "Santos", value: 50 },
+  { name: "Ribeirão Preto", value: 25 },
 ];
 
 const costRanking = [
-  { region: "Regiao metropolitana", amount: "R$ 800.000", percent: 38 },
-  { region: "Regiao de Campinas", amount: "R$ 650.000", percent: 31 },
-  { region: "Vale do Paraiba", amount: "R$ 400.000", percent: 26 },
-  { region: "Litoral Sul", amount: "R$ 230.000", percent: 16 },
-  { region: "Regiao de Ribeirao Preto", amount: "R$ 200.000", percent: 14 },
+  { region: "Região metropolitana de SP", amount: "R$ 800.000", percent: 44 },
+  { region: "Região de Campinas", amount: "R$ 520.000", percent: 29 },
+  { region: "Baixada Santista", amount: "R$ 310.000", percent: 17 },
+  { region: "Região de Ribeirão Preto", amount: "R$ 190.000", percent: 10 },
 ];
 
 const realtimeActivities = [
   {
     person: "Julia Rocha",
     time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
+    description: "Equipe de centro registrou panfletagem em Guaratinguetá",
     tag: "Panfletagem",
   },
   {
     person: "Marcos Lima",
     time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
+    description: "Equipe de centro registrou panfletagem em Guaratinguetá",
     tag: "Panfletagem",
   },
   {
     person: "Rafael Torres",
     time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
+    description: "Equipe de centro registrou panfletagem em Guaratinguetá",
     tag: "Panfletagem",
   },
   {
     person: "Alan Leal",
     time: "08:42",
-    description: "Equipe de centro registrou panfletagem em Guaratingueta",
+    description: "Equipe de centro registrou panfletagem em Guaratinguetá",
     tag: "Panfletagem",
   },
 ];
@@ -98,28 +96,28 @@ const fieldTeams = [
   {
     id: "centro-1",
     name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
+    city: "São José dos Campos",
     activities: 12,
     people: ["Julia Rocha", "Marcos Lima", "Ana Paula"],
   },
   {
     id: "centro-2",
     name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
+    city: "São José dos Campos",
     activities: 12,
     people: ["Rafael Torres", "Camila Reis", "Bruna Alves"],
   },
   {
     id: "centro-3",
     name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
+    city: "São José dos Campos",
     activities: 12,
     people: ["Leandro Dias", "Paula Nunes", "Daniel Costa"],
   },
   {
     id: "centro-4",
     name: "Equipe Centro",
-    city: "Sao Jose dos Campos",
+    city: "São José dos Campos",
     activities: 12,
     people: ["Marina Souza", "Igor Ramos", "Bianca Prado"],
   },
@@ -149,7 +147,15 @@ function GestaoCampanha({ session, onLogout }) {
       getCostRanking(costRankingMode),
       getRealtimeActivities(),
     ]).then(
-      ([profileResult, summaryResult, mapResult, dailySummaryResult, municipalityRankingResult, costRankingResult, realtimeActivitiesResult]) => {
+      ([
+        profileResult,
+        summaryResult,
+        mapResult,
+        dailySummaryResult,
+        municipalityRankingResult,
+        costRankingResult,
+        realtimeActivitiesResult,
+      ]) => {
         if (!active) return;
 
         setVoteGoal(
@@ -157,9 +163,7 @@ function GestaoCampanha({ session, onLogout }) {
             ? profileResult.value?.campaign?.vote_goal ?? null
             : null,
         );
-        setSummary(
-          summaryResult.status === "fulfilled" ? summaryResult.value : null,
-        );
+        setSummary(summaryResult.status === "fulfilled" ? summaryResult.value : null);
         setMapData(mapResult.status === "fulfilled" ? mapResult.value : null);
         setDailySummaryData(
           dailySummaryResult.status === "fulfilled" ? dailySummaryResult.value : null,
@@ -190,14 +194,14 @@ function GestaoCampanha({ session, onLogout }) {
       return { ...metric, value: formatVoteGoal(voteGoal) };
     }
 
-    if (metric.label === "Municipios ativos") {
+    if (metric.label === "Municípios ativos") {
       return {
         ...metric,
         value: formatInteger(summary?.metrics?.municipalities_active),
       };
     }
 
-    if (metric.label === "Liderancas") {
+    if (metric.label === "Lideranças") {
       return {
         ...metric,
         value: formatInteger(summary?.metrics?.leaders),
@@ -221,25 +225,18 @@ function GestaoCampanha({ session, onLogout }) {
       return item;
     }
 
-    const resolvedValue =
-      apiItem.value ?? apiItem.fallback_value ?? item.value;
+    const resolvedValue = apiItem.value ?? apiItem.fallback_value ?? item.value;
 
     return {
       ...item,
-      value:
-        resolvedValue === "--"
-          ? resolvedValue
-          : formatInteger(resolvedValue),
+      value: resolvedValue === "--" ? resolvedValue : formatInteger(resolvedValue),
     };
   });
 
   const resolvedMunicipalityRanking =
-    municipalityRankingData?.items?.length
-      ? municipalityRankingData.items
-      : municipalityRanking;
+    municipalityRankingData?.items?.length ? municipalityRankingData.items : municipalityRanking;
 
-  const resolvedFieldTeams =
-    summary?.field_teams?.length ? summary.field_teams : fieldTeams;
+  const resolvedFieldTeams = summary?.field_teams?.length ? summary.field_teams : fieldTeams;
   const resolvedCostRanking =
     costRankingData?.items?.length
       ? costRankingData.items.map((item) => ({
@@ -249,9 +246,7 @@ function GestaoCampanha({ session, onLogout }) {
         }))
       : costRanking;
   const resolvedRealtimeActivities =
-    realtimeActivitiesData?.items?.length
-      ? realtimeActivitiesData.items
-      : realtimeActivities;
+    realtimeActivitiesData?.items?.length ? realtimeActivitiesData.items : realtimeActivities;
 
   const resolvedRegions = campaignRegions.map((region) => {
     const regionStats = mapData?.regions?.find((item) => item.id === region.id);
@@ -273,7 +268,7 @@ function GestaoCampanha({ session, onLogout }) {
   return (
     <main className={styles.page}>
       <Sidebar
-        activeItem="Visao Geral"
+        activeItem="Visão Geral"
         brandImage={logoNav}
         brandLabel="Campanha"
         items={menuItems}
@@ -301,8 +296,8 @@ function GestaoCampanha({ session, onLogout }) {
           <DashboardPanel
             actions={
               <div className={styles.segmented}>
-                <button type="button">Periodo de campanha</button>
-                <button type="button">Apuracao dos votos</button>
+                <button type="button">Período de campanha</button>
+                <button type="button">Apuração dos votos</button>
               </div>
             }
             className={styles.mapPanel}
@@ -320,7 +315,7 @@ function GestaoCampanha({ session, onLogout }) {
           <DashboardPanel
             className={styles.performancePanel}
             subtitle="Comparativo com a meta"
-            title="Desempenho por regiao"
+            title="Desempenho por região"
           >
             <div className={styles.performanceList}>
               {resolvedPerformanceRegions.map((region) => (
@@ -348,6 +343,7 @@ function GestaoCampanha({ session, onLogout }) {
           <div className={styles.dailyGrid}>
             {resolvedDailySummary.map((item) => (
               <DailySummaryCard
+                icon={item.icon}
                 key={item.label}
                 label={item.label}
                 note={item.note}
@@ -366,7 +362,7 @@ function GestaoCampanha({ session, onLogout }) {
             }
             className={styles.municipalityPanel}
             subtitle="Top 5 por desempenho"
-            title="Ranking de Municipios"
+            title="Ranking de Municípios"
           >
             <MunicipalityRanking items={resolvedMunicipalityRanking} />
           </DashboardPanel>
@@ -374,23 +370,17 @@ function GestaoCampanha({ session, onLogout }) {
           <DashboardPanel
             actions={
               <div className={styles.smallSegmented}>
-                <button
-                  type="button"
-                  onClick={() => setCostRankingMode("region")}
-                >
-                  Regiao
+                <button type="button" onClick={() => setCostRankingMode("region")}>
+                  Região
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setCostRankingMode("city")}
-                >
+                <button type="button" onClick={() => setCostRankingMode("city")}>
                   Cidades
                 </button>
               </div>
             }
             className={styles.costPanel}
             subtitle="Ranking de custo financeiro"
-            title="Custo por regiao"
+            title="Custo por região"
           >
             <CostRanking items={resolvedCostRanking} />
             <button className={styles.moreButton} type="button">
@@ -399,7 +389,7 @@ function GestaoCampanha({ session, onLogout }) {
           </DashboardPanel>
         </section>
 
-        <section className={styles.operationGrid} aria-label="Operacao em campo">
+        <section className={styles.operationGrid} aria-label="Operação em campo">
           <DashboardPanel
             actions={
               <button className={styles.moreButton} type="button">

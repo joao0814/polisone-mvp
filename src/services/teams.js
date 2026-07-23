@@ -4,10 +4,10 @@ const TEAM_KEY = 'teams'
 const MEMBER_KEY = 'team-members'
 
 const initialTeams = [
-  { id: 'team-campinas', name: 'Equipe Campinas', city_name: 'Campinas', city_ibge_code: '3509502', state: 'SP', coordinator_name: 'Julia Rocha', status: 'ACTIVE', notes: 'Regiao central', members_count: 4 },
-  { id: 'team-sao-paulo', name: 'Equipe Capital', city_name: 'Sao Paulo', city_ibge_code: '3550308', state: 'SP', coordinator_name: 'Marcos Lima', status: 'ACTIVE', notes: 'Zona leste e centro', members_count: 3 },
+  { id: 'team-campinas', name: 'Equipe Campinas', city_name: 'Campinas', city_ibge_code: '3509502', state: 'SP', coordinator_name: 'Julia Rocha', status: 'ACTIVE', notes: 'Região central', members_count: 4 },
+  { id: 'team-sao-paulo', name: 'Equipe Capital', city_name: 'São Paulo', city_ibge_code: '3550308', state: 'SP', coordinator_name: 'Marcos Lima', status: 'ACTIVE', notes: 'Zona leste e centro', members_count: 3 },
   { id: 'team-santos', name: 'Equipe Baixada', city_name: 'Santos', city_ibge_code: '3548500', state: 'SP', coordinator_name: 'Camila Reis', status: 'ACTIVE', notes: 'Baixada Santista', members_count: 2 },
-  { id: 'team-ribeirao', name: 'Equipe Ribeirao', city_name: 'Ribeirao Preto', city_ibge_code: '3543402', state: 'SP', coordinator_name: 'Rafael Torres', status: 'INACTIVE', notes: 'Em reorganizacao', members_count: 1 },
+  { id: 'team-ribeirao', name: 'Equipe Ribeirão', city_name: 'Ribeirão Preto', city_ibge_code: '3543402', state: 'SP', coordinator_name: 'Rafael Torres', status: 'INACTIVE', notes: 'Em reorganização', members_count: 1 },
 ]
 
 const initialMembers = [
@@ -24,7 +24,7 @@ const initialMembers = [
 ]
 
 export function getTeams() {
-  const teams = withMemberCounts(readLocal(TEAM_KEY, initialTeams))
+  const teams = withMemberCounts(readLocal(TEAM_KEY, initialTeams)).map(normalizeTeamText)
   return localDelay({ items: teams, total: teams.length })
 }
 
@@ -59,7 +59,7 @@ export function createTeamMember(teamId, payload) {
 }
 
 export async function getTeamsSummary() {
-  const teams = withMemberCounts(readLocal(TEAM_KEY, initialTeams))
+  const teams = withMemberCounts(readLocal(TEAM_KEY, initialTeams)).map(normalizeTeamText)
   const members = readLocal(MEMBER_KEY, initialMembers)
   return localDelay({
     metrics: {
@@ -78,7 +78,7 @@ export async function getTeamsSummary() {
 }
 
 export function getTeamsMap() {
-  const teams = withMemberCounts(readLocal(TEAM_KEY, initialTeams))
+  const teams = withMemberCounts(readLocal(TEAM_KEY, initialTeams)).map(normalizeTeamText)
   const municipalities = teams.map((team) => ({
     city_ibge_code: team.city_ibge_code,
     name: team.city_name,
@@ -105,23 +105,54 @@ function withMemberCounts(teams) {
 function toTeam(payload) {
   return {
     ...(payload.id ? { id: payload.id } : {}),
-    name: payload.name,
-    city_name: payload.cityName ?? payload.city_name,
+    name: fixText(payload.name),
+    city_name: fixText(payload.cityName ?? payload.city_name),
     city_ibge_code: payload.cityIbgeCode ?? payload.city_ibge_code,
     state: payload.state,
-    coordinator_name: payload.coordinatorName ?? payload.coordinator_name,
+    coordinator_name: fixText(payload.coordinatorName ?? payload.coordinator_name),
     status: payload.status,
-    notes: payload.notes,
+    notes: fixText(payload.notes),
     members_count: payload.members_count ?? 0,
   }
 }
 
 function toMember(payload) {
   return {
-    name: payload.name,
+    name: fixText(payload.name),
     phone: payload.phone,
-    role: payload.role,
+    role: fixText(payload.role),
     status: payload.status,
     city_ibge_code: payload.cityIbgeCode ?? payload.city_ibge_code,
   }
+}
+
+function normalizeTeamText(team) {
+  return {
+    ...team,
+    name: fixText(team.name),
+    city_name: fixText(team.city_name),
+    coordinator_name: fixText(team.coordinator_name),
+    notes: fixText(team.notes),
+  }
+}
+
+function fixText(value) {
+  if (typeof value !== 'string') return value
+
+  return value
+    .replaceAll('Ã£', 'ã')
+    .replaceAll('Ã¡', 'á')
+    .replaceAll('Ã¢', 'â')
+    .replaceAll('Ã©', 'é')
+    .replaceAll('Ãª', 'ê')
+    .replaceAll('Ã­', 'í')
+    .replaceAll('Ã³', 'ó')
+    .replaceAll('Ã´', 'ô')
+    .replaceAll('Ãº', 'ú')
+    .replaceAll('Ã§', 'ç')
+    .replaceAll('Ãµ', 'õ')
+    .replaceAll('Ã ', 'à')
+    .replaceAll('Ã‰', 'É')
+    .replaceAll('Ã‡', 'Ç')
+    .replaceAll('Ãƒ', 'Ã')
 }
