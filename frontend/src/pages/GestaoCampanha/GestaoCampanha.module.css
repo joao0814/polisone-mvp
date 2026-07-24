@@ -601,10 +601,10 @@
 }
 
 .metricIconBox {
+  position: relative;
   width: 40px;
   height: 40px;
-  display: grid;
-  place-items: center;
+  display: block;
   border-radius: 6px;
   background: #5f4a00;
   color: #ffca18;
@@ -618,6 +618,18 @@
   height: 25px;
   display: block;
   overflow: visible;
+}
+
+.metricImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  transform: translate(-50%, -50%);
 }
 
 .metricContent {
@@ -965,9 +977,10 @@
   font: inherit;
   font-size: 7px;
   font-weight: 900;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.smallSegmented button:first-child {
+.smallSegmented button.segmentedActive {
   background: #ffca18;
   color: #10151d;
 }
@@ -1075,8 +1088,8 @@
 }
 
 .activityAvatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
   border: 2px solid rgba(255, 255, 255, 0.82);
@@ -1089,7 +1102,7 @@
 
 .activityItem time {
   color: #fff;
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 900;
   line-height: 1;
 }
@@ -1100,7 +1113,7 @@
   padding-left: 14px;
   border-left: 1px solid #ffca18;
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   line-height: 1.25;
 }
@@ -1134,14 +1147,14 @@
 
 .fieldTeamItem {
   display: grid;
-  grid-template-columns: 44px minmax(130px, 1fr) 72px auto;
+  grid-template-columns: 40px minmax(130px, 1fr) 72px auto;
   align-items: center;
   gap: 12px;
 }
 
 .teamMarker {
-  width: 43px;
-  height: 43px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #ffca18;
 }
@@ -1154,9 +1167,9 @@
 .teamInfo strong {
   overflow: hidden;
   color: #fff;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 900;
-  line-height: 1.25;
+  line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1164,7 +1177,7 @@
 .teamInfo span {
   overflow: hidden;
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1172,7 +1185,7 @@
 
 .fieldTeamItem small {
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   line-height: 1.25;
   text-align: right;
@@ -1242,21 +1255,26 @@
 }
 
 .dailyIcon {
+  position: relative;
   width: 38px;
   height: 38px;
-  display: grid;
-  place-items: center;
+  display: block;
   border-radius: 6px;
   background: #5f4a00;
   color: #ffca18;
   box-shadow: inset 0 0 0 1px rgba(255, 202, 24, 0.16);
 }
 
-.dailyIcon svg {
-  width: 25px;
-  height: 25px;
+.dailyImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
   display: block;
-  overflow: visible;
+  object-fit: contain;
+  object-position: center;
+  transform: translate(-50%, -50%);
 }
 
 .dailyCard span {
@@ -1355,6 +1373,11 @@
 .metricSvg {
   width: 27px;
   height: 27px;
+}
+
+.metricImage {
+  width: 26px;
+  height: 26px;
 }
 
 .metricContent span {
@@ -1630,9 +1653,9 @@
   height: 44px;
 }
 
-.dailyIcon svg {
-  width: 27px;
-  height: 27px;
+.dailyImage {
+  width: 26px;
+  height: 26px;
 }
 
 .dailyCard span {
@@ -1720,22 +1743,22 @@
 }
 
 .activityItem {
-  grid-template-columns: 42px 68px minmax(0, 1fr) 90px;
+  grid-template-columns: 40px 68px minmax(0, 1fr) 90px;
   gap: 12px;
 }
 
 .activityAvatar {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   font-size: 12px;
 }
 
 .activityItem time {
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .activityItem p {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .activityItem strong {
@@ -1744,21 +1767,21 @@
 }
 
 .fieldTeamItem {
-  grid-template-columns: 52px minmax(150px, 1fr) 84px auto;
+  grid-template-columns: 40px minmax(150px, 1fr) 84px auto;
 }
 
 .teamMarker {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
 }
 
 .teamInfo strong {
-  font-size: 23px;
+  font-size: 15px;
 }
 
 .teamInfo span,
 .fieldTeamItem small {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .teamAvatar {

@@ -3,7 +3,7 @@ import styles from "./CalendarEventModal.module.css";
 
 const STATUS_OPTIONS = [
   { value: "active", label: "Ativo" },
-  { value: "completed", label: "Concluido" },
+  { value: "completed", label: "Concluído" },
   { value: "canceled", label: "Cancelado" },
 ];
 const RECURRENCE_OPTIONS = [
@@ -166,7 +166,7 @@ export default function CalendarEventModal({
                 type="text"
                 value={form.title}
                 onChange={(event) => updateField("title", event.target.value)}
-                placeholder="Ex: Reuniao com equipe"
+                placeholder="Ex: Reunião com equipe"
                 maxLength={120}
               />
             </label>

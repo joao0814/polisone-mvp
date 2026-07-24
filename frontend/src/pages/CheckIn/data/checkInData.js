@@ -17,17 +17,17 @@ export const menuItems = [
 ];
 
 export const countdowns = [
-  { value: "38", label: "Dias para o inicio da campanha.", progress: 48, footer: "16/08" },
+  { value: "38", label: "Dias para o início da campanha.", progress: 48, footer: "16/08" },
   {
     value: "72",
-    label: "Dias para o dia da eleicao.",
+    label: "Dias para o dia da eleição.",
     progress: 18,
     footer: "04/10 (primeiro turno)",
   },
 ];
 
 export const summaryCards = [
-  { tone: "blue", title: "Liderancas ativas hoje", value: "50", note: "100% do total" },
+  { tone: "blue", title: "Lideranças ativas hoje", value: "50", note: "100% do total" },
   { tone: "green", title: "Representantes ativos hoje", value: "40", note: "80% do total" },
   { tone: "cyan", title: "Atividades realizadas", value: "300", note: "100% do total" },
   { tone: "orange", title: "Check-in", value: "240", note: "80% do total" },
@@ -49,8 +49,8 @@ export const activeTeams = [
   {
     id: "dulce-rita",
     name: "Dulce Rita",
-    city: "Sao Jose dos Campos",
-    badge: "Media influencia",
+    city: "São Jose dos Campos",
+    badge: "Media influência",
     badgeTone: "blue",
     initials: "DR",
     status: "Em atividade",
@@ -60,8 +60,8 @@ export const activeTeams = [
   {
     id: "leticia-aguiar",
     name: "Leticia Aguiar",
-    city: "Sao Paulo",
-    badge: "Baixa influencia",
+    city: "São Paulo",
+    badge: "Baixa influência",
     badgeTone: "red",
     initials: "LA",
     status: "Em atividade",
@@ -103,7 +103,7 @@ export const checkPerformance = [
   { label: "Check-in", value: "70,3%", color: "#00b765" },
   { label: "Atividades", value: "19,3%", color: "#1687df" },
   { label: "Check-Out", value: "8%", color: "#ff9518" },
-  { label: "Não realizado", value: "2%", color: "#ff3030" },
+  { label: "NÃ£o realizado", value: "2%", color: "#ff3030" },
 ];
 
 export const photoCards = [
@@ -112,7 +112,7 @@ export const photoCards = [
     time: "08:30",
     date: "06/07",
     person: "Manoel Ribas",
-    location: "Sao Jose dos Campos - SP",
+    location: "São Jose dos Campos - SP",
     role: "Representante",
     leader: "Jose Roberto",
     action: "Inicio",
@@ -124,7 +124,7 @@ export const photoCards = [
     time: "13:30",
     date: "06/07",
     person: "Manoel Ribas",
-    location: "Sao Jose dos Campos - SP",
+    location: "São Jose dos Campos - SP",
     role: "Representante",
     leader: "Jose Roberto",
     action: "Panfletagem",
@@ -136,7 +136,7 @@ export const photoCards = [
     time: "17:30",
     date: "06/07",
     person: "Manoel Ribas",
-    location: "Sao Jose dos Campos - SP",
+    location: "São Jose dos Campos - SP",
     role: "Representante",
     leader: "Jose Roberto",
     action: "Check-out",

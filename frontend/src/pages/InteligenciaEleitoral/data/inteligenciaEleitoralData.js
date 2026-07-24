@@ -14,12 +14,12 @@ export const menuItems = [
 
 export const intelligenceFilters = {
   uf: ["SP"],
-  region: ["Vale do Paraiba", "Campinas", "Metropolitana"],
+  region: ["Vale do Paraíba", "Campinas", "Metropolitana"],
   city: {
     SP: {
-      "Vale do Paraiba": ["Sao Jose dos Campos", "Taubate", "Guaratingueta"],
+      "Vale do Paraíba": ["São Jose dos Campos", "Taubate", "Guaratingueta"],
       Campinas: ["Campinas", "Sumare"],
-      Metropolitana: ["Sao Paulo", "Maua"],
+      Metropolitana: ["São Paulo", "Mauá"],
     },
   },
 };
@@ -28,9 +28,9 @@ export const intelligenceScenarios = [
   {
     id: "sp-vale-sjc",
     uf: "SP",
-    region: "Vale do Paraiba",
-    city: "Sao Jose dos Campos",
-    cityTitle: "Sao Jose dos Campos",
+    region: "Vale do Paraíba",
+    city: "São Jose dos Campos",
+    cityTitle: "São Jose dos Campos",
     salaryInsight: {
       highlight: "+20%",
       description:
@@ -64,7 +64,7 @@ export const intelligenceScenarios = [
       { name: "Carlos Abranches", party: "Cidadania", votes: "25.283", percent: "6,35%", score: 71 },
       { name: "Fernando Petiti", party: "MDB", votes: "21.666", percent: "5,44%", score: 61 },
       { name: "Mariana Costa", party: "PSD", votes: "19.431", percent: "4,88%", score: 54 },
-      { name: "Bianca Leal", party: "União", votes: "18.904", percent: "4,74%", score: 53 },
+      { name: "Bianca Leal", party: "UniÃ£o", votes: "18.904", percent: "4,74%", score: 53 },
     ],
     gender: { female: 70, male: 30 },
     ageRanges: [
@@ -85,10 +85,10 @@ export const intelligenceScenarios = [
     salaryInsight: {
       highlight: "+14%",
       description:
-        "Contexto Salarial: Campinas apresenta renda media acima da media estadual, com forte influencia do setor de servicos, tecnologia e universidade.",
+        "Contexto Salarial: Campinas apresenta renda media acima da media estadual, com forte influência do setor de servicos, tecnologia e universidade.",
     },
     workforceText:
-      "Municipio estrategico para consolidacao regional, com eleitorado urbano diversificado e alto volume de liderancas locais competitivas.",
+      "Municipio estrategico para consolidacao regional, com eleitorado urbano diversificado e alto volume de lideranças locais competitivas.",
     cityStats: [
       { label: "Habitantes", value: "1.139.047" },
       { label: "Eleitores", value: "843.780" },
@@ -115,7 +115,7 @@ export const intelligenceScenarios = [
       { name: "Helena Prado", party: "MDB", votes: "25.914", percent: "5,73%", score: 63 },
       { name: "Ricardo Gomes", party: "Republicanos", votes: "23.801", percent: "5,26%", score: 58 },
       { name: "Simone Batista", party: "PSB", votes: "20.533", percent: "4,54%", score: 50 },
-      { name: "Marina Porto", party: "União", votes: "19.887", percent: "4,40%", score: 48 },
+      { name: "Marina Porto", party: "UniÃ£o", votes: "19.887", percent: "4,40%", score: 48 },
     ],
     gender: { female: 67, male: 33 },
     ageRanges: [
@@ -131,15 +131,15 @@ export const intelligenceScenarios = [
     id: "sp-metro-sp",
     uf: "SP",
     region: "Metropolitana",
-    city: "Sao Paulo",
-    cityTitle: "Sao Paulo",
+    city: "São Paulo",
+    cityTitle: "São Paulo",
     salaryInsight: {
       highlight: "+28%",
       description:
-        "Contexto Salarial: capital com maior concentracao de renda e densidade economica, exigindo leitura segmentada por bairros e nucleos de influencia.",
+        "Contexto Salarial: capital com maior concentracao de renda e densidade economica, exigindo leitura segmentada por bairros e nucleos de influência.",
     },
     workforceText:
-      "Ambiente altamente competitivo, com grande volume de eleitores, agendas fragmentadas e necessidade de leitura fina por zona e liderancas intermediarias.",
+      "Ambiente altamente competitivo, com grande volume de eleitores, agendas fragmentadas e necessidade de leitura fina por zona e lideranças intermediarias.",
     cityStats: [
       { label: "Habitantes", value: "11.451.245" },
       { label: "Eleitores", value: "9.322.444" },
@@ -162,7 +162,7 @@ export const intelligenceScenarios = [
     mostVoted: [
       { name: "Maria Lins", party: "PT", votes: "152.321", percent: "10,22%", score: 100 },
       { name: "Fernando Petiti", party: "MDB", votes: "138.114", percent: "9,27%", score: 91 },
-      { name: "Joao Victor", party: "União", votes: "120.553", percent: "8,09%", score: 79 },
+      { name: "Joao Victor", party: "UniÃ£o", votes: "120.553", percent: "8,09%", score: 79 },
       { name: "Bianca Prado", party: "PSD", votes: "113.248", percent: "7,60%", score: 74 },
       { name: "Helena Castro", party: "PL", votes: "101.327", percent: "6,80%", score: 67 },
       { name: "Ricardo Gomes", party: "PSB", votes: "88.994", percent: "5,97%", score: 58 },

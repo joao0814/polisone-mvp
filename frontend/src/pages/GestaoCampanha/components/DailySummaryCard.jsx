@@ -1,23 +1,49 @@
 import styles from "../GestaoCampanha.module.css";
+import atividadesRegistradasIcon from "../../../assets/images/visao_geral/icons/atividaderegistradas.png";
+import equipesEmCampoIcon from "../../../assets/images/visao_geral/icons/equipesemcampo.png";
+import eventosIcon from "../../../assets/images/visao_geral/icons/eventos.png";
+import municipiosVisitadosIcon from "../../../assets/images/visao_geral/icons/municipiosvisitados.png";
+import novasLiderancasIcon from "../../../assets/images/visao_geral/icons/novasliderancas.png";
+
+const summaryIcons = {
+  Eventos: eventosIcon,
+  "Municípios visitados": municipiosVisitadosIcon,
+  "Equipes em campo": equipesEmCampoIcon,
+  "Atividades registradas": atividadesRegistradasIcon,
+  "Novas lideranças": novasLiderancasIcon,
+};
+
+function normalizeLabel(label) {
+  return String(label || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function getSummaryIcon(label) {
+  const directMatch = summaryIcons[label];
+  if (directMatch) return directMatch;
+
+  const normalized = normalizeLabel(label);
+
+  if (normalized === "Municipios visitados") return municipiosVisitadosIcon;
+  if (normalized === "Equipes em campo") return equipesEmCampoIcon;
+  if (normalized === "Atividades registradas") return atividadesRegistradasIcon;
+  if (normalized === "Novas liderancas") return novasLiderancasIcon;
+  return eventosIcon;
+}
 
 function DailySummaryCard({ label, note, value }) {
+  const iconSrc = getSummaryIcon(label);
+
   return (
     <article className={styles.dailyCard}>
       <span className={styles.dailyIcon} aria-hidden="true">
-        <svg
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <rect height="16" rx="2" width="16" x="4" y="5" />
-          <path d="M8 3v4" />
-          <path d="M16 3v4" />
-          <path d="M4 10h16" />
-          <path d="m9 16 2 2 4-5" />
-        </svg>
+        <img
+          alt=""
+          className={styles.dailyImage}
+          draggable="false"
+          src={iconSrc}
+        />
       </span>
       <div>
         <span>{label}</span>

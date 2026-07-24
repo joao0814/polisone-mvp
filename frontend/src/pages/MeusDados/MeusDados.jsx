@@ -251,7 +251,7 @@ function MeusDados({ session, onLogout, onUserUpdate }) {
         ) : error && !form.email ? (
           <AsyncSectionState
             state="error"
-            title="Nao foi possivel carregar seus dados"
+            title="Não foi possivel carregar seus dados"
             description={error}
           />
         ) : (
@@ -354,7 +354,7 @@ function MeusDados({ session, onLogout, onUserUpdate }) {
                 />
               </Field>
 
-              <Field label="Ano da eleicao">
+              <Field label="Ano da eleição">
                 <input
                   value={form.electionYear}
                   onChange={change("electionYear")}
@@ -425,7 +425,7 @@ function MeusDados({ session, onLogout, onUserUpdate }) {
                 />
               </Field>
 
-              <Field label="Data da eleicao">
+              <Field label="Data da eleição">
                 <input
                   type="date"
                   value={form.electionDate}
@@ -510,7 +510,7 @@ function getRoles(user) {
 function getRoleLabel(roles) {
   if (roles.includes("ADMIN")) return "Administrador";
   if (roles.includes("MANAGER")) return "Gestor";
-  if (roles.includes("LIDERANCA")) return "Lideranca";
+  if (roles.includes("LIDERANCA")) return "Liderança";
   if (roles.includes("REPRESENTANTE")) return "Representante";
   if (roles.includes("EQUIPE")) return "Equipe";
   return "Candidato";
@@ -565,7 +565,7 @@ function validateProfileForm(form, { isCandidateProfile }) {
   }
 
   if (!/^\d{4}$/.test(String(form.electionYear || "").trim())) {
-    return "Informe um ano de eleicao valido com 4 digitos.";
+    return "Informe um ano de eleição valido com 4 digitos.";
   }
 
   if (!form.intendedOffice) {
@@ -573,7 +573,7 @@ function validateProfileForm(form, { isCandidateProfile }) {
   }
 
   if (form.startDate && form.electionDate && form.startDate > form.electionDate) {
-    return "A data de inicio da campanha nao pode ser maior que a data da eleicao.";
+    return "A data de início da campanha não pode ser maior que a data da eleição.";
   }
 
   if (form.voteGoal !== "") {

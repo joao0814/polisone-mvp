@@ -1,29 +1,29 @@
 export const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
   { label: "Mapa eleitoral" },
-  { label: "Metricas" },
+  { label: "Métricas" },
 ];
 
 export const summaryCardsByMode = {
   campaign: [
-    { label: "Municipios Ativos", value: "235", note: "No estado de Sao Paulo" },
-    { label: "Municipios Prioritarios", value: "32", note: "No estado de Sao Paulo" },
-    { label: "Municipios com votos", value: "212", note: "No estado de Sao Paulo" },
-    { label: "Municipios com recursos", value: "62", note: "No estado de Sao Paulo" },
+    { label: "Municípios Ativos", value: "235", note: "No estado de São Paulo" },
+    { label: "Municípios Prioritários", value: "32", note: "No estado de São Paulo" },
+    { label: "Municípios com votos", value: "212", note: "No estado de São Paulo" },
+    { label: "Municípios com recursos", value: "62", note: "No estado de São Paulo" },
   ],
   votes: [
-    { label: "Municipios Apurados", value: "148", note: "Com boletim consolidado" },
-    { label: "Municipios Lideres", value: "29", note: "Acima da meta local" },
-    { label: "Municipios Disputados", value: "54", note: "Com margem apertada" },
-    { label: "Municipios Sem Avanco", value: "18", note: "Abaixo da meta projetada" },
+    { label: "Municípios Apurados", value: "148", note: "Com boletim consolidado" },
+    { label: "Municípios Líderes", value: "29", note: "Acima da meta local" },
+    { label: "Municípios Disputados", value: "54", note: "Com margem apertada" },
+    { label: "Municípios Sem Avanço", value: "18", note: "Abaixo da meta projetada" },
   ],
 };
 
@@ -31,7 +31,7 @@ export const municipalitiesByMode = {
   campaign: [
     {
       id: "sjrio-preto",
-      name: "Sao Jose do Rio Preto",
+      name: "São José do Rio Preto",
       region: "Noroeste",
       representatives: 18,
       population: "469.173",
@@ -41,7 +41,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "sjc",
-      name: "Sao Jose dos Campos",
+      name: "São José dos Campos",
       region: "Leste",
       representatives: 32,
       population: "735.000",
@@ -51,7 +51,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "guaratingueta",
-      name: "Guaratingueta",
+      name: "Guaratinguetá",
       region: "Leste",
       representatives: 35,
       population: "130.000",
@@ -61,7 +61,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "sumare",
-      name: "Sumare",
+      name: "Sumaré",
       region: "Campinas",
       representatives: 60,
       population: "280.000",
@@ -91,8 +91,8 @@ export const municipalitiesByMode = {
     },
     {
       id: "ribeirao-preto",
-      name: "Ribeirao Preto",
-      region: "Ribeirao Preto",
+      name: "Ribeirão Preto",
+      region: "Ribeirão Preto",
       representatives: 24,
       population: "728.400",
       voters: "502.544",
@@ -111,7 +111,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "maua",
-      name: "Maua",
+      name: "Mauá",
       region: "Metropolitana",
       representatives: 19,
       population: "477.552",
@@ -131,8 +131,8 @@ export const municipalitiesByMode = {
     },
     {
       id: "taubate",
-      name: "Taubate",
-      region: "Vale do Paraiba",
+      name: "Taubaté",
+      region: "Vale do Paraíba",
       representatives: 21,
       population: "317.915",
       voters: "238.501",
@@ -140,8 +140,8 @@ export const municipalitiesByMode = {
       amendmentsCount: 5,
     },
     {
-      id: "sjc-2",
-      name: "Sao Paulo",
+      id: "sp",
+      name: "São Paulo",
       region: "Metropolitana",
       representatives: 52,
       population: "11.451.245",
@@ -153,7 +153,7 @@ export const municipalitiesByMode = {
   votes: [
     {
       id: "sjrio-preto-v",
-      name: "Sao Jose do Rio Preto",
+      name: "São José do Rio Preto",
       region: "Noroeste",
       representatives: 42,
       population: "469.173",
@@ -163,7 +163,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "sjc-v",
-      name: "Sao Jose dos Campos",
+      name: "São José dos Campos",
       region: "Leste",
       representatives: 67,
       population: "735.000",
@@ -173,7 +173,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "guaratingueta-v",
-      name: "Guaratingueta",
+      name: "Guaratinguetá",
       region: "Leste",
       representatives: 21,
       population: "130.000",
@@ -183,7 +183,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "sumare-v",
-      name: "Sumare",
+      name: "Sumaré",
       region: "Campinas",
       representatives: 54,
       population: "280.000",
@@ -213,8 +213,8 @@ export const municipalitiesByMode = {
     },
     {
       id: "ribeirao-preto-v",
-      name: "Ribeirao Preto",
-      region: "Ribeirao Preto",
+      name: "Ribeirão Preto",
+      region: "Ribeirão Preto",
       representatives: 45,
       population: "728.400",
       voters: "502.544",
@@ -233,7 +233,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "maua-v",
-      name: "Maua",
+      name: "Mauá",
       region: "Metropolitana",
       representatives: 28,
       population: "477.552",
@@ -253,8 +253,8 @@ export const municipalitiesByMode = {
     },
     {
       id: "taubate-v",
-      name: "Taubate",
-      region: "Vale do Paraiba",
+      name: "Taubaté",
+      region: "Vale do Paraíba",
       representatives: 31,
       population: "317.915",
       voters: "238.501",
@@ -263,7 +263,7 @@ export const municipalitiesByMode = {
     },
     {
       id: "sp-v",
-      name: "Sao Paulo",
+      name: "São Paulo",
       region: "Metropolitana",
       representatives: 88,
       population: "11.451.245",

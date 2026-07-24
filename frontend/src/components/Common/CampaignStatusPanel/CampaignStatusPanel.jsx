@@ -4,13 +4,13 @@ import styles from "./CampaignStatusPanel.module.css";
 const DEFAULT_ITEMS = [
   {
     id: "campaign-start",
-    label: "Dias para o inicio da campanha.",
+    label: "Dias para o início da campanha.",
     targetDate: "2026-08-16T00:00:00-03:00",
     startDate: "2026-07-01T00:00:00-03:00",
   },
   {
     id: "election-day",
-    label: "Dias para o dia da eleicao.",
+    label: "Dias para o dia da eleição.",
     targetDate: "2026-10-04T00:00:00-03:00",
     startDate: "2026-07-01T00:00:00-03:00",
     footerSuffix: "(primeiro turno)",

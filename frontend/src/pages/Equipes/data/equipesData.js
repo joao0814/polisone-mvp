@@ -13,18 +13,18 @@ export const menuItems = [
 ];
 
 export const countdowns = [
-  { value: "38", label: "Dias para o inicio da campanha.", progress: 48, footer: "16/08" },
+  { value: "38", label: "Dias para o início da campanha.", progress: 48, footer: "16/08" },
   {
     value: "72",
-    label: "Dias para o dia da eleicao.",
+    label: "Dias para o dia da eleição.",
     progress: 18,
     footer: "04/10 (primeiro turno)",
   },
 ];
 
 export const summaryCards = [
-  { tone: "blue", title: "Total de lideranca", value: "50", note: "100% do total" },
-  { tone: "green", title: "Total de lideranca Ativa", value: "40", note: "80% do total" },
+  { tone: "blue", title: "Total de liderança", value: "50", note: "100% do total" },
+  { tone: "green", title: "Total de liderança Ativa", value: "40", note: "80% do total" },
   { tone: "cyan", title: "Total de representantes", value: "300", note: "100% do total" },
   { tone: "orange", title: "Representantes Ativos", value: "240", note: "80% do total" },
   { tone: "red", title: "Excluidos", value: "60", note: "20% do total" },
@@ -34,7 +34,7 @@ export const people = [
   {
     id: "dr-elton-1",
     name: "Dr. Elton",
-    badge: "Alta influencia",
+    badge: "Alta influência",
     badgeTone: "yellow",
     initials: "DE",
     leader: true,
@@ -46,24 +46,24 @@ export const people = [
   {
     id: "dulce-rita",
     name: "Dulce Rita",
-    badge: "Media influencia",
+    badge: "Media influência",
     badgeTone: "blue",
     initials: "DR",
     leader: false,
     representative: true,
-    city: "Sao Jose dos campos",
+    city: "São Jose dos campos",
     role: "Deputada",
     relationship: 5,
   },
   {
     id: "leticia-aguiar",
     name: "Leticia Aguiar",
-    badge: "Baixa influencia",
+    badge: "Baixa influência",
     badgeTone: "red",
     initials: "LA",
     leader: true,
     representative: false,
-    city: "Sao Paulo",
+    city: "São Paulo",
     role: "Ex-prefeito",
     relationship: 3,
   },
@@ -88,14 +88,14 @@ export const people = [
     leader: true,
     representative: false,
     city: "Guaratingueta",
-    role: "Lideranca Local",
+    role: "Liderança Local",
     relationship: 4,
   },
 ];
 
 export const leadershipDistribution = [
   { label: "Representantes", value: "70,3%", color: "#00b765" },
-  { label: "Liderancas", value: "29,7%", color: "#1687df" },
+  { label: "Lideranças", value: "29,7%", color: "#1687df" },
 ];
 
 export const loyaltyIndex = [
@@ -107,17 +107,17 @@ export const loyaltyIndex = [
 ];
 
 export const influenceIndex = [
-  { position: "1o", label: "Alta influencia", value: 94 },
-  { position: "2o", label: "Media Influencia", value: 76 },
+  { position: "1o", label: "Alta influência", value: 94 },
+  { position: "2o", label: "Media Influência", value: 76 },
   { position: "3o", label: "Influente", value: 62 },
-  { position: "4o", label: "Baixa influencia", value: 48 },
+  { position: "4o", label: "Baixa influência", value: 48 },
   { position: "5o", label: "Apoiador forte", value: 34 },
 ];
 
 export const footerMetrics = [
   { title: "TOTAL DE LIDERANCAS", value: "50", note: "LIDERANCAS CADASTRADAS" },
-  { title: "Representantes", value: "300", note: "Vinculados as liderancas" },
-  { title: "Liderancas ativas", value: "40", note: "80% do total" },
+  { title: "Representantes", value: "300", note: "Vinculados as lideranças" },
+  { title: "Lideranças ativas", value: "40", note: "80% do total" },
   { title: "Municipios cobertos", value: "28", note: "Municipios com equipes" },
   { title: "Taxa de atividade", value: "89%", note: "Da base em operacao" },
 ];

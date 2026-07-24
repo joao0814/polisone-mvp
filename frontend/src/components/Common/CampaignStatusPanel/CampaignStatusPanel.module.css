@@ -1,13 +1,13 @@
 .root {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 64px;
-  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 74px;
+  gap: 8px;
   align-items: stretch;
 }
 
 .stack {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .card,
@@ -19,38 +19,39 @@
 }
 
 .card {
-  min-height: 52px;
-  padding: 5px 10px;
+  min-height: 58px;
+  padding: 7px 12px;
 }
 
 .cardTitle {
   display: block;
   color: #ffca18;
-  font-size: 6px;
+  font-size: 7px;
   font-weight: 900;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .cardBody {
   display: grid;
-  grid-template-columns: auto minmax(82px, 96px) minmax(96px, 1fr);
+  grid-template-columns: 48px minmax(124px, 156px) minmax(110px, 1fr);
   align-items: center;
-  gap: 7px;
+  gap: 10px;
 }
 
 .cardBody strong {
   color: #ffffff;
-  font-size: 33px;
-  font-weight: 500;
-  line-height: 0.9;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .cardBody p {
   margin: 0;
   color: #f3f5f8;
-  font-size: 7px;
+  font-size: 9px;
   font-weight: 800;
-  line-height: 1.12;
+  line-height: 1.18;
 }
 
 .cardBody i,
@@ -62,9 +63,9 @@
 
 .card small {
   display: block;
-  margin-top: 1px;
+  margin-top: 3px;
   color: #ffffff;
-  font-size: 6px;
+  font-size: 7px;
   font-weight: 800;
   text-align: right;
 }
@@ -72,18 +73,18 @@
 .dateBox {
   display: grid;
   place-items: center;
-  padding: 7px 4px;
+  padding: 8px 6px;
   color: #ffffff;
 }
 
 .dateBox strong,
 .dateBox small {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 900;
 }
 
 .dateBox span {
-  width: 48px;
+  width: 54px;
   height: 2px;
   background: #ffca18;
 }

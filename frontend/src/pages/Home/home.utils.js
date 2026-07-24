@@ -34,7 +34,7 @@ export function formatEventTime(event) {
 }
 
 export function getStatusLabel(status) {
-  if (status === "completed") return "Concluido";
+  if (status === "completed") return "Concluído";
   if (status === "canceled") return "Cancelado";
   return "Ativo";
 }

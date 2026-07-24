@@ -20,14 +20,14 @@ import styles from "./Equipes.module.css";
 
 const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
 ];
 
 const states = [
@@ -193,8 +193,8 @@ function Equipes({ session, onLogout }) {
       { tone: "blue", title: "Total de equipes", value: teams.length, note: "bases cadastradas" },
       { tone: "green", title: "Equipes ativas", value: activeTeams, note: "operando agora" },
       { tone: "cyan", title: "Total de membros", value: totalMembers, note: "membros ativos nas equipes" },
-      { tone: "orange", title: "Municipios cobertos", value: citiesCovered, note: "com equipe ativa ou reserva" },
-      { tone: "red", title: "Equipes inativas", value: Math.max(teams.length - activeTeams, 0), note: "aguardando reativacao" },
+      { tone: "orange", title: "Municípios cobertos", value: citiesCovered, note: "com equipe ativa ou reserva" },
+      { tone: "red", title: "Equipes inativas", value: Math.max(teams.length - activeTeams, 0), note: "aguardando reativação" },
     ];
   }, [teams]);
 
@@ -387,7 +387,7 @@ function Equipes({ session, onLogout }) {
 
   async function submitTeamModal() {
     if (!teamModalForm.name.trim() || !teamModalForm.cityName.trim() || !teamModalForm.cityIbgeCode.trim()) {
-      setModalError("Informe nome da equipe, municipio e codigo IBGE.");
+      setModalError("Informe nome da equipe, município e código IBGE.");
       return;
     }
 
@@ -636,7 +636,7 @@ function Equipes({ session, onLogout }) {
     return (
       <main className={styles.loading}>
         <AsyncSectionState
-          description="As equipes da campanha estao sendo carregadas."
+          description="As equipes da campanha estão sendo carregadas."
           state="loading"
           title="Carregando equipes"
         />
@@ -660,10 +660,10 @@ function Equipes({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Operacao territorial da campanha</p>
+            <p className={styles.kicker}>Operação territorial da campanha</p>
             <h1>Equipes</h1>
             <span>
-              Cadastre equipes, acompanhe a cobertura por municipio e gerencie os
+              Cadastre equipes, acompanhe a cobertura por município e gerencie os
               membros de campo da campanha.
             </span>
           </div>
@@ -716,16 +716,16 @@ function Equipes({ session, onLogout }) {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Equipe, coordenador, liderança, municipio ou codigo IBGE"
+              placeholder="Equipe, coordenador, liderança, município ou código IBGE"
             />
           </label>
 
           <label className={styles.filterField}>
-            <span>Municipio</span>
+            <span>Município</span>
             <select value={cityFilter} onChange={(event) => setCityFilter(event.target.value)}>
               {cities.map((city) => (
                 <option key={city} value={city}>
-                  {city === "ALL" ? "Todos os municipios" : city}
+                  {city === "ALL" ? "Todos os municípios" : city}
                 </option>
               ))}
             </select>
@@ -767,9 +767,9 @@ function Equipes({ session, onLogout }) {
                 <thead>
                   <tr>
                     <th>Equipe</th>
-                    <th>Municipio</th>
+                    <th>Município</th>
                     <th>UF</th>
-                    <th>Codigo IBGE</th>
+                    <th>Código IBGE</th>
                     <th>Coordenador</th>
                     <th>Status</th>
                     <th>Membros</th>
@@ -795,7 +795,7 @@ function Equipes({ session, onLogout }) {
                               <small>
                                 {team.linked_leader_name
                                   ? `Liderança vinculada: ${team.linked_leader_name}`
-                                  : team.notes || "Sem observacoes adicionais"}
+                                  : team.notes || "Sem observações adicionais"}
                               </small>
                             </div>
                           </button>
@@ -1007,7 +1007,7 @@ function EntityManagementModal({
       >
         <div className={styles.modalHeader}>
           <div>
-            <span className={styles.modalEyebrow}>Operacao territorial</span>
+            <span className={styles.modalEyebrow}>Operação territorial</span>
             <h2 className={styles.modalTitle} id="equipes-entity-modal-title">
               {title}
             </h2>
@@ -1040,11 +1040,11 @@ function EntityManagementModal({
                   <input type="text" value={teamForm.name} onChange={(event) => onTeamChange((current) => ({ ...current, name: event.target.value }))} disabled={savingTeam} />
                 </label>
                 <label className={styles.modalField}>
-                  <span>Municipio</span>
+                  <span>Município</span>
                   <input type="text" value={teamForm.cityName} onChange={(event) => onTeamChange((current) => ({ ...current, cityName: event.target.value }))} disabled={savingTeam} />
                 </label>
                 <label className={styles.modalField}>
-                  <span>Codigo IBGE</span>
+                  <span>Código IBGE</span>
                   <input type="text" value={teamForm.cityIbgeCode} onChange={(event) => onTeamChange((current) => ({ ...current, cityIbgeCode: event.target.value.replace(/\D/g, "").slice(0, 7) }))} disabled={savingTeam} />
                 </label>
                 <label className={styles.modalField}>
@@ -1060,7 +1060,7 @@ function EntityManagementModal({
                 <label className={styles.modalField}>
                   <span>Lideranca vinculada</span>
                   <select value={teamForm.linkedLeaderId} onChange={(event) => onTeamChange((current) => ({ ...current, linkedLeaderId: event.target.value }))} disabled={savingTeam}>
-                    <option value="">Sem lideranca vinculada</option>
+                    <option value="">Sem liderança vinculada</option>
                     {leaders.map((leader) => (
                       <option key={leader.id} value={leader.id}>
                         {leader.name} {leader.city_name ? `- ${leader.city_name}` : ""}
@@ -1077,7 +1077,7 @@ function EntityManagementModal({
               </div>
 
               <label className={styles.modalTextareaField}>
-                <span>Observacoes</span>
+                <span>Observações</span>
                 <textarea rows={4} maxLength={400} value={teamForm.notes} onChange={(event) => onTeamChange((current) => ({ ...current, notes: event.target.value }))} disabled={savingTeam} />
               </label>
 
@@ -1095,7 +1095,7 @@ function EntityManagementModal({
                         onClick={() => onOpenLeaderModalForTeam(editingTeamId)}
                         disabled={saving || savingTeam}
                       >
-                        Nova lideranca
+                        Nova liderança
                       </button>
                       <button
                         className={styles.modalSecondaryButton}
@@ -1202,11 +1202,11 @@ function EntityManagementModal({
                 <input type="text" value={memberForm.phone} onChange={(event) => onMemberChange((current) => ({ ...current, phone: formatPhoneInput(event.target.value) }))} disabled={saving} />
               </label>
               <label className={styles.modalField}>
-                <span>Funcao</span>
+                <span>Função</span>
                 <input type="text" value={memberForm.role} onChange={(event) => onMemberChange((current) => ({ ...current, role: event.target.value }))} disabled={saving} />
               </label>
               <label className={styles.modalField}>
-                <span>Municipio</span>
+                <span>Município</span>
                 <input type="text" value={memberTeam?.city_name || "--"} readOnly />
               </label>
             </div>
@@ -1229,12 +1229,12 @@ function EntityManagementModal({
                   <input type="text" value={leaderForm.phone} onChange={(event) => onLeaderChange((current) => ({ ...current, phone: formatPhoneInput(event.target.value) }))} disabled={saving} />
                 </label>
                 <label className={styles.modalField}>
-                  <span>Municipio</span>
+                  <span>Município</span>
                   <input type="text" value={leaderTeam?.city_name || "--"} readOnly />
                 </label>
               </div>
               <label className={styles.modalTextareaField}>
-                <span>Observacoes</span>
+                <span>Observações</span>
                 <textarea rows={4} maxLength={400} value={leaderForm.notes} onChange={(event) => onLeaderChange((current) => ({ ...current, notes: event.target.value }))} disabled={saving} />
               </label>
             </>
@@ -1256,7 +1256,7 @@ function EntityManagementModal({
                 <input type="email" value={representativeForm.email} onChange={(event) => onRepresentativeChange((current) => ({ ...current, email: event.target.value }))} disabled={saving} />
               </label>
               <label className={styles.modalField}>
-                <span>Funcao</span>
+                <span>Função</span>
                 <input type="text" value={representativeForm.role} onChange={(event) => onRepresentativeChange((current) => ({ ...current, role: event.target.value }))} disabled={saving} />
               </label>
               <label className={styles.modalField}>
@@ -1264,7 +1264,7 @@ function EntityManagementModal({
                 <input type="text" value={representativeForm.phone} onChange={(event) => onRepresentativeChange((current) => ({ ...current, phone: formatPhoneInput(event.target.value) }))} disabled={saving} />
               </label>
               <label className={styles.modalField}>
-                <span>Municipio</span>
+                <span>Município</span>
                 <input type="text" value={representativeTeam?.city_name || "--"} readOnly />
               </label>
             </div>

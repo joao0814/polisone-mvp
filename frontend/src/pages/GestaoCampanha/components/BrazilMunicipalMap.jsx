@@ -3,38 +3,38 @@ import styles from "../GestaoCampanha.module.css";
 
 const legend = [
   { label: "0 Equipes", tone: "empty" },
-  { label: "Baixo numero de equipes", tone: "low" },
-  { label: "Medio numero de equipes", tone: "medium" },
-  { label: "Bom numero de equipes", tone: "good" },
-  { label: "Alto numero de equipes", tone: "high" },
+  { label: "Baixo número de equipes", tone: "low" },
+  { label: "Médio número de equipes", tone: "medium" },
+  { label: "Bom número de equipes", tone: "good" },
+  { label: "Alto número de equipes", tone: "high" },
 ];
 
 const states = [
   { id: "state-ac", group: "Estados", label: "Acre", statePrefixes: ["12"] },
   { id: "state-al", group: "Estados", label: "Alagoas", statePrefixes: ["27"] },
-  { id: "state-ap", group: "Estados", label: "Amapa", statePrefixes: ["16"] },
+  { id: "state-ap", group: "Estados", label: "Amapá", statePrefixes: ["16"] },
   { id: "state-am", group: "Estados", label: "Amazonas", statePrefixes: ["13"] },
   { id: "state-ba", group: "Estados", label: "Bahia", statePrefixes: ["29"] },
-  { id: "state-ce", group: "Estados", label: "Ceara", statePrefixes: ["23"] },
+  { id: "state-ce", group: "Estados", label: "Ceará", statePrefixes: ["23"] },
   { id: "state-df", group: "Estados", label: "Distrito Federal", statePrefixes: ["53"] },
-  { id: "state-es", group: "Estados", label: "Espirito Santo", statePrefixes: ["32"] },
-  { id: "state-go", group: "Estados", label: "Goias", statePrefixes: ["52"] },
-  { id: "state-ma", group: "Estados", label: "Maranhao", statePrefixes: ["21"] },
+  { id: "state-es", group: "Estados", label: "Espírito Santo", statePrefixes: ["32"] },
+  { id: "state-go", group: "Estados", label: "Goiás", statePrefixes: ["52"] },
+  { id: "state-ma", group: "Estados", label: "Maranhão", statePrefixes: ["21"] },
   { id: "state-mt", group: "Estados", label: "Mato Grosso", statePrefixes: ["51"] },
   { id: "state-ms", group: "Estados", label: "Mato Grosso do Sul", statePrefixes: ["50"] },
   { id: "state-mg", group: "Estados", label: "Minas Gerais", statePrefixes: ["31"] },
-  { id: "state-pa", group: "Estados", label: "Para", statePrefixes: ["15"] },
-  { id: "state-pb", group: "Estados", label: "Paraiba", statePrefixes: ["25"] },
-  { id: "state-pr", group: "Estados", label: "Parana", statePrefixes: ["41"] },
+  { id: "state-pa", group: "Estados", label: "Pará", statePrefixes: ["15"] },
+  { id: "state-pb", group: "Estados", label: "Paraíba", statePrefixes: ["25"] },
+  { id: "state-pr", group: "Estados", label: "Paraná", statePrefixes: ["41"] },
   { id: "state-pe", group: "Estados", label: "Pernambuco", statePrefixes: ["26"] },
-  { id: "state-pi", group: "Estados", label: "Piaui", statePrefixes: ["22"] },
+  { id: "state-pi", group: "Estados", label: "Piauí", statePrefixes: ["22"] },
   { id: "state-rj", group: "Estados", label: "Rio de Janeiro", statePrefixes: ["33"] },
   { id: "state-rn", group: "Estados", label: "Rio Grande do Norte", statePrefixes: ["24"] },
   { id: "state-rs", group: "Estados", label: "Rio Grande do Sul", statePrefixes: ["43"] },
-  { id: "state-ro", group: "Estados", label: "Rondonia", statePrefixes: ["11"] },
+  { id: "state-ro", group: "Estados", label: "Rondônia", statePrefixes: ["11"] },
   { id: "state-rr", group: "Estados", label: "Roraima", statePrefixes: ["14"] },
   { id: "state-sc", group: "Estados", label: "Santa Catarina", statePrefixes: ["42"] },
-  { id: "state-sp", group: "Estados", label: "Sao Paulo", statePrefixes: ["35"] },
+  { id: "state-sp", group: "Estados", label: "São Paulo", statePrefixes: ["35"] },
   { id: "state-se", group: "Estados", label: "Sergipe", statePrefixes: ["28"] },
   { id: "state-to", group: "Estados", label: "Tocantins", statePrefixes: ["17"] },
 ];
@@ -78,9 +78,7 @@ function BrazilMunicipalMap({
     () => getRegionView(municipalities, selectedRegion),
     [municipalities, selectedRegion],
   );
-  const activeView = focusedView
-    ? getFocusedTransform(focusedView, view)
-    : view;
+  const activeView = focusedView ? getFocusedTransform(focusedView, view) : view;
 
   useEffect(() => {
     let isActive = true;
@@ -235,9 +233,9 @@ function BrazilMunicipalMap({
       </div>
 
       <label className={styles.regionSelector}>
-        <span>Regiao</span>
+        <span>Região</span>
         <select
-          aria-label="Filtro de regiao do mapa"
+          aria-label="Filtro de região do mapa"
           onChange={handleRegionChange}
           value={selectedRegionId ?? ""}
         >
@@ -259,15 +257,13 @@ function BrazilMunicipalMap({
           className={styles.brazilMap}
           role="img"
           viewBox="0 0 640 420"
-          aria-label="Mapa do Brasil dividido por municipios"
+          aria-label="Mapa do Brasil dividido por municípios"
           onPointerDown={handlePointerDown}
           onPointerLeave={handlePointerUp}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
         >
-          <g
-            transform={`translate(${activeView.x} ${activeView.y}) scale(${activeView.scale})`}
-          >
+          <g transform={`translate(${activeView.x} ${activeView.y}) scale(${activeView.scale})`}>
             <MunicipalityPaths
               hasSelectedRegion={Boolean(selectedRegionId)}
               isStateSelection={isStateSelection}
@@ -281,8 +277,8 @@ function BrazilMunicipalMap({
         <div className={styles.mapLoading}>Carregando malha municipal...</div>
       )}
 
-      <aside className={styles.mapLegend} aria-label="Forca de trabalho por regiao">
-        <strong>Forca de Trabalho por Regiao</strong>
+      <aside className={styles.mapLegend} aria-label="Força de trabalho por região">
+        <strong>Força de Trabalho por Região</strong>
         {legend.map((item) => (
           <span key={item.label}>
             <i className={styles[item.tone]} />
@@ -344,7 +340,7 @@ function createRegionMatcher(region) {
 
 function groupRegions(regions) {
   return regions.reduce((groups, region) => {
-    const label = region.group ?? "Regioes";
+    const label = region.group ?? "Regiões";
     const currentGroup = groups.find((group) => group.label === label);
 
     if (currentGroup) {

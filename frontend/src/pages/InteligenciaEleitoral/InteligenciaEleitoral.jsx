@@ -243,7 +243,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
         <section className={styles.profilePanel} aria-label="Perfil de eleitores">
           <div className={styles.genderBlock}>
             <h2>Perfil de Eleitores</h2>
-            <p>Genero:</p>
+            <p>Gênero:</p>
 
             <div className={styles.genderRow}>
               <div className={`${styles.genderIcon} ${styles.genderFemale}`} />
@@ -281,7 +281,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
           </div>
 
           <div className={styles.ageBlock}>
-            <h3>Faixa Etaria:</h3>
+            <h3>Faixa Etária:</h3>
             {scenario.ageRanges.map((range) => (
               <div className={styles.ageRow} key={range.label}>
                 <span>{range.label}</span>
@@ -292,7 +292,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
           </div>
 
           <aside className={styles.averageCard}>
-            <h3>Idade Media</h3>
+            <h3>Idade Média</h3>
             <strong>{scenario.averageAge.total}</strong>
             <div className={styles.averageMeta}>
               <span className={styles.averageFemale}>
@@ -309,7 +309,7 @@ function InteligenciaEleitoral({ session, onLogout }) {
           </>
         ) : (
           <AsyncSectionState
-            description="Nao encontramos um cenario local para esse conjunto de filtros. Ajuste UF, regiao ou municipio e analise novamente."
+            description="Não encontramos um cenario local para esse conjunto de filtros. Ajuste UF, regiao ou municipio e analise novamente."
             state="empty"
             title="Nenhum cenario disponivel"
           />

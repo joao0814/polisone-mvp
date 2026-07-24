@@ -383,16 +383,24 @@
 
 .tablePanel {
   min-height: 532px;
+  height: 532px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 16px 19px 28px;
   border-radius: 24px;
 }
 
 .formPanel {
   min-height: 532px;
+  height: 532px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
   padding: 18px 19px 24px;
   border: 1px solid var(--line);
   border-radius: 24px;
   background: rgba(8, 21, 34, 0.96);
+  overflow: hidden;
 }
 
 .formHeader h2 {
@@ -405,7 +413,19 @@
 .costForm {
   display: grid;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  padding-bottom: 12px;
+}
+
+.costForm::-webkit-scrollbar {
+  width: 8px;
+}
+
+.costForm::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 202, 24, 0.45);
 }
 
 .costForm label {
@@ -443,6 +463,14 @@
 
 .notesField {
   min-height: 0;
+}
+
+.formActions {
+  display: grid;
+  gap: 10px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background: rgba(8, 21, 34, 0.96);
 }
 
 .emptyCell {
@@ -665,7 +693,7 @@
 
 .analyticsGrid {
   display: grid;
-  grid-template-columns: minmax(320px, 1fr) minmax(280px, 0.94fr);
+  grid-template-columns: minmax(360px, 1.08fr) minmax(320px, 0.92fr);
   gap: 13px;
   margin-top: 12px;
 }
@@ -673,8 +701,9 @@
 .statusPanel,
 .destinationPanel,
 .rankingPanel {
-  min-height: 292px;
-  padding: 17px 22px;
+  min-height: 356px;
+  height: auto;
+  padding: 20px 24px;
   border-radius: 22px;
 }
 
@@ -683,8 +712,8 @@
 .rankingPanel h2 {
   margin: 0;
   color: var(--yellow);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .donutWrap {
@@ -750,34 +779,37 @@
 
 .destinationList {
   display: grid;
-  gap: 15px;
-  margin-top: 34px;
+  gap: 16px;
+  margin-top: 24px;
 }
 
 .destinationRow {
   display: grid;
-  grid-template-columns: 104px minmax(120px, 1fr) 28px;
+  grid-template-columns: 116px minmax(180px, 1fr) 34px;
   gap: 12px;
   align-items: center;
   color: #ffffff;
-  font-size: 11px;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .destinationRow i,
 .rankingItem i {
-  height: 10px;
+  height: 12px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--yellow) var(--value), #020912 var(--value));
 }
 
 .destinationRow small {
-  font-size: 7px;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .rankingPanel p {
   margin: 8px 0 18px;
   color: #ffffff;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .rankingList {
@@ -787,19 +819,20 @@
 
 .rankingItem {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0 8px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 0 12px;
   align-items: center;
   color: var(--yellow);
 }
 
 .rankingItem strong {
-  font-size: 20px;
+  font-size: 32px;
+  line-height: 1;
 }
 
 .rankingItem span {
   overflow: hidden;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;

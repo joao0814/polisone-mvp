@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
 import { apiRequestBlob } from "../../../services/api";
 
-const missingStoragePaths = new Set();
-
 function ProtectedStorageImage({ storagePath, alt, className, fallback = null }) {
   const [src, setSrc] = useState("");
+  const localDataSrc = storagePath?.startsWith("data:") ? storagePath : "";
 
   useEffect(() => {
     let isActive = true;
     let objectUrl = "";
 
-    setSrc("");
-
-    if (!storagePath || missingStoragePaths.has(storagePath)) {
+    if (!storagePath) {
       return undefined;
+    }
+
+    if (storagePath.startsWith("data:")) {
+      return () => {
+        isActive = false;
+      };
     }
 
     apiRequestBlob(`/storage/${toStorageRoute(storagePath)}`)
@@ -22,11 +25,7 @@ function ProtectedStorageImage({ storagePath, alt, className, fallback = null })
         objectUrl = URL.createObjectURL(blob);
         setSrc(objectUrl);
       })
-      .catch((error) => {
-        if (error?.status === 404) {
-          missingStoragePaths.add(storagePath);
-        }
-
+      .catch(() => {
         if (isActive) setSrc("");
       });
 
@@ -36,9 +35,10 @@ function ProtectedStorageImage({ storagePath, alt, className, fallback = null })
     };
   }, [storagePath]);
 
-  if (!storagePath || !src) return fallback;
+  const resolvedSrc = localDataSrc || src;
+  if (!storagePath || !resolvedSrc) return fallback;
 
-  return <img src={src} alt={alt} className={className} />;
+  return <img src={resolvedSrc} alt={alt} className={className} />;
 }
 
 function toStorageRoute(storagePath) {

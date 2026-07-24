@@ -128,8 +128,9 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(170px, 1fr));
   gap: 16px;
-  max-width: 850px;
-  margin: 50px 0 20px auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 50px 0 20px;
 }
 
 .summaryCard {
@@ -145,27 +146,25 @@
 }
 
 .summaryIcon {
+  position: relative;
   width: 46px;
   height: 46px;
-  display: grid;
-  place-items: center;
   border-radius: 8px;
   background: #5f4a00;
   color: var(--yellow);
+  overflow: hidden;
 }
 
-.summaryIcon i {
+.summaryImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 28px;
-  height: 24px;
+  height: 28px;
   display: block;
-  background:
-    linear-gradient(currentColor 0 0) 2px 16px / 3px 8px,
-    linear-gradient(currentColor 0 0) 8px 12px / 3px 12px,
-    linear-gradient(currentColor 0 0) 14px 7px / 3px 17px,
-    linear-gradient(currentColor 0 0) 20px 3px / 3px 21px;
-  background-repeat: no-repeat;
-  border-bottom: 2px solid currentColor;
-  border-left: 2px solid currentColor;
+  object-fit: contain;
+  object-position: center;
+  transform: translate(-50%, -50%);
 }
 
 .summaryCard span {

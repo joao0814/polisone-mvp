@@ -3,6 +3,7 @@ import Sidebar from "../../components/Common/Sidebar/Sidebar";
 import logoNav from "../../assets/images/home/logo nav.png";
 import AsyncSectionState from "../../components/Common/AsyncSectionState/AsyncSectionState";
 import CampaignStatusPanel from "../../components/Common/CampaignStatusPanel/CampaignStatusPanel";
+import summaryIcon from "../../assets/images/visao_geral/icons/metadevotos.png";
 import {
   menuItems,
   municipalitiesByMode,
@@ -66,7 +67,7 @@ function Municipios({ session, onLogout }) {
   return (
     <main className={styles.page}>
       <Sidebar
-        activeItem="Municipios"
+        activeItem="Municípios"
         brandImage={logoNav}
         brandLabel="Campanha"
         items={menuItems}
@@ -79,18 +80,23 @@ function Municipios({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Visao Geral da Campanha</p>
-            <h1>Municipios</h1>
+            <p className={styles.kicker}>Visão Geral da Campanha</p>
+            <h1>Municípios</h1>
           </div>
 
           <CampaignStatusPanel className={styles.headerRight} />
         </header>
 
-        <section className={styles.summaryGrid} aria-label="Indicadores dos municipios">
+        <section className={styles.summaryGrid} aria-label="Indicadores dos municípios">
           {summaryCards.map((card) => (
             <article className={styles.summaryCard} key={card.label}>
               <span className={styles.summaryIcon} aria-hidden="true">
-                <i />
+                <img
+                  alt=""
+                  className={styles.summaryImage}
+                  draggable="false"
+                  src={summaryIcon}
+                />
               </span>
               <div>
                 <span>{card.label}</span>
@@ -101,35 +107,35 @@ function Municipios({ session, onLogout }) {
           ))}
         </section>
 
-        <section className={styles.tablePanel} aria-label="Lista de municipios">
+        <section className={styles.tablePanel} aria-label="Lista de municípios">
           <div className={styles.tableToolbar}>
             <label className={styles.searchBox}>
               <input
-                aria-label="Buscar municipio"
-                placeholder="Busca"
+                aria-label="Buscar município"
+                placeholder="Busca rápida"
                 type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
-              <button type="button" aria-label="Buscar municipio">
+              <button type="button" aria-label="Buscar município">
                 <span aria-hidden="true" />
               </button>
             </label>
 
-            <div className={styles.segmented} aria-label="Filtros de periodo">
+            <div className={styles.segmented} aria-label="Filtros de período">
               <button
                 className={mode === "campaign" ? styles.segmentedActive : ""}
                 type="button"
                 onClick={() => setMode("campaign")}
               >
-                Periodo de campanha
+                Período de campanha
               </button>
               <button
                 className={mode === "votes" ? styles.segmentedActive : ""}
                 type="button"
                 onClick={() => setMode("votes")}
               >
-                Apuracao dos votos
+                Apuração dos votos
               </button>
             </div>
           </div>
@@ -144,66 +150,66 @@ function Municipios({ session, onLogout }) {
 
           {municipalityRows.length ? (
             <>
-            <div className={styles.tableScroll}>
-              <table className={styles.municipalityTable}>
-                <thead>
-                  <tr>
-                    <th>Municipios</th>
-                    <th>Regiao</th>
-                    <th>Representantes</th>
-                    <th>Populacao</th>
-                    <th>Eleitores</th>
-                    <th>Emendas (R$)</th>
-                    <th>Emendas (QTD)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedRows.length ? (
-                    paginatedRows.map((municipality) => (
-                      <tr key={municipality.id}>
-                        <td>{municipality.name}</td>
-                        <td>{municipality.region}</td>
-                        <td>{municipality.representatives}</td>
-                        <td>{municipality.population}</td>
-                        <td>{municipality.voters}</td>
-                        <td>{municipality.amendmentsValue}</td>
-                        <td>{municipality.amendmentsCount}</td>
-                      </tr>
-                    ))
-                  ) : (
+              <div className={styles.tableScroll}>
+                <table className={styles.municipalityTable}>
+                  <thead>
                     <tr>
-                      <td className={styles.emptyCell} colSpan="7">
-                        Nenhum municipio encontrado com os filtros atuais.
-                      </td>
+                      <th>Municípios</th>
+                      <th>Região</th>
+                      <th>Representantes</th>
+                      <th>População</th>
+                      <th>Eleitores</th>
+                      <th>Emendas (R$)</th>
+                      <th>Emendas (QTD)</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <footer className={styles.pagination}>
-              <span>
-                Mostrando {paginationRange.start} a {paginationRange.end} de {paginationRange.total}
-              </span>
-              <nav aria-label="Paginacao de municipios">
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <button
-                    className={currentPage === index + 1 ? styles.pageActive : ""}
-                    key={`municipios-page-${index + 1}`}
-                    type="button"
-                    onClick={() => setCurrentPage(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </nav>
-              <button type="button">{pageSize} por pagina</button>
-            </footer>
+                  </thead>
+                  <tbody>
+                    {paginatedRows.length ? (
+                      paginatedRows.map((municipality) => (
+                        <tr key={municipality.id}>
+                          <td>{municipality.name}</td>
+                          <td>{municipality.region}</td>
+                          <td>{municipality.representatives}</td>
+                          <td>{municipality.population}</td>
+                          <td>{municipality.voters}</td>
+                          <td>{municipality.amendmentsValue}</td>
+                          <td>{municipality.amendmentsCount}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td className={styles.emptyCell} colSpan="7">
+                          Nenhum município encontrado com os filtros atuais.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <footer className={styles.pagination}>
+                <span>
+                  Mostrando {paginationRange.start} a {paginationRange.end} de {paginationRange.total}
+                </span>
+                <nav aria-label="Paginação de municípios">
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      className={currentPage === index + 1 ? styles.pageActive : ""}
+                      key={`municipios-page-${index + 1}`}
+                      type="button"
+                      onClick={() => setCurrentPage(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </nav>
+                <button type="button">{pageSize} por página</button>
+              </footer>
             </>
           ) : (
             <AsyncSectionState
-              description="Os municipios aparecerao aqui assim que a fonte de dados desta tela estiver conectada."
+              description="Os municípios aparecerão aqui assim que a fonte de dados desta tela estiver conectada."
               state="empty"
-              title="Nenhum municipio disponivel"
+              title="Nenhum município disponível"
             />
           )}
         </section>

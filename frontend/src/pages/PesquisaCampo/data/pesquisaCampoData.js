@@ -47,17 +47,17 @@ export const researchScenarios = [
       { label: "Partido", value: "14,9%", color: "#ff3030" },
     ],
     cityProblems: [
-      { label: "Saude", value: 38 },
+      { label: "Saúde", value: 38 },
       { label: "Mobilidade", value: 24 },
-      { label: "Seguranca", value: 16 },
+      { label: "Segurança", value: 16 },
       { label: "Emprego", value: 12 },
-      { label: "Educacao", value: 6 },
+      { label: "Educação", value: 6 },
       { label: "Outros", value: 4 },
     ],
     priorityRanking: [
-      { position: "1o", label: "Saude", value: 92, votes: "4.520 votos" },
-      { position: "2o", label: "Seguranca", value: 74, votes: "1.100 votos" },
-      { position: "3o", label: "Educacao", value: 62, votes: "927 votos" },
+      { position: "1o", label: "Saúde", value: 92, votes: "4.520 votos" },
+      { position: "2o", label: "Segurança", value: 74, votes: "1.100 votos" },
+      { position: "3o", label: "Educação", value: 62, votes: "927 votos" },
       { position: "4o", label: "Emprego/renda", value: 48, votes: "754 votos" },
       { position: "5o", label: "Outros", value: 34, votes: "698 votos" },
     ],
@@ -89,18 +89,18 @@ export const researchScenarios = [
     footerMetrics: [
       { title: "Meta da semana", value: "2.000", note: "TOTAL" },
       { title: "Realizadas na semana", value: "1.428", note: "71,4% DO TOTAL" },
-      { title: "Crescimento de Pesquisas", value: "36%", note: "Em relacao a semana anterior", trend: true },
-      { title: "Crescimento de Municipios pesquisados", value: "28%", note: "Em relacao a semana anterior", trend: true },
-      { title: "Ranking do candidato", value: "3o", note: "Subiu duas posicoes em relacao a semana anterior" },
+      { title: "Crescimento de Pesquisas", value: "36%", note: "Em relação a semana anterior", trend: true },
+      { title: "Crescimento de Municipios pesquisados", value: "28%", note: "Em relação a semana anterior", trend: true },
+      { title: "Ranking do candidato", value: "3o", note: "Subiu duas posições em relação a semana anterior" },
     ],
     perceptionPanels: [
       {
-        title: "Voce conhece o candidato?",
+        title: "Você conhece o candidato?",
         items: [
           { label: "Sim", value: 38 },
           { label: "Ja ouvi falar", value: 34 },
           { label: "Conheco de vista", value: 20 },
-          { label: "Nao conheco", value: 8 },
+          { label: "Não conheco", value: 8 },
         ],
       },
       {
@@ -109,7 +109,7 @@ export const researchScenarios = [
           { label: "Com certeza", value: 33 },
           { label: "Provavel votar", value: 28 },
           { label: "Ainda estou indeciso", value: 25 },
-          { label: "Nao votaria", value: 14 },
+          { label: "Não votaria", value: 14 },
         ],
       },
       {
@@ -125,7 +125,7 @@ export const researchScenarios = [
   },
   {
     id: "sao-jose-2025",
-    title: "Sao Jose dos Campos",
+    title: "São Jose dos Campos",
     entity: "Equipe Vale Norte",
     type: "Espontanea",
     year: "2025",
@@ -139,7 +139,7 @@ export const researchScenarios = [
       { tone: "red", title: "Taxa de resposta", value: "71%", note: "" },
     ],
     cityDistribution: [
-      { label: "Sao Jose dos Campos", value: "52,1%", color: "#00b765" },
+      { label: "São Jose dos Campos", value: "52,1%", color: "#00b765" },
       { label: "Jacarei", value: "19,7%", color: "#1687df" },
       { label: "Taubate", value: "16,4%", color: "#ff9518" },
       { label: "Cacapava", value: "11,8%", color: "#ff3030" },
@@ -151,18 +151,18 @@ export const researchScenarios = [
       { label: "Partido", value: "14,3%", color: "#ff3030" },
     ],
     cityProblems: [
-      { label: "Saude", value: 31 },
+      { label: "Saúde", value: 31 },
       { label: "Emprego", value: 23 },
       { label: "Transporte", value: 18 },
-      { label: "Seguranca", value: 14 },
+      { label: "Segurança", value: 14 },
       { label: "Habitacao", value: 8 },
       { label: "Outros", value: 6 },
     ],
     priorityRanking: [
-      { position: "1o", label: "Saude", value: 86, votes: "3.910 votos" },
+      { position: "1o", label: "Saúde", value: 86, votes: "3.910 votos" },
       { position: "2o", label: "Emprego/renda", value: 69, votes: "1.540 votos" },
-      { position: "3o", label: "Seguranca", value: 58, votes: "1.118 votos" },
-      { position: "4o", label: "Educacao", value: 44, votes: "884 votos" },
+      { position: "3o", label: "Segurança", value: 58, votes: "1.118 votos" },
+      { position: "4o", label: "Educação", value: 44, votes: "884 votos" },
       { position: "5o", label: "Mobilidade", value: 29, votes: "603 votos" },
     ],
     electorateProfile: {
@@ -193,18 +193,18 @@ export const researchScenarios = [
     footerMetrics: [
       { title: "Meta da semana", value: "1.500", note: "TOTAL" },
       { title: "Realizadas na semana", value: "902", note: "60,1% DO TOTAL" },
-      { title: "Crescimento de Pesquisas", value: "18%", note: "Em relacao a semana anterior", trend: true },
-      { title: "Crescimento de Municipios pesquisados", value: "12%", note: "Em relacao a semana anterior", trend: true },
-      { title: "Ranking do candidato", value: "4o", note: "Manteve a posicao na semana" },
+      { title: "Crescimento de Pesquisas", value: "18%", note: "Em relação a semana anterior", trend: true },
+      { title: "Crescimento de Municipios pesquisados", value: "12%", note: "Em relação a semana anterior", trend: true },
+      { title: "Ranking do candidato", value: "4o", note: "Manteve a posição na semana" },
     ],
     perceptionPanels: [
       {
-        title: "Voce conhece o candidato?",
+        title: "Você conhece o candidato?",
         items: [
           { label: "Sim", value: 31 },
           { label: "Ja ouvi falar", value: 29 },
           { label: "Conheco de vista", value: 24 },
-          { label: "Nao conheco", value: 16 },
+          { label: "Não conheco", value: 16 },
         ],
       },
       {
@@ -213,7 +213,7 @@ export const researchScenarios = [
           { label: "Com certeza", value: 24 },
           { label: "Provavel votar", value: 31 },
           { label: "Ainda estou indeciso", value: 27 },
-          { label: "Nao votaria", value: 18 },
+          { label: "Não votaria", value: 18 },
         ],
       },
       {
@@ -229,7 +229,7 @@ export const researchScenarios = [
   },
   {
     id: "sao-paulo-2024",
-    title: "Sao Paulo",
+    title: "São Paulo",
     entity: "Equipe Capital Leste",
     type: "Quantitativa",
     year: "2024",
@@ -256,16 +256,16 @@ export const researchScenarios = [
     ],
     cityProblems: [
       { label: "Transporte", value: 34 },
-      { label: "Saude", value: 26 },
-      { label: "Seguranca", value: 17 },
+      { label: "Saúde", value: 26 },
+      { label: "Segurança", value: 17 },
       { label: "Moradia", value: 11 },
       { label: "Emprego", value: 7 },
       { label: "Outros", value: 5 },
     ],
     priorityRanking: [
       { position: "1o", label: "Transporte", value: 88, votes: "5.240 votos" },
-      { position: "2o", label: "Saude", value: 72, votes: "2.004 votos" },
-      { position: "3o", label: "Seguranca", value: 56, votes: "1.480 votos" },
+      { position: "2o", label: "Saúde", value: 72, votes: "2.004 votos" },
+      { position: "3o", label: "Segurança", value: 56, votes: "1.480 votos" },
       { position: "4o", label: "Moradia", value: 41, votes: "1.022 votos" },
       { position: "5o", label: "Emprego/renda", value: 33, votes: "910 votos" },
     ],
@@ -297,18 +297,18 @@ export const researchScenarios = [
     footerMetrics: [
       { title: "Meta da semana", value: "2.800", note: "TOTAL" },
       { title: "Realizadas na semana", value: "2.132", note: "76,1% DO TOTAL" },
-      { title: "Crescimento de Pesquisas", value: "22%", note: "Em relacao a semana anterior", trend: true },
-      { title: "Crescimento de Municipios pesquisados", value: "11%", note: "Em relacao a semana anterior", trend: true },
-      { title: "Ranking do candidato", value: "2o", note: "Subiu uma posicao em relacao a semana anterior" },
+      { title: "Crescimento de Pesquisas", value: "22%", note: "Em relação a semana anterior", trend: true },
+      { title: "Crescimento de Municipios pesquisados", value: "11%", note: "Em relação a semana anterior", trend: true },
+      { title: "Ranking do candidato", value: "2o", note: "Subiu uma posição em relação a semana anterior" },
     ],
     perceptionPanels: [
       {
-        title: "Voce conhece o candidato?",
+        title: "Você conhece o candidato?",
         items: [
           { label: "Sim", value: 42 },
           { label: "Ja ouvi falar", value: 30 },
           { label: "Conheco de vista", value: 18 },
-          { label: "Nao conheco", value: 10 },
+          { label: "Não conheco", value: 10 },
         ],
       },
       {
@@ -317,7 +317,7 @@ export const researchScenarios = [
           { label: "Com certeza", value: 36 },
           { label: "Provavel votar", value: 26 },
           { label: "Ainda estou indeciso", value: 23 },
-          { label: "Nao votaria", value: 15 },
+          { label: "Não votaria", value: 15 },
         ],
       },
       {

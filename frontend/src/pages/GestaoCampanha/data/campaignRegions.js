@@ -1,7 +1,7 @@
 const campaignRegions = [
   {
     id: "norte",
-    group: "Regioes do Brasil",
+    group: "Regiões do Brasil",
     label: "Norte",
     showInPerformance: false,
     value: 54,
@@ -9,7 +9,7 @@ const campaignRegions = [
   },
   {
     id: "nordeste",
-    group: "Regioes do Brasil",
+    group: "Regiões do Brasil",
     label: "Nordeste",
     showInPerformance: false,
     value: 67,
@@ -17,7 +17,7 @@ const campaignRegions = [
   },
   {
     id: "centro-oeste",
-    group: "Regioes do Brasil",
+    group: "Regiões do Brasil",
     label: "Centro-Oeste",
     showInPerformance: false,
     value: 48,
@@ -25,7 +25,7 @@ const campaignRegions = [
   },
   {
     id: "sudeste",
-    group: "Regioes do Brasil",
+    group: "Regiões do Brasil",
     label: "Sudeste",
     showInPerformance: false,
     value: 82,
@@ -33,7 +33,7 @@ const campaignRegions = [
   },
   {
     id: "sul",
-    group: "Regioes do Brasil",
+    group: "Regiões do Brasil",
     label: "Sul",
     showInPerformance: false,
     value: 61,
@@ -41,8 +41,8 @@ const campaignRegions = [
   },
   {
     id: "metropolitana-sp",
-    group: "Sub-regioes de campanha",
-    label: "Regiao metropolitana de SP",
+    group: "Sub-regiões de campanha",
+    label: "Região metropolitana de SP",
     value: 42,
     municipalityIds: [
       "3550308",
@@ -61,8 +61,8 @@ const campaignRegions = [
   },
   {
     id: "campinas",
-    group: "Sub-regioes de campanha",
-    label: "Regiao de Campinas",
+    group: "Sub-regiões de campanha",
+    label: "Região de Campinas",
     value: 71,
     municipalityIds: [
       "3509502",
@@ -79,8 +79,8 @@ const campaignRegions = [
   },
   {
     id: "vale-paraiba",
-    group: "Sub-regioes de campanha",
-    label: "Vale do Paraiba",
+    group: "Sub-regiões de campanha",
+    label: "Vale do Paraíba",
     value: 50,
     municipalityIds: [
       "3549904",
@@ -100,7 +100,7 @@ const campaignRegions = [
   },
   {
     id: "baixada-santista",
-    group: "Sub-regioes de campanha",
+    group: "Sub-regiões de campanha",
     label: "Baixada Santista",
     value: 58,
     municipalityIds: [
@@ -117,8 +117,8 @@ const campaignRegions = [
   },
   {
     id: "ribeirao-preto",
-    group: "Sub-regioes de campanha",
-    label: "Regiao de Ribeirao Preto",
+    group: "Sub-regiões de campanha",
+    label: "Região de Ribeirão Preto",
     value: 82,
     municipalityIds: [
       "3543402",
@@ -134,8 +134,8 @@ const campaignRegions = [
   },
   {
     id: "sorocaba",
-    group: "Sub-regioes de campanha",
-    label: "Regiao de Sorocaba",
+    group: "Sub-regiões de campanha",
+    label: "Região de Sorocaba",
     value: 46,
     municipalityIds: [
       "3552205",
@@ -150,8 +150,8 @@ const campaignRegions = [
   },
   {
     id: "bauru",
-    group: "Sub-regioes de campanha",
-    label: "Regiao de Bauru",
+    group: "Sub-regiões de campanha",
+    label: "Região de Bauru",
     value: 63,
     municipalityIds: [
       "3506003",
@@ -165,8 +165,8 @@ const campaignRegions = [
   },
   {
     id: "rio-preto",
-    group: "Sub-regioes de campanha",
-    label: "Regiao de Sao Jose do Rio Preto",
+    group: "Sub-regiões de campanha",
+    label: "Região de São José do Rio Preto",
     value: 57,
     municipalityIds: [
       "3549805",

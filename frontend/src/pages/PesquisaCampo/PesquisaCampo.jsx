@@ -238,7 +238,7 @@ function PesquisaCampo({ session, onLogout }) {
             <span>Recorte ativo</span>
             <strong>{activeScenario.title}</strong>
             <small>
-              {activeScenario.entity} · {activeScenario.type} · {activeScenario.status}
+              {activeScenario.entity} Â· {activeScenario.type} Â· {activeScenario.status}
             </small>
           </div>
           <p>{filteredScenarios.length} resultado(s) com os filtros atuais</p>
@@ -271,7 +271,7 @@ function PesquisaCampo({ session, onLogout }) {
         <VoterProfile profile={activeScenario.electorateProfile} />
 
         <section className={styles.middleGrid} aria-label="Analise eleitoral">
-          <DonutPanel title="O que mais influencia seu voto?" items={activeScenario.voteInfluence} />
+          <DonutPanel title="O que mais influência seu voto?" items={activeScenario.voteInfluence} />
 
           <SpontaneousPanel
             items={visibleSpontaneousVotes}
@@ -382,7 +382,7 @@ function VoterProfile({ profile }) {
     <section className={styles.profilePanel} aria-label="Perfil de eleitores">
       <div className={styles.genderBlock}>
         <h2>Perfil de Eleitores</h2>
-        <p>Genero:</p>
+        <p>Gênero:</p>
 
         <div className={styles.genderRow}>
           <div className={`${styles.genderIcon} ${styles.genderFemale}`} />
@@ -412,7 +412,7 @@ function VoterProfile({ profile }) {
       </div>
 
       <div className={styles.ageBlock}>
-        <h3>Faixa Etaria:</h3>
+        <h3>Faixa Etária:</h3>
         {profile.ageRanges.map((range) => (
           <div className={styles.ageRow} key={range.label}>
             <span>{range.label}</span>
@@ -423,7 +423,7 @@ function VoterProfile({ profile }) {
       </div>
 
       <aside className={styles.averageCard}>
-        <h3>Idade Media</h3>
+        <h3>Idade Média</h3>
         <strong>{profile.averageAge.total}</strong>
         <div className={styles.averageMeta}>
           <span className={styles.averageFemale}>

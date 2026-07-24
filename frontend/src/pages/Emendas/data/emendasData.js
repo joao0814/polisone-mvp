@@ -13,10 +13,10 @@ export const menuItems = [
 ];
 
 export const countdowns = [
-  { value: "38", label: "Dias para o inicio da campanha.", progress: 48, footer: "16/08" },
+  { value: "38", label: "Dias para o início da campanha.", progress: 48, footer: "16/08" },
   {
     value: "72",
-    label: "Dias para o dia da eleicao.",
+    label: "Dias para o dia da eleição.",
     progress: 18,
     footer: "04/10 (primeiro turno)",
   },
@@ -25,8 +25,8 @@ export const countdowns = [
 export const filterOptions = {
   type: ["Todos", "Individual", "Bancada"],
   year: ["2023 - 2026", "2024", "2025"],
-  status: ["TODAS", "Pago/Concluido", "Em execucao", "Em liberacao"],
-  city: ["TODOS", "Sao Jose dos Campos", "Taubate", "Sumare"],
+  status: ["TODAS", "Pago/Concluído", "Em execucao", "Em liberacao"],
+  city: ["TODOS", "São Jose dos Campos", "Taubate", "Sumare"],
   entity: ["TODOS", "Prefeituras", "Hospitais", "Associacoes"],
 };
 
@@ -68,17 +68,17 @@ export const amendments = [
     id: "2024.123.52362-1",
     number: "2024.123.52362",
     type: "Individual",
-    destination: "Prefeitura de Sao Jose dos Campos / SP",
+    destination: "Prefeitura de São Jose dos Campos / SP",
     object: "Construcao de Unidade basica de saude",
     value: "R$ 800.000,00",
-    status: "Pago/Concluido",
+    status: "Pago/Concluído",
     date: "15/03/2024",
   },
   {
     id: "2024.123.52362-2",
     number: "2024.123.52362",
     type: "Bancada",
-    destination: "Prefeitura de Sao Jose dos Campos / SP",
+    destination: "Prefeitura de São Jose dos Campos / SP",
     object: "Construcao de Unidade basica de saude",
     value: "R$ 800.000,00",
     status: "Em execucao",
@@ -88,17 +88,17 @@ export const amendments = [
     id: "2024.123.52362-3",
     number: "2024.123.52362",
     type: "Individual",
-    destination: "Prefeitura de Sao Jose dos Campos / SP",
+    destination: "Prefeitura de São Jose dos Campos / SP",
     object: "Construcao de Unidade basica de saude",
     value: "R$ 800.000,00",
-    status: "Pago/Concluido",
+    status: "Pago/Concluído",
     date: "15/03/2024",
   },
   {
     id: "2024.123.52362-4",
     number: "2024.123.52362",
     type: "Individual",
-    destination: "Prefeitura de Sao Jose dos Campos / SP",
+    destination: "Prefeitura de São Jose dos Campos / SP",
     object: "Construcao de Unidade basica de saude",
     value: "R$ 800.000,00",
     status: "Em liberacao",
@@ -108,24 +108,24 @@ export const amendments = [
     id: "2024.123.52362-5",
     number: "2024.123.52362",
     type: "Individual",
-    destination: "Prefeitura de Sao Jose dos Campos / SP",
+    destination: "Prefeitura de São Jose dos Campos / SP",
     object: "Construcao de Unidade basica de saude",
     value: "R$ 800.000,00",
-    status: "Pago/Concluido",
+    status: "Pago/Concluído",
     date: "15/03/2024",
   },
 ];
 
 export const statusDistribution = [
-  { label: "Pago/Concluido", value: "70,3%", color: "#00b765" },
+  { label: "Pago/Concluído", value: "70,3%", color: "#00b765" },
   { label: "Em Execucao", value: "19,3%", color: "#1687df" },
   { label: "Em Liberacao", value: "8%", color: "#ff9518" },
   { label: "Cancelado", value: "2%", color: "#ff3030" },
 ];
 
 export const destinationTypes = [
-  { label: "Educacao", value: 38 },
-  { label: "Saude", value: 24 },
+  { label: "Educação", value: 38 },
+  { label: "Saúde", value: 24 },
   { label: "Infraestrutura", value: 18 },
   { label: "Assistencia Social", value: 10 },
   { label: "Esporte e lazer", value: 6 },
@@ -133,7 +133,7 @@ export const destinationTypes = [
 ];
 
 export const cityRanking = [
-  { position: "1o", city: "Sao Jose dos Campos", value: 94 },
+  { position: "1o", city: "São Jose dos Campos", value: 94 },
   { position: "2o", city: "Taubate", value: 75 },
   { position: "3o", city: "Sumare", value: 62 },
   { position: "4o", city: "Guaratingueta", value: 48 },

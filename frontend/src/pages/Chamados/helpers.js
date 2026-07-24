@@ -61,7 +61,7 @@ export function mapStatusLabel(status) {
     WAITING_CUSTOMER: "Aguardando cliente",
     WAITING_INTERNAL: "Aguardando interno",
     RESOLVED: "Resolvido",
-    CLOSED: "Concluido",
+    CLOSED: "Concluído",
   };
 
   return labelMap[status] ?? status;

@@ -89,7 +89,7 @@ function Chamados({ session, onLogout }) {
           .length,
       },
       {
-        label: "Concluidos",
+        label: "Concluídos",
         value: allTickets.filter((ticket) => ticket.status === "CLOSED").length,
       },
     ];

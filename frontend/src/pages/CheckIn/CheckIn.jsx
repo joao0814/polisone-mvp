@@ -21,7 +21,7 @@ const ACTIVITY_TYPE_OPTIONS = [
   { value: "PANFLETAGEM", label: "Panfletagem" },
   { value: "ADESIVAGEM", label: "Adesivagem" },
   { value: "VISITA", label: "Visita" },
-  { value: "REUNIAO", label: "Reuniao" },
+  { value: "REUNIAO", label: "Reunião" },
   { value: "EVENTO", label: "Evento" },
   { value: "PESQUISA_CAMPO", label: "Pesquisa de campo" },
   { value: "OUTRO", label: "Outro" },
@@ -268,7 +268,7 @@ function CheckIn({ session, onLogout }) {
     return [
       {
         tone: "blue",
-        title: "Liderancas ativas hoje",
+        title: "Lideranças ativas hoje",
         value: formatInteger(leadersToday),
         note: `${formatPercent(leadersToday, leaders.length)} do total`,
       },
@@ -324,7 +324,7 @@ function CheckIn({ session, onLogout }) {
       { label: "Check-in", total: checkedIn, color: "#00b765" },
       { label: "Check-Out", total: checkedOut, color: "#1687df" },
       { label: "Cancelado", total: canceled, color: "#ff9518" },
-      { label: "Nao realizado", total: noAction, color: "#ff3030" },
+      { label: "Não realizado", total: noAction, color: "#ff3030" },
     ]);
   }, [allRepresentatives.length, leaders.length, todayCheckIns]);
 
@@ -356,7 +356,7 @@ function CheckIn({ session, onLogout }) {
           location: `${latestCheckIn.city_name} - ${latestCheckIn.state}`,
           role:
             latestCheckIn.person_type === "LEADER"
-              ? "Lideranca"
+              ? "Liderança"
               : "Representante",
           leader:
             latestCheckIn.person_type === "LEADER"
@@ -388,7 +388,7 @@ function CheckIn({ session, onLogout }) {
           location: `${latestCheckout.city_name} - ${latestCheckout.state}`,
           role:
             latestCheckout.person_type === "LEADER"
-              ? "Lideranca"
+              ? "Liderança"
               : "Representante",
           leader:
             latestCheckout.person_type === "LEADER"
@@ -429,7 +429,7 @@ function CheckIn({ session, onLogout }) {
         findTeamForCity(selected.city_ibge_code, selected.city_name)?.id;
 
       if (!teamId) {
-        setFormError("Nao foi encontrada equipe vinculada para registrar esse check-in.");
+        setFormError("Não foi encontrada equipe vinculada para registrar esse check-in.");
         setIsMutating(false);
         return;
       }
@@ -455,7 +455,7 @@ function CheckIn({ session, onLogout }) {
       await loadData();
       closeModal();
     } catch (error) {
-      setFormError(error.message || "Nao foi possivel registrar o check-in.");
+      setFormError(error.message || "Não foi possivel registrar o check-in.");
     } finally {
       setIsMutating(false);
     }
@@ -477,7 +477,7 @@ function CheckIn({ session, onLogout }) {
       await loadData();
       closeModal();
     } catch (error) {
-      setFormError(error.message || "Nao foi possivel atualizar o check-in.");
+      setFormError(error.message || "Não foi possivel atualizar o check-in.");
     } finally {
       setIsMutating(false);
     }
@@ -616,11 +616,11 @@ function CheckIn({ session, onLogout }) {
 
         <form
           className={styles.mainSearch}
-          aria-label="Buscar lideranca ou representante"
+          aria-label="Buscar liderança ou representante"
           onSubmit={handleSearchSubmit}
         >
           <input
-            placeholder="Buscar por lideranca/representante"
+            placeholder="Buscar por liderança/representante"
             type="search"
             value={search}
             onChange={(event) => handleSearchClear(event.target.value)}
@@ -684,7 +684,7 @@ function CheckIn({ session, onLogout }) {
                             <div>
                               <strong>{team.name}</strong>
                               <small>
-                                {team.city} • {team.peopleLabel}
+                                {team.city} â€¢ {team.peopleLabel}
                               </small>
                             </div>
                           </div>
@@ -739,7 +739,7 @@ function CheckIn({ session, onLogout }) {
                   </button>
                 ))}
               </nav>
-              <button type="button">{pageSize} por pagina</button>
+              <button type="button">{pageSize} por página</button>
             </footer>
           </article>
 
@@ -834,7 +834,7 @@ function CheckInModal({
               <span className={styles.modalEyebrow}>Operacao territorial</span>
               <h2 className={styles.modalTitle} id="checkin-modal-title">
                 {createForm.personType === "LEADER"
-                  ? "Novo check-in de lideranca"
+                  ? "Novo check-in de liderança"
                   : "Novo check-in de representante"}
               </h2>
             </div>
@@ -845,7 +845,7 @@ function CheckInModal({
               disabled={isMutating}
               aria-label="Fechar modal"
             >
-              ×
+              Ã—
             </button>
           </div>
 
@@ -915,7 +915,7 @@ function CheckInModal({
             </div>
 
             <label className={styles.modalTextareaField}>
-              <span>Observacao</span>
+              <span>Observação</span>
               <textarea
                 rows={4}
                 maxLength={400}
@@ -982,7 +982,7 @@ function CheckInModal({
             disabled={isMutating}
             aria-label="Fechar modal"
           >
-            ×
+            Ã—
           </button>
         </div>
 
@@ -1022,7 +1022,7 @@ function CheckInModal({
 
           {statusForm.action === "checkout" ? (
             <label className={styles.modalTextareaField}>
-              <span>Observacao do check-out</span>
+              <span>Observação do check-out</span>
               <textarea
                 rows={4}
                 maxLength={400}
@@ -1122,7 +1122,7 @@ function PhotoCard({ card }) {
       <div className={styles.locationBox}>
         <strong>{card.location}</strong>
         <span>{card.role}</span>
-        <small>Lideranca: {card.leader}</small>
+        <small>Liderança: {card.leader}</small>
       </div>
       <button className={styles[card.tone]} type="button">
         {card.action}

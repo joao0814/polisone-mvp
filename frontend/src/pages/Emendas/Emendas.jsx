@@ -51,7 +51,7 @@ function Emendas({ session, onLogout }) {
       const response = await getCampaignCosts();
       setCostsResponse(response);
     } catch (error) {
-      setLoadError(error.message || "Nao foi possivel carregar os custos.");
+      setLoadError(error.message || "Não foi possivel carregar os custos.");
       setCostsResponse({ items: [] });
     }
   }
@@ -64,7 +64,7 @@ function Emendas({ session, onLogout }) {
   );
 
   const filteredCosts = useMemo(() => {
-    const normalizedSearch = normalizeText(search);
+    const normalizedSearch = normalizeText(appliedSearch);
 
     return allCosts.filter((item) => {
       const matchesRegion =
@@ -147,7 +147,7 @@ function Emendas({ session, onLogout }) {
     } catch (error) {
       setFeedback({
         type: "error",
-        message: error?.message || "Nao foi possivel salvar o custo.",
+        message: error?.message || "Não foi possivel salvar o custo.",
       });
     } finally {
       setIsSubmitting(false);
@@ -173,7 +173,7 @@ function Emendas({ session, onLogout }) {
       setPendingDeleteId(costId);
       setFeedback({
         type: "info",
-        message: "Clique novamente em excluir para confirmar a remocao do custo.",
+        message: "Clique novamente em excluir para confirmar a remoção do custo.",
       });
       return;
     }
@@ -189,7 +189,7 @@ function Emendas({ session, onLogout }) {
     } catch (error) {
       setFeedback({
         type: "error",
-        message: error?.message || "Nao foi possivel remover o custo.",
+        message: error?.message || "Não foi possivel remover o custo.",
       });
     } finally {
       setPendingDeleteId(null);
@@ -243,7 +243,7 @@ function Emendas({ session, onLogout }) {
 
         {costsResponse === null ? (
           <AsyncSectionState
-            description="Os custos da campanha estao sendo carregados."
+            description="Os custos da campanha estão sendo carregados."
             state="loading"
             title="Carregando custos"
           />
@@ -251,7 +251,7 @@ function Emendas({ session, onLogout }) {
           <AsyncSectionState
             description={loadError}
             state="error"
-            title="Nao foi possivel carregar os custos"
+            title="Não foi possível carregar os custos"
           />
         ) : (
           <>
@@ -259,12 +259,12 @@ function Emendas({ session, onLogout }) {
         <section className={styles.filtersRow} aria-label="Filtros de custos">
           <form className={styles.filtersPanel} onSubmit={handleApplySearch}>
             <label>
-              <span>REGIAO</span>
+              <span>REGIÃO</span>
               <select value={regionFilter} onChange={(event) => setRegionFilter(event.target.value)}>
                 <option value="TODAS">Todas</option>
                 {campaignSubregions.map((region) => (
                   <option key={region.id} value={region.id}>
-                    {region.label}
+                    {prettifyText(region.label)}
                   </option>
                 ))}
               </select>
@@ -283,7 +283,7 @@ function Emendas({ session, onLogout }) {
             <div className={styles.searchLine}>
               <input
                 aria-label="Buscar custos"
-                placeholder="Buscar por cidade, regiao ou observacao"
+                placeholder="Buscar por cidade, região ou observação"
                 type="search"
                 value={draftSearch}
                 onChange={(event) => setDraftSearch(event.target.value)}
@@ -319,9 +319,9 @@ function Emendas({ session, onLogout }) {
           <article className={`${styles.financialCard} ${styles.green}`}>
             <span className={styles.financeIcon} aria-hidden="true" />
             <div>
-              <strong>Regioes com custo</strong>
+              <strong>Regiões com custo</strong>
               <p>{summary.regionsCount}</p>
-              <small>regioes com lancamento</small>
+              <small>regiões com lançamento</small>
             </div>
           </article>
           <article className={`${styles.financialCard} ${styles.cyan}`}>
@@ -329,7 +329,7 @@ function Emendas({ session, onLogout }) {
             <div>
               <strong>Cidades com custo</strong>
               <p>{summary.citiesCount}</p>
-              <small>cidades alcancadas</small>
+              <small>cidades alcançadas</small>
             </div>
           </article>
           <article className={`${styles.financialCard} ${styles.orange}`}>
@@ -337,13 +337,13 @@ function Emendas({ session, onLogout }) {
             <div>
               <strong>Maior aporte</strong>
               <p>{formatCurrency(summary.biggestAmount)}</p>
-              <small>maior lancamento individual</small>
+              <small>maior lançamento individual</small>
             </div>
           </article>
           <article className={`${styles.financialCard} ${styles.red}`}>
             <span className={styles.financeIcon} aria-hidden="true" />
             <div>
-              <strong>Lancamentos</strong>
+              <strong>Lançamentos</strong>
               <p>{summary.entriesCount}</p>
               <small>custos cadastrados</small>
             </div>
@@ -356,7 +356,7 @@ function Emendas({ session, onLogout }) {
               <label className={styles.searchBox}>
                 <input
                   aria-label="Busca na lista de custos"
-                  placeholder="Busca rapida"
+                  placeholder="Busca rápida"
                   type="search"
                   value={draftSearch}
                   onChange={(event) => setDraftSearch(event.target.value)}
@@ -372,24 +372,24 @@ function Emendas({ session, onLogout }) {
                 <thead>
                   <tr>
                     <th>Cidade</th>
-                    <th>Codigo IBGE</th>
-                    <th>Regiao</th>
+                    <th>Código IBGE</th>
+                    <th>Região</th>
                     <th>Valor</th>
                     <th>Data</th>
-                    <th>Observacao</th>
-                    <th>Acoes</th>
+                    <th>Observação</th>
+                    <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedCosts.length ? (
                     paginatedCosts.map((cost) => (
                       <tr key={cost.id}>
-                        <td>{cost.city_name}</td>
+                        <td>{prettifyText(cost.city_name)}</td>
                         <td>{cost.city_ibge_code}</td>
-                        <td>{cost.region_name}</td>
+                        <td>{prettifyText(cost.region_name)}</td>
                         <td>{formatCurrency(cost.amount)}</td>
                         <td>{formatDate(cost.spent_at)}</td>
-                        <td>{cost.notes || "Sem observacao"}</td>
+                        <td>{cost.notes || "Sem observação"}</td>
                         <td>
                           <div className={styles.actions}>
                             <button type="button" onClick={() => handleEdit(cost)}>
@@ -417,7 +417,7 @@ function Emendas({ session, onLogout }) {
               <span>
                 Mostrando {startEntry} a {endEntry} de {filteredCosts.length}
               </span>
-              <nav aria-label="Paginacao de custos">
+              <nav aria-label="Paginação de custos">
                 {paginationRange.map((page) => (
                   <button
                     key={page}
@@ -429,17 +429,21 @@ function Emendas({ session, onLogout }) {
                   </button>
                 ))}
               </nav>
-              <button type="button">{pageSize} por pagina</button>
+              <button type="button">{pageSize} por página</button>
             </div>
           </section>
 
           <section className={styles.formPanel} aria-label="Cadastro de custo">
             <div className={styles.formHeader}>
-              <p className={styles.kicker}>Lancamento financeiro</p>
+              <p className={styles.kicker}>Lançamento financeiro</p>
               <h2>{editingCostId ? "Editar custo" : "Novo custo"}</h2>
             </div>
 
-            <form className={styles.costForm} onSubmit={handleSubmit}>
+            <form
+              className={styles.costForm}
+              id="emendas-cost-form"
+              onSubmit={handleSubmit}
+            >
               <label>
                 <span>Cidade</span>
                 <input
@@ -455,7 +459,7 @@ function Emendas({ session, onLogout }) {
                 />
               </label>
               <label>
-                <span>Codigo IBGE</span>
+                <span>Código IBGE</span>
                 <input
                   required
                   type="text"
@@ -469,7 +473,7 @@ function Emendas({ session, onLogout }) {
                 />
               </label>
               <label>
-                <span>Regiao</span>
+                <span>Região</span>
                 <select
                   value={form.regionId}
                   onChange={(event) =>
@@ -478,7 +482,7 @@ function Emendas({ session, onLogout }) {
                 >
                   {campaignSubregions.map((region) => (
                     <option key={region.id} value={region.id}>
-                      {region.label}
+                      {prettifyText(region.label)}
                     </option>
                   ))}
                 </select>
@@ -507,7 +511,7 @@ function Emendas({ session, onLogout }) {
                 />
               </label>
               <label className={styles.notesField}>
-                <span>Observacao</span>
+                <span>Observação</span>
                 <textarea
                   rows="5"
                   value={form.notes}
@@ -517,8 +521,16 @@ function Emendas({ session, onLogout }) {
                 />
               </label>
 
-              <button className={styles.addButton} disabled={isSubmitting} type="submit">
-                {isSubmitting ? "Salvando..." : editingCostId ? "Salvar alteracoes" : "Cadastrar custo"}
+            </form>
+
+            <div className={styles.formActions}>
+              <button
+                className={styles.addButton}
+                disabled={isSubmitting}
+                form="emendas-cost-form"
+                type="submit"
+              >
+                {isSubmitting ? "Salvando..." : editingCostId ? "Salvar alterações" : "Cadastrar custo"}
               </button>
               {editingCostId ? (
                 <button
@@ -529,21 +541,21 @@ function Emendas({ session, onLogout }) {
                     setFeedback({ type: "", message: "" });
                   }}
                 >
-                  Cancelar edicao
+                  Cancelar edição
                 </button>
               ) : null}
-            </form>
+            </div>
           </section>
         </section>
 
-        <section className={styles.analyticsGrid} aria-label="Analiticos de custos">
+        <section className={styles.analyticsGrid} aria-label="Analíticos de custos">
           <article className={styles.destinationPanel}>
-            <h2>Distribuicao por regiao</h2>
+            <h2>Distribuição por região</h2>
             <div className={styles.destinationList}>
               {regionDistribution.length ? (
                 regionDistribution.map((item) => (
                   <div className={styles.destinationRow} key={item.label}>
-                    <span>{item.label}</span>
+                    <span>{prettifyText(item.label)}</span>
                     <i style={{ "--value": `${item.percent}%` }} />
                     <small>{item.percent}%</small>
                   </div>
@@ -555,14 +567,14 @@ function Emendas({ session, onLogout }) {
           </article>
 
           <article className={styles.rankingPanel}>
-            <h2>Ranking de Municipios</h2>
+            <h2>Ranking de Municípios</h2>
             <p>Top 5 por valor investido</p>
             <div className={styles.rankingList}>
               {cityRanking.length ? (
                 cityRanking.map((item, index) => (
                   <div className={styles.rankingItem} key={item.city}>
-                    <strong>{index + 1}o</strong>
-                    <span>{item.city}</span>
+                    <strong>{index + 1}º</strong>
+                    <span>{prettifyText(item.city)}</span>
                     <i style={{ "--value": `${item.percent}%` }} />
                   </div>
                 ))
@@ -661,7 +673,7 @@ function validateForm(form) {
   }
 
   if (form.cityIbgeCode.length !== 7) {
-    return "Informe um codigo IBGE valido com 7 digitos.";
+    return "Informe um código IBGE valido com 7 digitos.";
   }
 
   const amount = Number(form.amount);
@@ -707,3 +719,28 @@ function toDateTimeLocal(value) {
 }
 
 export default Emendas;
+
+function prettifyText(value) {
+  if (!value) return value;
+
+  const normalized = String(value).trim();
+  const dictionary = new Map([
+    ["Sao Paulo", "São Paulo"],
+    ["Sao Jose dos Campos", "São José dos Campos"],
+    ["Sao Jose do Rio Preto", "São José do Rio Preto"],
+    ["Taubate", "Taubaté"],
+    ["Sumare", "Sumaré"],
+    ["Guaratingueta", "Guaratinguetá"],
+    ["Ribeirao Preto", "Ribeirão Preto"],
+    ["Cacapava", "Caçapava"],
+    ["Regiao metropolitana de SP", "Região metropolitana de SP"],
+    ["Regiao de Campinas", "Região de Campinas"],
+    ["Regiao de Ribeirao Preto", "Região de Ribeirão Preto"],
+    ["Regiao de Sorocaba", "Região de Sorocaba"],
+    ["Regiao de Bauru", "Região de Bauru"],
+    ["Regiao de Sao Jose do Rio Preto", "Região de São José do Rio Preto"],
+    ["Vale do Paraiba", "Vale do Paraíba"],
+  ]);
+
+  return dictionary.get(normalized) ?? normalized;
+}

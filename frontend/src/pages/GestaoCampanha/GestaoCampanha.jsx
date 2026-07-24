@@ -26,31 +26,31 @@ import styles from "./GestaoCampanha.module.css";
 
 const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
 ];
 
 const metrics = [
   { label: "Meta de votos", value: null, icon: "chart" },
-  { label: "Votos necessarios", value: null, icon: "ballot" },
+  { label: "Votos necessários", value: null, icon: "ballot" },
   { label: "Total de votos", value: null, icon: "vote" },
-  { label: "Municipios ativos", value: null, icon: "pin" },
-  { label: "Liderancas", value: null, icon: "network" },
+  { label: "Municípios ativos", value: null, icon: "pin" },
+  { label: "Lideranças", value: null, icon: "network" },
   { label: "Representantes", value: null, icon: "person" },
 ];
 
 const dailySummary = [
   { key: "events_scheduled", label: "Eventos", value: "--", note: "Agendados" },
-  { key: "municipalities_visited_today", label: "Municipios visitados", value: "--", note: "Hoje" },
+  { key: "municipalities_visited_today", label: "Municípios visitados", value: "--", note: "Hoje" },
   { key: "field_teams_active_now", label: "Equipes em campo", value: "--", note: "Ativas agora" },
   { key: "activities_registered_today", label: "Atividades registradas", value: "0", note: "Hoje" },
-  { key: "new_leaders_today", label: "Novas liderancas", value: "0", note: "Hoje" },
+  { key: "new_leaders_today", label: "Novas lideranças", value: "0", note: "Hoje" },
 ];
 
 const performanceRegions = campaignRegions.filter(
@@ -182,7 +182,7 @@ function GestaoCampanha({ session, onLogout }) {
   return (
     <main className={styles.page}>
       <Sidebar
-        activeItem="Visao Geral"
+        activeItem="Visão Geral"
         brandImage={logoNav}
         brandLabel="Campanha"
         items={menuItems}
@@ -210,8 +210,8 @@ function GestaoCampanha({ session, onLogout }) {
           <DashboardPanel
             actions={
               <div className={styles.segmented}>
-                <button type="button">Periodo de campanha</button>
-                <button type="button">Apuracao dos votos</button>
+                <button type="button">Período de campanha</button>
+                <button type="button">Apuração dos votos</button>
               </div>
             }
             className={styles.mapPanel}
@@ -229,7 +229,7 @@ function GestaoCampanha({ session, onLogout }) {
           <DashboardPanel
             className={styles.performancePanel}
             subtitle="Comparativo com a meta"
-            title="Desempenho por regiao"
+            title="Desempenho por região"
           >
             <div className={styles.performanceList}>
               {resolvedPerformanceRegions.map((region) => (
@@ -283,7 +283,7 @@ function GestaoCampanha({ session, onLogout }) {
             }
             className={styles.municipalityPanel}
             subtitle="Top 5 por desempenho"
-            title="Ranking de Municipios"
+            title="Ranking de Municípios"
           >
             <MunicipalityRanking items={resolvedMunicipalityRanking} />
           </DashboardPanel>
@@ -293,12 +293,18 @@ function GestaoCampanha({ session, onLogout }) {
               <div className={styles.smallSegmented}>
                 <button
                   type="button"
+                  className={
+                    costRankingMode === "region" ? styles.segmentedActive : ""
+                  }
                   onClick={() => setCostRankingMode("region")}
                 >
-                  Regiao
+                  Região
                 </button>
                 <button
                   type="button"
+                  className={
+                    costRankingMode === "city" ? styles.segmentedActive : ""
+                  }
                   onClick={() => setCostRankingMode("city")}
                 >
                   Cidades
@@ -307,7 +313,7 @@ function GestaoCampanha({ session, onLogout }) {
             }
             className={styles.costPanel}
             subtitle="Ranking de custo financeiro"
-            title="Custo por regiao"
+            title="Custo por região"
           >
             <CostRanking items={resolvedCostRanking} />
             <button
@@ -320,7 +326,7 @@ function GestaoCampanha({ session, onLogout }) {
           </DashboardPanel>
         </section>
 
-        <section className={styles.operationGrid} aria-label="Operacao em campo">
+        <section className={styles.operationGrid} aria-label="Operação em campo">
           <DashboardPanel
             actions={
               <button
@@ -386,10 +392,10 @@ function formatMetricValue(value) {
 function getOverviewMetricKey(label) {
   const map = {
     "Meta de votos": "vote_goal",
-    "Votos necessarios": "votes_needed",
+    "Votos necessários": "votes_needed",
     "Total de votos": "total_votes",
-    "Municipios ativos": "municipalities_active",
-    Liderancas: "leaders",
+    "Municípios ativos": "municipalities_active",
+    Lideranças: "leaders",
     Representantes: "representatives",
   };
 

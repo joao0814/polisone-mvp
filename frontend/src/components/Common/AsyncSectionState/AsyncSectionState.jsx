@@ -9,7 +9,7 @@ function AsyncSectionState({
     title ||
     {
       loading: "Carregando informacoes",
-      error: "Nao foi possivel carregar",
+      error: "Não foi possivel carregar",
       empty: "Nenhum dado disponivel",
     }[state];
 
