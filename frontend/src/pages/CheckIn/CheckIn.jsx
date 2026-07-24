@@ -373,7 +373,7 @@ function CheckIn({ session, onLogout }) {
           time: formatTime(latestActivity.happened_at || latestActivity.created_at),
           date: formatShortDate(latestActivity.happened_at || latestActivity.created_at),
           location: `${latestActivity.city_name} - ${latestActivity.state}`,
-          role: "Operacao",
+          role: "Opera??o",
           leader:
             findLeaderForCity(latestActivity.city_ibge_code)?.name || "--",
         };
@@ -607,7 +607,7 @@ function CheckIn({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Visao Geral da Campanha</p>
+            <p className={styles.kicker}>Vis?o Geral da Campanha</p>
             <h1>Check-in</h1>
           </div>
 
@@ -727,7 +727,7 @@ function CheckIn({ session, onLogout }) {
               <span>
                 Mostrando {paginationRange.start} a {paginationRange.end} de {paginationRange.total}
               </span>
-              <nav aria-label="Paginacao de check-in">
+              <nav aria-label="Pagina??o de check-in">
                 {Array.from({ length: totalPages }).map((_, index) => (
                   <button
                     className={currentPage === index + 1 ? styles.pageActive : ""}
@@ -831,7 +831,7 @@ function CheckInModal({
         >
           <div className={styles.modalHeader}>
             <div>
-              <span className={styles.modalEyebrow}>Operacao territorial</span>
+              <span className={styles.modalEyebrow}>Opera??o territorial</span>
               <h2 className={styles.modalTitle} id="checkin-modal-title">
                 {createForm.personType === "LEADER"
                   ? "Novo check-in de liderança"
@@ -870,7 +870,7 @@ function CheckInModal({
                       </option>
                     ))
                   ) : (
-                    <option value="">Nenhuma opcao disponivel</option>
+                    <option value="">Nenhuma op??o dispon?vel</option>
                   )}
                 </select>
               </label>
@@ -896,7 +896,7 @@ function CheckInModal({
               </label>
 
               <label className={styles.modalField}>
-                <span>Municipio</span>
+                <span>Munic?pio</span>
                 <input
                   type="text"
                   value={selectedCreatePerson?.city_name || "--"}
@@ -970,7 +970,7 @@ function CheckInModal({
       >
         <div className={styles.modalHeader}>
           <div>
-            <span className={styles.modalEyebrow}>Operacao territorial</span>
+            <span className={styles.modalEyebrow}>Opera??o territorial</span>
             <h2 className={styles.modalTitle} id="checkin-status-modal-title">
               Atualizar check-in
             </h2>

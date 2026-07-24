@@ -1,9 +1,14 @@
 .sidebar {
   width: 214px;
+  height: 100svh;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  flex-shrink: 0;
   background:
     linear-gradient(180deg, rgba(4, 20, 39, 0.98), rgba(0, 8, 18, 0.98)),
     #000a15;
@@ -488,7 +493,9 @@
 }
 
 .sidebarFooter {
+  flex: 0 0 auto;
   padding: 10px 14px 18px;
+  background: inherit;
 }
 
 .logoutBtn {
@@ -542,7 +549,9 @@
 @media (max-width: 760px) {
   .sidebar {
     width: 100%;
+    height: auto;
     min-height: auto;
+    position: static;
   }
 
   .sidebarContent {

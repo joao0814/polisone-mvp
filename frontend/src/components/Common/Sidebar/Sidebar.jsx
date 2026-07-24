@@ -14,8 +14,9 @@ function Sidebar({
   userName = "Usuario",
 }) {
   const navigate = useNavigate();
+  const normalizedActiveItem = normalizeLabel(activeItem);
   const hasActiveTerritoryChild = items.some(
-    (item) => isTerritoryChild(item.label) && item.label === activeItem,
+    (item) => isTerritoryChild(item.label) && normalizeLabel(item.label) === normalizedActiveItem,
   );
   const [isTerritoryOpen, setIsTerritoryOpen] = useState(hasActiveTerritoryChild);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -70,9 +71,12 @@ function Sidebar({
         <nav aria-label="Menu principal">
           <ul className={styles.sideItems}>
             {items.map((item) => {
-              const isTerritoryParent = item.label === "Territorio";
+              const normalizedLabel = normalizeLabel(item.label);
+              const isTerritoryParent = normalizedLabel === "territorio";
               const isChild = isTerritoryChild(item.label);
-              const isActive = item.label === activeItem || (isTerritoryParent && hasActiveTerritoryChild);
+              const isActive =
+                normalizedLabel === normalizedActiveItem ||
+                (isTerritoryParent && hasActiveTerritoryChild);
 
               if (isChild && !isTerritoryOpen) {
                 return null;
@@ -148,24 +152,32 @@ function getInitials(name = "") {
 
 function getIconClass(label = "") {
   const icons = {
-    "Portal do Candidato": "iconHome",
-    "Visao Geral": "iconTarget",
-    "Inteligencia Eleitoral": "iconIdea",
-    Municipios: "iconCity",
-    Emendas: "iconMoney",
-    Equipes: "iconUsers",
-    "Check-in": "iconCheck",
-    "Pesquisa de campo": "iconSearch",
-    Territorio: "iconMap",
-    "Mapa eleitoral": "iconMapPin",
-    Metricas: "iconBars",
+    "portal do candidato": "iconHome",
+    "visao geral": "iconTarget",
+    "inteligencia eleitoral": "iconIdea",
+    municipios: "iconCity",
+    emendas: "iconMoney",
+    equipes: "iconUsers",
+    "check-in": "iconCheck",
+    "pesquisa de campo": "iconSearch",
+    territorio: "iconMap",
+    "mapa eleitoral": "iconMapPin",
+    metricas: "iconBars",
   };
 
-  return icons[label] || "iconTarget";
+  return icons[normalizeLabel(label)] || "iconTarget";
 }
 
 function isTerritoryChild(label = "") {
-  return ["Mapa eleitoral", "Metricas"].includes(label);
+  return ["mapa eleitoral", "metricas"].includes(normalizeLabel(label));
+}
+
+function normalizeLabel(label = "") {
+  return String(label)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
 }
 
 export default Sidebar;

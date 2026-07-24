@@ -306,12 +306,12 @@
 }
 
 .summaryCard {
-  min-height: 75px;
+  min-height: 84px;
   display: grid;
   grid-template-columns: 46px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid currentColor;
   border-radius: 9px;
   background: rgba(8, 21, 34, 0.96);
@@ -338,15 +338,15 @@
 .summaryCard strong {
   display: block;
   color: currentColor;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
 }
 
 .summaryCard p {
   margin: 3px 0 0;
   color: #ffffff;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 26px;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -354,7 +354,7 @@
   display: block;
   margin-top: 4px;
   color: currentColor;
-  font-size: 6px;
+  font-size: 7px;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -402,15 +402,15 @@
 
 .panel {
   min-height: 292px;
-  padding: 17px 22px;
+  padding: 20px 24px;
   border-radius: 22px;
 }
 
 .panel h2 {
   margin: 0;
   color: var(--yellow);
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
 }
 
 .panelHeader {
@@ -457,7 +457,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .donutWrap li i {
@@ -480,7 +481,8 @@
   gap: 12px;
   align-items: center;
   color: #ffffff;
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .barRow i,
@@ -493,7 +495,8 @@
 
 .barRow small,
 .priorityItem small {
-  font-size: 7px;
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .priorityList {
@@ -512,12 +515,27 @@
 .priorityItem strong {
   grid-row: span 2;
   color: var(--yellow);
-  font-size: 22px;
+  font-size: 28px;
+}
+
+.priorityItem strong sup,
+.growthItem > strong sup {
+  margin-left: 1px;
+  font-size: 0.52em;
+  vertical-align: text-top;
+}
+
+.ordinalValue {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 1px;
+  white-space: nowrap;
 }
 
 .priorityItem span {
   color: #ffffff;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .priorityItem small {
@@ -753,13 +771,13 @@
 
 .spontaneousItem strong {
   color: var(--yellow);
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .spontaneousItem small {
   display: block;
   color: #ffffff;
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .spontaneousItem aside {
@@ -805,13 +823,13 @@
 
 .growthItem > strong {
   color: #ffffff;
-  font-size: 20px;
+  font-size: 26px;
 }
 
 .growthItem p {
   margin: 0;
   color: #ffffff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   line-height: 1.05;
 }
@@ -823,12 +841,12 @@
   border: 1px solid #00bd69;
   border-radius: 5px;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .growthItem em {
   color: #00bd69;
-  font-size: 18px;
+  font-size: 22px;
   font-style: normal;
   font-weight: 900;
 }
@@ -859,26 +877,48 @@
 .footerMetrics strong {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  margin-top: 3px;
+  margin-top: 5px;
   color: #ffffff;
-  font-size: 36px;
+  font-size: 50px;
   font-weight: 500;
+  line-height: 0.92;
+}
+
+.footerOrdinal {
+  gap: 6px;
+}
+
+.footerOrdinal .ordinalValue {
+  align-items: flex-start;
+  gap: 0;
+  color: #ffffff;
+  font-size: inherit;
+  font-weight: inherit;
   line-height: 1;
+}
+
+.footerOrdinal .ordinalValue sup {
+  margin-left: 1px;
+  font-size: 0.42em;
+  line-height: 1;
+  vertical-align: super;
 }
 
 .footerMetrics strong i {
   width: 0;
   height: 0;
-  border-right: 5px solid transparent;
-  border-bottom: 8px solid #00bd69;
-  border-left: 5px solid transparent;
+  align-self: center;
+  border-right: 6px solid transparent;
+  border-bottom: 9px solid #00bd69;
+  border-left: 6px solid transparent;
 }
 
 .footerMetrics small {
-  margin-top: 3px;
+  margin-top: 5px;
   color: var(--yellow);
-  font-size: 6px;
+  font-size: 8px;
   font-weight: 800;
 }
 
@@ -900,7 +940,7 @@
 .perceptionPanel h2 {
   margin: 0 0 12px;
   color: var(--yellow);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 900;
 }
 
@@ -915,7 +955,8 @@
   gap: 8px;
   align-items: center;
   color: #ffffff;
-  font-size: 8px;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .perceptionRow i {
@@ -925,7 +966,7 @@
 }
 
 .perceptionRow small {
-  font-size: 6px;
+  font-size: 9px;
   font-weight: 800;
 }
 

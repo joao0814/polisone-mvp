@@ -122,7 +122,7 @@ function PesquisaCampo({ session, onLogout }) {
       <section className={styles.workspace}>
         <header className={styles.header}>
           <div>
-            <p className={styles.kicker}>Visao Geral da Campanha</p>
+            <p className={styles.kicker}>Visão Geral da Campanha</p>
             <h1>Pesquisa de Campo</h1>
           </div>
 
@@ -131,9 +131,9 @@ function PesquisaCampo({ session, onLogout }) {
 
         {!hasResearchData ? (
           <AsyncSectionState
-            description="A estrutura da pesquisa esta pronta e passara a exibir os resultados assim que a coleta estiver conectada."
+            description="A estrutura da pesquisa está pronta e passará a exibir os resultados assim que a coleta estiver conectada."
             state="empty"
-            title="Nenhum resultado de pesquisa disponivel"
+            title="Nenhum resultado de pesquisa disponível"
           />
         ) : (
           <>
@@ -162,7 +162,7 @@ function PesquisaCampo({ session, onLogout }) {
               </select>
             </label>
             <label>
-              <span>Situacao</span>
+              <span>Situação</span>
               <select
                 onChange={(event) => handleDraftChange("status", event.target.value)}
                 value={draftFilters.status}
@@ -173,7 +173,7 @@ function PesquisaCampo({ session, onLogout }) {
               </select>
             </label>
             <label>
-              <span>Municipio</span>
+              <span>Município</span>
               <select
                 onChange={(event) => handleDraftChange("city", event.target.value)}
                 value={draftFilters.city}
@@ -198,7 +198,7 @@ function PesquisaCampo({ session, onLogout }) {
             <div className={styles.searchLine}>
               <input
                 aria-label="Buscar pesquisa"
-                placeholder="Buscar emendas, entidades e etc..."
+                placeholder="Buscar emendas, entidades etc."
                 onChange={(event) => handleDraftChange("search", event.target.value)}
                 value={draftFilters.search}
                 type="search"
@@ -215,7 +215,7 @@ function PesquisaCampo({ session, onLogout }) {
             type="button"
             onClick={() =>
               setFeedback(
-                "O cadastro da pesquisa sera conectado depois ao formulario externo de coleta.",
+                "O cadastro da pesquisa será conectado depois ao formulário externo de coleta.",
               )
             }
           >
@@ -238,7 +238,7 @@ function PesquisaCampo({ session, onLogout }) {
             <span>Recorte ativo</span>
             <strong>{activeScenario.title}</strong>
             <small>
-              {activeScenario.entity} Â· {activeScenario.type} Â· {activeScenario.status}
+              {activeScenario.entity} • {activeScenario.type} • {activeScenario.status}
             </small>
           </div>
           <p>{filteredScenarios.length} resultado(s) com os filtros atuais</p>
@@ -258,20 +258,20 @@ function PesquisaCampo({ session, onLogout }) {
         </section>
 
         <section className={styles.topGrid} aria-label="Indicadores principais de campo">
-          <DonutPanel title="Em qual cidade voce esta?" items={activeScenario.cityDistribution} />
+          <DonutPanel title="Em qual cidade você está?" items={activeScenario.cityDistribution} />
 
-          <BarPanel title="Qual e o principal problema da sua cidade?" items={activeScenario.cityProblems} />
+          <BarPanel title="Qual é o principal problema da sua cidade?" items={activeScenario.cityProblems} />
 
           <RankingPanel
             items={activeScenario.priorityRanking}
-            title="Qual dessas areas deveria ser prioridade para um deputado estadual?"
+            title="Qual dessas áreas deveria ser prioridade para um deputado estadual?"
           />
         </section>
 
         <VoterProfile profile={activeScenario.electorateProfile} />
 
-        <section className={styles.middleGrid} aria-label="Analise eleitoral">
-          <DonutPanel title="O que mais influência seu voto?" items={activeScenario.voteInfluence} />
+        <section className={styles.middleGrid} aria-label="Análise eleitoral">
+          <DonutPanel title="O que mais influencia seu voto?" items={activeScenario.voteInfluence} />
 
           <SpontaneousPanel
             items={visibleSpontaneousVotes}
@@ -288,20 +288,22 @@ function PesquisaCampo({ session, onLogout }) {
           />
         </section>
 
-        <section className={styles.footerMetrics} aria-label="Metricas finais de pesquisa">
+        <section className={styles.footerMetrics} aria-label="Métricas finais de pesquisa">
           {activeScenario.footerMetrics.map((metric) => (
             <article key={metric.title}>
               <span>{metric.title}</span>
-              <strong>
+              <strong
+                className={metric.title === "Ranking do candidato" ? styles.footerOrdinal : undefined}
+              >
                 {metric.trend ? <i aria-hidden="true" /> : null}
-                {metric.value}
+                {metric.title === "Ranking do candidato" ? renderOrdinal(metric.value) : metric.value}
               </strong>
               <small>{metric.note}</small>
             </article>
           ))}
         </section>
 
-        <section className={styles.perceptionGrid} aria-label="Percepcao sobre o candidato">
+        <section className={styles.perceptionGrid} aria-label="Percepção sobre o candidato">
           {activeScenario.perceptionPanels.map((panel, index) => (
             <PerceptionPanel key={`${panel.title}-${index}`} panel={panel} />
           ))}
@@ -366,7 +368,7 @@ function RankingPanel({ items, title }) {
       <div className={styles.priorityList}>
         {items.map((item) => (
           <div className={styles.priorityItem} key={item.label}>
-            <strong>{item.position}</strong>
+            <strong>{renderOrdinal(item.position)}</strong>
             <span>{item.label}</span>
             <small>{item.votes}</small>
             <i style={{ "--value": `${item.value}%` }} />
@@ -444,7 +446,7 @@ function SpontaneousPanel({ items, onToggle, showToggle, showingAll }) {
   return (
     <article className={styles.panel}>
       <div className={styles.panelHeader}>
-        <h2>Pesquisa Espontanea de votos</h2>
+        <h2>Pesquisa Espontânea de votos</h2>
         <button type="button">Deputado Estadual</button>
       </div>
       <div className={styles.spontaneousList}>
@@ -476,13 +478,13 @@ function GrowthPanel({ items, onToggle, showToggle, showingAll }) {
   return (
     <article className={styles.panel}>
       <div className={styles.panelHeader}>
-        <h2>Quem esta crescendo</h2>
+        <h2>Quem está crescendo</h2>
         <button type="button">Deputado Estadual</button>
       </div>
       <div className={styles.growthList}>
         {items.map((item) => (
           <div className={styles.growthItem} key={item.name}>
-            <strong>{item.position}</strong>
+            <strong>{renderOrdinal(item.position)}</strong>
             <span className={styles.avatar}>{item.avatar}</span>
             <p>{item.name}</p>
             <small>{item.votes}</small>
@@ -513,6 +515,19 @@ function PerceptionPanel({ panel }) {
         ))}
       </div>
     </article>
+  );
+}
+
+function renderOrdinal(value) {
+  const digits = String(value || "").match(/\d+/)?.[0];
+
+  if (!digits) return value;
+
+  return (
+    <span className={styles.ordinalValue}>
+      {digits}
+      <sup>o</sup>
+    </span>
   );
 }
 

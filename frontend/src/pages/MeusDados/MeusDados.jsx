@@ -11,14 +11,14 @@ const PROFILE_IMAGE_MAX_SIZE = 5 * 1024 * 1024;
 
 const menuItems = [
   { label: "Portal do Candidato", path: "/" },
-  { label: "Visao Geral", path: "/gestao-campanha" },
-  { label: "Inteligencia Eleitoral", path: "/inteligencia-eleitoral" },
-  { label: "Municipios", path: "/municipios" },
+  { label: "Visão Geral", path: "/gestao-campanha" },
+  { label: "Inteligência Eleitoral", path: "/inteligencia-eleitoral" },
+  { label: "Municípios", path: "/municipios" },
   { label: "Emendas", path: "/emendas" },
   { label: "Equipes", path: "/equipes" },
   { label: "Check-in", path: "/check-in" },
   { label: "Pesquisa de campo", path: "/pesquisa-campo" },
-  { label: "Territorio" },
+  { label: "Território" },
 ];
 
 const initialForm = {
